@@ -40,7 +40,8 @@ export default function EditShipmentForm({ shipment, onUpdate, onClose }) {
   }
 
   const handleNavigate = () => {
-    navigate('/shipments')
+   navigate('/dashboard/shipments')
+
   }
 
   if (!shipment) {

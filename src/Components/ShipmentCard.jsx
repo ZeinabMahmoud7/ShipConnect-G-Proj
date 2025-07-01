@@ -37,7 +37,8 @@ export default function ShipmentCard({ shipment }) {
 
   return (
     <div
-      onClick={() => shipment.id && navigate(`/shipment/${shipment.id}`)}
+      onClick={() => navigate(`shipment/${shipment.id}`)}
+
       style={{ borderColor: "#B0B6C4" }}
       className="cursor-pointer border rounded-lg p-4 shadow-xs hover:shadow-sm transition"
     >

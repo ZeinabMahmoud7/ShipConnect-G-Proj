@@ -1,12 +1,12 @@
 import React from 'react';
-import Logo from '../assets/LogoShip.png';
+
 import HeroBg1 from '../assets/hero-bg.jpg';
 import User1 from '../assets/hero-bg.jpg';
 import User2 from '../assets/hero-bg.jpg';
 import User3 from '../assets/hero-bg.jpg';
 import HeroBg2 from '../assets/Hero2.jpg'; // أضف الصور الإضافية
 import HeroBg3 from '../assets/Hero3.jpg';
-import avatarNav from '../assets/AvatarNav.jpg'
+
 import { useState,useEffect,useRef } from 'react';
 import Frame1 from '../assets/Frame1.png';
 import Frame2 from '../assets/Frame 2.png';
@@ -19,20 +19,16 @@ import Frame8 from '../assets/Frame8.png';
 import bgAboute from '../assets/AboutBG.jpg';
 import bgAboute1 from '../assets/AboutBg2.jpg';
 import PlatFormHome from '../Components/PlatFormHome/PlatFormHome';
+import Footer from '../Components/Footer/Footer';
+import Testimonials from '../Components/Testimonials/Testimonials';
+import { Link } from "react-router-dom";
+import Navbar from '../Components/Navbar/Navbar';
 export default function HomePage() {
- const [menuOpen, setMenuOpen] = useState(false); // للقائمة الجوال
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // للقائمة المنسدلة
+ // للقائمة الجوال
+ // للقائمة المنسدلة
   const dropdownRef = useRef(null);
 
-useEffect(() => {
-  const handleClickOutside = (event) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-      setIsDropdownOpen(false);
-    }
-  };
-  document.addEventListener("mousedown", handleClickOutside);
-  return () => document.removeEventListener("mousedown", handleClickOutside);
-}, []);
+
 
   const backgroundImages = [HeroBg1, HeroBg2, HeroBg3];
 const [bgIndex, setBgIndex] = useState(0);
@@ -159,89 +155,7 @@ const stopSlideShow = () => {
   </div>
 
   {/* النافبار فوق الخلفية */}
-  <header className="fixed top-10 left-0 w-full z-50 px-5 lg:px-20">
-    <div className="mx-auto max-w-[1264px] h-[70px] bg-[#153052]/35 rounded-[20px] px-4 md:px-[88px] py-4 flex justify-between items-center">
-
-      {/* اللوجو */}
-      <div className="flex items-center gap-2">
-        <img src={Logo} alt="ShipConnect" className="h-10 w-auto object-contain" />
-        <span className="text-white font-bold text-lg">ShipConnect</span>
-      </div>
-
-      {/* روابط النافبار */}
-      <nav className="hidden md:flex gap-6 text-white text-base font-medium">
-        <a href="#" className="hover:bg-white/20 rounded-md px-2 py-1 transition-colors">Home</a>
-        <a href="#" className="hover:bg-white/20 rounded-md px-2 py-1 transition-colors">Contact Us</a>
-        <a href="#" className="hover:bg-white/20 rounded-md px-2 py-1 transition-colors">Conditions</a>
-      </nav>
-  {/* صورة اليوزر + المنيو */}
-<div className="flex items-center gap-2 relative" ref={dropdownRef}>
-  <button
-    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-    className="flex items-center gap-2 text-white p-1 hover:bg-white/20 rounded-md transition"
-  >
-    <img src={avatarNav} className="w-8 h-8 rounded-full" alt="Avatar" />
-    <svg width="24" height="24" viewBox="0 0 33 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M8.625 12.9375C8.625 12.9375 14.6091 21.0625 16.75 21.0625C18.8909 21.0625 24.875 12.9375 24.875 12.9375" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  </button>
-
-  {/* القائمة المنسدلة */}
-  <div
-    className={`absolute top-12 right-0 w-56 bg-white rounded-lg shadow-lg p-4 z-50 transition-all duration-500 ease-in-out
-      ${isDropdownOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'}`}
-  >
-    <div
-      onClick={() => setIsDropdownOpen(false)}
-      className="px-3 text-primaryBlue py-2 mb-2 text-center font-semibold rounded-md cursor-pointer hover:bg-gray-100"
-    >
-      Log in
-    </div>
-    <div
-      onClick={() => setIsDropdownOpen(false)}
-      className="px-3 py-2 mb-2 rounded-md cursor-pointer text-center font-semibold text-primaryBlue hover:bg-gray-100"
-    >
-      Register as Startup
-    </div>
-    <div
-      onClick={() => setIsDropdownOpen(false)}
-      className="px-3 py-2 rounded-md cursor-pointer text-center font-semibold text-primaryBlue hover:bg-gray-100"
-    >
-      Register as Shipping
-    </div>
-  </div>
-</div>
-
-      {/* زر الموبايل */}
-      <button
-        onClick={() => setMenuOpen(!menuOpen)}
-        className="md:hidden p-2 rounded-md hover:bg-white/20 transition-colors"
-        aria-label="Toggle menu"
-      >
-        {menuOpen ? (
-          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
-        ) : (
-          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <line x1="3" y1="6" x2="21" y2="6" />
-            <line x1="3" y1="12" x2="21" y2="12" />
-            <line x1="3" y1="18" x2="21" y2="18" />
-          </svg>
-        )}
-      </button>
-    </div>
-
-    {/* قائمة الموبايل */}
-    {menuOpen && (
-      <nav className="lg:hidden bg-[#153052]/90 rounded-b-[20px] px-6 py-4 space-y-3 text-white font-medium text-base shadow-lg">
-        <a href="#" className="block hover:bg-white/20 rounded-md px-2 py-1 transition-colors">Home</a>
-        <a href="#" className="block hover:bg-white/20 rounded-md px-2 py-1 transition-colors">Contact Us</a>
-        <a href="#" className="block hover:bg-white/20 rounded-md px-2 py-1 transition-colors">Conditions</a>
-      </nav>
-    )}
-  </header>
+  <Navbar/>
 
   {/* محتوى الـ Hero Section فوق الصورة */}
   <div className="absolute inset-0 z-10 flex items-center justify-start px-4 md:px-20 text-white">
@@ -278,7 +192,7 @@ const stopSlideShow = () => {
     </section>
 
       {/* Why Choose Us */}
-      <section className=" mx-20 py-12">
+      <section className=" mx-auto md:mx-20 py-12">
         <div className="container mx-auto px-4 text-center">
 <h2
   className="text-3xl text-[#10233E] font-bold mb-4"
@@ -349,7 +263,7 @@ const stopSlideShow = () => {
       </section>
 
       {/* About Us */}
-      <section className="bg-white py-12 mx-20">
+      <section className="bg-white py-12 mx-auto md:mx-20">
         <h2
   className="text-3xl text-center text-[#10233E]  font-bold mb-8"
   style={{ textShadow: '4px 4px 15px #00000040' }}
@@ -407,56 +321,16 @@ const stopSlideShow = () => {
       </section>
 
       {/* Workflow */}
-      <div className='bg-[#E4E6EC] mx-20 px-8 rounded-xl'>
+      <div className='bg-[#E4E6EC] mx-auto md:mx-20 px-8 rounded-xl'>
           <PlatFormHome/>
       </div>
   
 
       {/* Testimonials */}
-      <section className="bg-white py-12">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-xl font-bold mb-8">What Our Users Say</h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              { name: 'Nour', role: 'Startup Founder', text: 'ShipConnect helped us compare offers in minutes.', avatar: User1 },
-              { name: 'Mahmoud', role: 'Logistics Manager', text: 'A platform to manage all shipments in one place.', avatar: User2 },
-              { name: 'Lina E.', role: 'E-commerce Owner', text: 'Reliable and fast, we now trust our process more than ever.', avatar: User3 },
-            ].map((user, i) => (
-              <div key={i} className="bg-gray-50 p-6 rounded shadow">
-                <p className="text-gray-700 italic mb-4">“{user.text}”</p>
-                <div className="flex items-center space-x-2">
-                  <img src={user.avatar} alt={user.name} className="w-8 h-8 rounded-full" />
-                  <div className="text-left">
-                    <p className="font-bold text-sm">{user.name}</p>
-                    <p className="text-gray-500 text-xs">{user.role}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+     <Testimonials/>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-gray-300 py-10">
-        <div className="container mx-auto px-4 grid md:grid-cols-4 gap-8">
-          <div>
-            <img src={Logo} alt="ShipConnect" className="w-6 h-6 mb-2" />
-            <p className="text-sm">Connecting startups with reliable shipping companies. Simplifying logistics, saving time, and building trust.</p>
-          </div>
-          {['Explore', 'About Us', 'Resources'].map((section, i) => (
-            <div key={i}>
-              <h4 className="text-white font-semibold mb-2">{section}</h4>
-              <ul className="text-sm space-y-1">
-                <li><a href="#" className="hover:text-white">Help Center</a></li>
-                <li><a href="#" className="hover:text-white">Careers</a></li>
-                <li><a href="#" className="hover:text-white">Blog</a></li>
-              </ul>
-            </div>
-          ))}
-        </div>
-        <div className="text-center text-xs text-gray-500 mt-8">© 2025 ShipConnect. All rights reserved.</div>
-      </footer>
+   <Footer/>
     </div>
   );
 }

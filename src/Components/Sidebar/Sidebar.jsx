@@ -48,11 +48,11 @@ export default function Sidebar() {
 
   );
   const navLinks = [
-    { to: "/", label: "Dashboard" ,  icon: Dash  },
-    { to: "/shipments", label: "Shipments",icon:Ship },
-    { to: "/offers", label: "Offers",icon:Offers },
-    { to: "/contact", label: "Contact",icon:Contact },
-    { to: "/settings", label: "Setting",icon:Setting },
+    { to: "/dashboard", label: "Dashboard" ,  icon: Dash  },
+    { to: "shipments", label: "Shipments",icon:Ship },
+    { to: "offers", label: "Offers",icon:Offers },
+    { to: "contact", label: "Contact",icon:Contact },
+    { to: "settings", label: "Setting",icon:Setting },
   ];
 
   return (

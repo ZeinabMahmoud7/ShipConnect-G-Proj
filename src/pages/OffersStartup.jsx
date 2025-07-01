@@ -17,7 +17,7 @@ export default function Offers() {
   // لما المستخدم يختار شركة، نحدد الشات وننقل لصفحة الدردشة
   const handleConnect = (id) => {
     setActiveChatId(id);
-    navigate(`/offers/chat/${id}`);
+    navigate(`chat/${id}`);
   };
 
   return (
