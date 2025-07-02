@@ -86,12 +86,13 @@ const Navbar = () => {
 >
   Register as Startup
 </Link>
-    <div
+    <Link
+    to="/dashboardShipping"
       onClick={() => setIsDropdownOpen(false)}
       className="px-3 py-2 rounded-md cursor-pointer text-center font-semibold text-primaryBlue hover:bg-gray-100"
     >
       Register as Shipping
-    </div>
+    </Link>
   </div>
 </div>
 

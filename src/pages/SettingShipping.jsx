@@ -1,16 +1,9 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
-import { BsPerson } from "react-icons/bs";
-import { CiMail, CiLocationOn } from "react-icons/ci";
-import { MdOutlinePublic, MdOutlineTextSnippet } from "react-icons/md";
-import { FaPhoneAlt } from "react-icons/fa";
-import { RiLockPasswordLine } from "react-icons/ri";
-import { TbWorldWww } from "react-icons/tb";
-import { HiOutlineDocumentText } from "react-icons/hi";
 
-import profilePic from '../../assets/Avatar.png';
+import profilePic from  '../assets/Avatar.png';
 
-function ProfileForm() {
+function SettingShipping() {
   const { register, handleSubmit, reset } = useForm();
 
   const onSubmit = (data) => {
@@ -185,4 +178,4 @@ const SelectField = ({ label, name, options, icon, register }) => (
   </div>
 );
 
-export default ProfileForm;
+export default SettingShipping;

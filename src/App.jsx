@@ -14,6 +14,11 @@ import { mockShipments } from './Context/data/mockShipments';
 import { useState } from 'react';
 import AddShipment from './Components/AddShipment';
 import ContactUs from './pages/ContactHome';
+import DashboardShipping from './pages/DashboardShipping';
+import LayoutShipping from './Layout/LayoutDashboardShipping';
+import ContactShipping from './pages/ContactShipping';
+import SettingShipping from './pages/SettingShipping';
+import OffersShipping from './pages/OffersShipping';
 function App() {
   const [shipments, setShipments] = useState(mockShipments);
 
@@ -29,7 +34,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
          <Route path="/contact-us" element={<ContactUs />} />
 
-          {/* Dashboard routes */}
+          {/* Dashboard StartUp routes */}
           <Route path="/dashboard" element={<Layout />}>
             <Route index element={<Dashboard />} />
             <Route path="offers" element={<Offers />} />
@@ -62,6 +67,14 @@ function App() {
               element={<AddShipment onAddShipment={handleAddShipment} />}
             />
           </Route>
+            {/* Dashboard Shipping routes */}
+           <Route path="/dashboardShipping" element={<LayoutShipping />}>
+  <Route index element={<DashboardShipping />} />
+    <Route path='contactShipping' element={<ContactShipping />} />
+     <Route path='settingsShipping' element={<SettingShipping />} />
+     <Route path='offersShipping' element={<OffersShipping />} />
+</Route>
+
         </Routes>
       </OffersProvider>
     </BrowserRouter>

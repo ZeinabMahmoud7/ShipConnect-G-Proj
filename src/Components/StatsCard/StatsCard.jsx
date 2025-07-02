@@ -31,6 +31,16 @@ const average = segments.length ? Math.round(total / segments.length) : 0;
 </svg>
 
   );
+    const OffersIcon = () => (
+    
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M18.058 8.536L17.058 7.923C16.055 7.308 15.554 7 15 7C14.446 7 13.945 7.308 12.942 7.923L11.942 8.536C10.993 9.118 10.519 9.409 10.26 9.878C10 10.348 10 10.913 10 12.044V17.909C10 19.838 10 20.802 10.586 21.401C11.172 22 12.114 22 14 22H16C17.886 22 18.828 22 19.414 21.4C20 20.802 20 19.838 20 17.91V12.044C20 10.913 20 10.347 19.74 9.878C19.48 9.409 19.007 9.118 18.058 8.536Z" stroke="#204C80" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M14.0008 7.10801C13.3618 6.49501 12.9808 6.17301 12.4978 6.05201C11.9378 5.91101 11.3498 6.06901 10.1728 6.38501L9.0008 6.69901C7.8878 6.99901 7.3308 7.14701 6.9448 7.51601C6.5578 7.88601 6.4078 8.41001 6.1088 9.45901L4.5548 14.897C4.0448 16.685 3.7888 17.579 4.2228 18.284C4.5948 18.889 6.0848 19.634 7.5018 20" stroke="#204C80" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M14.495 10C15.336 9.44001 16.083 8.54301 16.547 7.42701C17.505 5.12201 16.894 2.75701 15.184 2.14601C13.473 1.53401 11.309 2.90601 10.351 5.21101C10.1956 5.58258 10.078 5.96887 10 6.36401" stroke="#204C80" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+
+  );
 
   const typeConfig = {
     users: {
@@ -57,6 +67,13 @@ const average = segments.length ? Math.round(total / segments.length) : 0;
     Scope: {
       title: 'Shipping Scope',
       icon: <ShippingIcon />,
+      bg: '#FFE1CD',
+      border: '#FFE1CD',
+      centerLabel: 'Shipping',
+    },
+       Offers: {
+      title: 'Offers',
+      icon: <OffersIcon />,
       bg: '#FFE1CD',
       border: '#FFE1CD',
       centerLabel: 'Shipping',

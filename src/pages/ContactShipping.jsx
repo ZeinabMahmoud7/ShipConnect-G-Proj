@@ -1,7 +1,7 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 
-function ContactForm() {
+function ContactShipping() {
   const {
     register,
     handleSubmit,
@@ -109,4 +109,4 @@ function ContactForm() {
   );
 }
 
-export default ContactForm;
+export default ContactShipping;
