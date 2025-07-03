@@ -11,6 +11,7 @@ import HomePage from './pages/HomeShipConnect';
 import ShipmentsList from './pages/ShipmentListStartUp';
 import ShipmentDetails from './pages/ShipmentDetailsStartUp';
 import { mockShipments } from './Context/data/mockShipments';
+import { mockShipping } from './Context/data/mockShipping';
 import { useState } from 'react';
 import AddShipment from './Components/AddShipment';
 import ContactUs from './pages/ContactHome';
@@ -19,9 +20,12 @@ import LayoutShipping from './Layout/LayoutDashboardShipping';
 import ContactShipping from './pages/ContactShipping';
 import SettingShipping from './pages/SettingShipping';
 import OffersShipping from './pages/OffersShipping';
+import OffersShippingDetailes from './pages/OffersShippingDetailes';
+import ShipmentsListShipping from './pages/ShipmentsListShipping';
+import DeliverShippingShipment from './pages/DeliverShippingShipment';
 function App() {
   const [shipments, setShipments] = useState(mockShipments);
-
+const [shipmentsShipping, setShipmentsShipping] = useState(mockShipping);
   const handleAddShipment = (newShipment) => {
     setShipments((prev) => [newShipment, ...prev]);
   };
@@ -68,12 +72,31 @@ function App() {
             />
           </Route>
             {/* Dashboard Shipping routes */}
-           <Route path="/dashboardShipping" element={<LayoutShipping />}>
+ <Route path="/dashboardShipping" element={<LayoutShipping />}>
   <Route index element={<DashboardShipping />} />
-    <Route path='contactShipping' element={<ContactShipping />} />
-     <Route path='settingsShipping' element={<SettingShipping />} />
-     <Route path='offersShipping' element={<OffersShipping />} />
+  <Route path="contactShipping" element={<ContactShipping />} />
+  <Route path="settingsShipping" element={<SettingShipping />} />
+
+  {/* صفحة العروض */}
+  <Route path="offersShipping" element={<OffersShipping />} />
+  
+  {/* صفحة التفاصيل الخاصة بالعروض */}
+  <Route path="shipping-details" element={<OffersShippingDetailes />} />
+  
+  
+            <Route
+              path="shipmentsShipping"
+              element={
+                <ShipmentsListShipping
+                  shipments={shipmentsShipping}
+                  setShipments={setShipmentsShipping}
+                />
+              }
+            />
+        <Route   path="shipmentsShipping/shipment/:id" element={<DeliverShippingShipment />} />
+
 </Route>
+
 
         </Routes>
       </OffersProvider>
