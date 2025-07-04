@@ -1,11 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircle, CheckCircle, XCircle, Search } from 'lucide-react';
+import PaymentModal from '../PaymentModal';
+import { useNavigate } from 'react-router-dom';
 
 export default function OffersList({ offers, approvedChats, onApprove, onConnect }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterOpen, setFilterOpen] = useState(false);
   const [priceFilter, setPriceFilter] = useState('');
   const filterRef = useRef(null);
+const [payModalOfferId, setPayModalOfferId] = useState(null);
+const [approvedLocal, setApprovedLocal] = useState(() => new Set(approvedChats));
+const navigate = useNavigate();
 
   const filteredOffers = offers.filter((offer) => {
     const matchesId = offer.id.toLowerCase().includes(searchTerm.toLowerCase());
@@ -25,6 +30,13 @@ export default function OffersList({ offers, approvedChats, onApprove, onConnect
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+const handleConfirmPayment = (id) => {
+  alert(`Payment done for ${id}`);
+  setPayModalOfferId(null);
+navigate(`/dashboard/offers/chat/${id}`);
+
+
+};
 
   return (
     <div className="relative px-4 sm:px-6 md:px-8 max-w-screen-xl mx-auto">
@@ -206,55 +218,37 @@ export default function OffersList({ offers, approvedChats, onApprove, onConnect
                   </p>
                 </div>
 
-                {approvedChats.includes(offer.id) ? (
-                  <button
-                    onClick={() => onConnect(offer.id)}
-                    className="bg-buttonBlue hover:bg-buttonBlueHover text-white font-semibold py-2 px-4 rounded-full flex items-center gap-1 w-full md:w-auto justify-center"
-                  >
-                    
-<svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M10.6275 15.6675C13.7655 15.4598 16.2645 12.9248 16.47 9.74251C16.5098 9.12001 16.5098 8.47501 16.47 7.85251C16.2645 4.67101 13.7655 2.13751 10.6275 1.92826C9.54369 1.85684 8.45634 1.85684 7.37251 1.92826C4.23451 2.13676 1.73551 4.67101 1.53001 7.85326C1.49028 8.48264 1.49028 9.11389 1.53001 9.74326C1.60501 10.902 2.11726 11.9753 2.72101 12.8813C3.07126 13.515 2.84026 14.3063 2.47501 14.9985C2.21251 15.4973 2.08051 15.7463 2.18626 15.9263C2.29126 16.1063 2.52751 16.1123 2.99926 16.1235C3.93301 16.146 4.56226 15.882 5.06176 15.5138C5.34451 15.3045 5.48626 15.2003 5.58376 15.1883C5.68126 15.1763 5.87401 15.2558 6.25801 15.4133C6.60301 15.5558 7.00426 15.6435 7.37176 15.6683C8.44051 15.7388 9.55726 15.7388 10.6283 15.6683M8.99626 9.00001H9.00376M11.9933 9.00001H12M6.00001 9.00001H6.00676" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
- Connect
-                  </button>
-                ) : (
-                  <div className="flex gap-2 w-full md:w-auto flex-wrap md:flex-nowrap justify-center md:justify-start">
-                    <button
-                      onClick={() => onApprove(offer.id)}
-                      className="border border-success text-success hover:bg-green-50 px-4 py-2 rounded-full flex items-center gap-1 flex-grow md:flex-grow-0 justify-center"
-                    >
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M22 12C22 6.477 17.523 2 12 2C6.477 2 2 6.477 2 12C2 17.523 6.477 22 12 22C17.523 22 22 17.523 22 12Z"
-                          stroke="#177D3F"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M8 12.75C8 12.75 9.6 13.662 10.4 15C10.4 15 12.8 9.75 16 8"
-                          stroke="#177D3F"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                      Approve
-                    </button>
-                    <button
-                      onClick={() => alert('Rejected!')}
-                      className="border border-error text-error hover:bg-red-50 px-4 py-2 rounded-full flex items-center gap-1 flex-grow md:flex-grow-0 justify-center"
-                    >
-                      <XCircle size={18} /> Reject
-                    </button>
-                  </div>
-                )}
+{approvedLocal.has(offer.id) ? (
+  <button
+    onClick={() => setPayModalOfferId(offer.id)}
+    className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-full flex items-center gap-1 w-full md:w-auto justify-center"
+  >
+    Pay
+  </button>
+) : (
+  <div className="flex gap-2 w-full md:w-auto flex-wrap md:flex-nowrap justify-center md:justify-start">
+ <button
+  onClick={() => {
+    // لا تستدعي onApprove لمنع التنقل:
+    setApprovedLocal(prev => new Set(prev).add(offer.id));
+    // لو حابة تستدعيها لاحقاً بعد معالجة التنقل، احذفي السطر التالي:
+    // if (onApprove) onApprove(offer.id);
+  }}
+  className="border border-success text-success hover:bg-green-50 px-4 py-2 rounded-full flex items-center gap-1 flex-grow md:flex-grow-0 justify-center"
+>
+  <CheckCircle size={18} /> Approve
+</button>
+
+    <button
+      onClick={() => alert('Rejected!')}
+      className="border border-error text-error hover:bg-red-50 px-4 py-2 rounded-full flex items-center gap-1 flex-grow md:flex-grow-0 justify-center"
+    >
+      <XCircle size={18} /> Reject
+    </button>
+  </div>
+)}
+
+
               </div>
             </div>
           </div>
@@ -262,6 +256,16 @@ export default function OffersList({ offers, approvedChats, onApprove, onConnect
       ) : (
         <p className="text-gray-500">No offers match your search.</p>
       )}
+{payModalOfferId && (
+  <PaymentModal
+    offerId={payModalOfferId}
+    onClose={() => setPayModalOfferId(null)}
+    onConfirm={handleConfirmPayment}
+  />
+)}
+
+
+
     </div>
   );
 }

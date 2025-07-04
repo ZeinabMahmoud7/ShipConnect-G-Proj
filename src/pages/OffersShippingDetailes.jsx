@@ -50,7 +50,7 @@ const navigate = useNavigate();
   </svg>
 </div>
 
-          <span className="font-bold text-primaryBlue text-[24px]">
+          <span className="font-bold text-primaryBlue text-[20px]">
             Transit ID <span className="text-[#10233E99] font-normal">#123abc456</span>
           </span>
         </div>
@@ -70,19 +70,19 @@ const navigate = useNavigate();
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 text-sm">
             <div className='my-4'>
-              <p className="text-[#10233E99] text-[24px] mb-3 font-normal">Startup Name</p>
+              <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Startup Name</p>
               <p className="font-bold text-[20px] text-[#10233E]">FastTrack Logistics</p>
             </div>
             <div className='my-4'>
-              <p className="text-[#10233E99] text-[24px] mb-3 font-normal">Phone Number</p>
+              <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Phone Number</p>
               <p className="font-bold text-[#10233E] text-[20px]">+012004040598</p>
             </div>
             <div className='my-4'>
-              <p className="text-[#10233E99] text-[24px] mb-3 font-normal">Destination Address</p>
+              <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Destination Address</p>
               <p className="font-bold text-[#10233E] text-[20px]">22 Nile St., Giza, Egypt</p>
             </div>
             <div className='my-4'>
-              <p className="text-[#10233E99] text-[24px] mb-3 font-normal">Email</p>
+              <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Email</p>
               <p className="font-bold text-[#10233E] text-[20px]">companyname@gmail.com</p>
             </div>
           </div>
@@ -100,19 +100,19 @@ const navigate = useNavigate();
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 text-sm">
             <div className='my-4'>
-              <p className="text-[#10233E99] text-[24px] mb-3 font-normal">Startup Name</p>
+              <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Startup Name</p>
               <p className="font-bold text-[#10233E] text-[20px]">SwiftLogistic</p>
             </div>
             <div className='my-4'>
-              <p className="text-[#10233E99] text-[24px] mb-3 font-normal">Phone Number</p>
+              <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Phone Number</p>
               <p className="font-bold text-[#10233E] text-[20px]">+09172971271298</p>
             </div>
             <div className='my-4'>
-              <p className="text-[#10233E99] text-[24px] mb-3 font-normal">Destination Address</p>
+              <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Destination Address</p>
               <p className="font-bold text-[#10233E] text-[20px]">22 Nile St., Giza, Egypt</p>
             </div>
             <div className='my-4'>
-              <p className="text-[#10233E99] text-[24px] mb-3 font-normal">Email</p>
+              <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Email</p>
               <p className="font-bold text-[#10233E] text-[20px]">companyname@gmail.com</p>
             </div>
           </div>
@@ -129,39 +129,39 @@ const navigate = useNavigate();
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 text-sm">
             <div className='my-4'>
-              <p className="text-[#10233E99] text-[24px] mb-3 font-normal">Shipment Type</p>
+              <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Shipment Type</p>
               <p className="font-bold text-[#10233E] text-[20px]">Electronics</p>
             </div>
             <div className='my-4'>
-              <p className="text-[#10233E99] text-[24px] mb-3 font-normal">Quantity</p>
+              <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Quantity</p>
               <p className="font-bold text-[#10233E] text-[20px]">3 boxes</p>
             </div>
             <div className='my-4'>
-              <p className="text-[#10233E99] text-[24px] mb-3 font-normal">Weight</p>
+              <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Weight</p>
               <p className="font-bold text-[#10233E] text-[20px]">12.5 kg</p>
             </div>
             <div className='my-4'>
-              <p className="text-[#10233E99] text-[24px] mb-3 font-normal">Preferred Delivery Date</p>
+              <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Preferred Delivery Date</p>
               <p className="font-bold text-[#10233E] text-[20px]">2025-06-25</p>
             </div>
             <div className='my-4'>
-              <p className="text-[#10233E99] text-[24px] mb-3 font-normal">Shipping Speed</p>
+              <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Shipping Speed</p>
               <p className="font-bold text-[#10233E] text-[20px]">Express</p>
             </div>
             <div className='my-4'>
-              <p className="text-[#10233E99] text-[24px] mb-3 font-normal">Budget Range</p>
+              <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Budget Range</p>
               <p className="font-bold text-[#10233E] text-[20px]">$20 - $35</p>
             </div>
             <div className='my-4'>
-              <p className="text-[#10233E99] text-[24px] mb-3 font-normal">Preferred Vehicle Type</p>
+              <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Preferred Vehicle Type</p>
               <p className="font-bold text-[#10233E] text-[20px]">Small Van</p>
             </div>
             <div className='my-4'>
-              <p className="text-[#10233E99] text-[24px] mb-3 font-normal">Packaging Options</p>
+              <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Packaging Options</p>
               <p className="font-bold text-[#10233E] text-[20px]">Fragile Protection (Anti-shock bubble wrap)</p>
             </div>
             <div className="md:col-span-2">
-              <p className="text-[#10233E99] text-[24px] mb-3 font-normal">Dimensions (L×W×H)</p>
+              <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Dimensions (L×W×H)</p>
               <p className="font-bold text-[#10233E] text-[20px]">40 cm × 30 cm × 25 cm</p>
             </div>
           </div>

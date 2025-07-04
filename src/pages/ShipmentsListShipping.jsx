@@ -102,17 +102,22 @@ export default function ShipmentsListShipping({ shipments, setShipments }) {
       <div className="space-y-3">
         {filteredShipments.length > 0 ? (
           filteredShipments.map((shipment) => (
-            <ShipmentCard
+<ShipmentCard
   key={shipment.id}
   shipment={shipment}
   onClick={() => {
+    console.log("ffffffffffffff",shipment.status);
     if (shipment.status === 'Delivered') {
       navigate(`/dashboardShipping/shipmentsShipping/shipment/${shipment.id}`);
-
-
+    } else if (shipment.status === 'On Transit') {
+      navigate(`/dashboardShipping/shipmentsShipping/transit/${shipment.id}`);
+    }else if (shipment.status === 'Pending') {
+      navigate(`/dashboardShipping/shipmentsShipping/Pending/${shipment.id}`);
     }
+
   }}
 />
+
 
           ))
         ) : (

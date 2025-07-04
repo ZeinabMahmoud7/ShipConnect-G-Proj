@@ -3,15 +3,19 @@ import { IoIosCheckmarkCircleOutline } from 'react-icons/io';
 import { FaRegCommentDots } from 'react-icons/fa';
 import { BsStarFill } from 'react-icons/bs';
 import avatarImg from '../assets/avatar.png';
-
+import { useNavigate } from 'react-router-dom';
 export default function DeliverShippingShipment({ onBack }) {
+    const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-[#E4E6EC] px-4 py-6 flex justify-center">
       <div className="w-full max-w-4xl space-y-6">
 
         {/* Header */}
         <div className="flex items-center text-[#1A3D65] gap-2 font-semibold text-base sm:text-lg">
-          <FaChevronLeft className="cursor-pointer" onClick={onBack} />
+          <FaChevronLeft
+      className="cursor-pointer"
+      onClick={() => navigate('/dashboardShipping/shipmentsShipping')} // ✅ مسار صحيح
+    />
           <span>Transit ID</span>
           <span className="text-[#10233E99] font-normal">#123abc456</span>
         </div>

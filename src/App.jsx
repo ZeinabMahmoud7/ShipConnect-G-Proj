@@ -23,6 +23,9 @@ import OffersShipping from './pages/OffersShipping';
 import OffersShippingDetailes from './pages/OffersShippingDetailes';
 import ShipmentsListShipping from './pages/ShipmentsListShipping';
 import DeliverShippingShipment from './pages/DeliverShippingShipment';
+import OnTransitShippingShipment from './pages/OnTransitShippingShipment';
+import TrackShipment from './pages/TrackShipment';
+import PendingShippingShipment from './pages/PendingShippingShipment';
 function App() {
   const [shipments, setShipments] = useState(mockShipments);
 const [shipmentsShipping, setShipmentsShipping] = useState(mockShipping);
@@ -43,7 +46,7 @@ const [shipmentsShipping, setShipmentsShipping] = useState(mockShipping);
             <Route index element={<Dashboard />} />
             <Route path="offers" element={<Offers />} />
             <Route path="settings" element={<SettingStartup />} />
-            <Route path="offers/chat/:id" element={<ChatPanel />} />
+            <Route path="/dashboard/offers/chat/:id" element={<ChatPanel />} />
             <Route path="contact" element={<ContactStartup />} />
 
             <Route
@@ -94,6 +97,9 @@ const [shipmentsShipping, setShipmentsShipping] = useState(mockShipping);
               }
             />
         <Route   path="shipmentsShipping/shipment/:id" element={<DeliverShippingShipment />} />
+                 <Route path="shipmentsShipping/transit/:id" element={<OnTransitShippingShipment />} />
+                   <Route path="shipmentsShipping/Pending/:id" element={<PendingShippingShipment />} />
+                 <Route path="track/:id" element={<TrackShipment />} />
 
 </Route>
 

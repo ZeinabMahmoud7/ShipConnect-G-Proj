@@ -1,14 +1,11 @@
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
 import {
   IoIosCheckmarkCircleOutline,
   IoIosTimer,
 } from "react-icons/io"
 import { PiWarningCircle } from "react-icons/pi";
 
-export default function ShipmentCard({ shipment }) {
-  const navigate = useNavigate()
-
+export default function ShipmentCard({ shipment, onClick }) {
   const getStatusIcon = (status) => {
     switch (status) {
       case 'Delivered':
@@ -37,8 +34,7 @@ export default function ShipmentCard({ shipment }) {
 
   return (
     <div
-      onClick={() => navigate(`shipment/${shipment.id}`)}
-
+      onClick={onClick} // نستخدم onClick الممرر من الأب
       style={{ borderColor: "#B0B6C4" }}
       className="cursor-pointer border rounded-lg p-4 shadow-xs hover:shadow-sm transition"
     >
