@@ -82,6 +82,7 @@ export default function StartupRegisterForm() {
               <input {...register('email', { required: true })} type="email" placeholder="Enter Your Email" className="w-full bg-transparent outline-none" />
             </div>
           </div>
+          {errors.email && <p className="text-red-500 text-xs">Email is required</p>}
 
           {/* Phone */}
           <div>
@@ -130,8 +131,15 @@ export default function StartupRegisterForm() {
             <label className="block text-sm font-semibold mb-1 text-[#204C80]">Password *</label>
             <div className="flex items-center border rounded-2xl px-3 py-2 bg-white" style={{ borderColor: "#204C80" }}>
               <FaLock className="text-gray-500 mr-2" />
-              <input {...register('password', { required: true })} type="password" placeholder="Enter Password" className="w-full bg-transparent outline-none" />
-            </div>
+              <input
+                {...register('password', {
+                  required: true,
+                  pattern: {
+                    value: /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/,
+                    message: 'Password must include uppercase, number, and special character',
+                  },
+                })}
+              /></div>
           </div>
 
           {/* Confirm Password */}
@@ -160,8 +168,8 @@ export default function StartupRegisterForm() {
             <label className="block text-sm font-semibold mb-1 text-[#204C80]">Tax ID *</label>
             <div className="flex items-center border rounded-2xl px-3 py-2 bg-white" style={{ borderColor: "#204C80" }}>
               <div className="text-gray-500 mr-2" ><svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M18.644 4.5C18.5083 4.13353 18.2948 3.80087 18.018 3.525C16.984 2.5 15.322 2.5 12 2.5C8.678 2.5 7.015 2.5 5.982 3.525C5.70524 3.80087 5.49165 4.13353 5.356 4.5M5 18.5C5.087 19.92 5.326 20.823 5.982 21.475C7.015 22.5 8.677 22.5 12 22.5C15.323 22.5 16.985 22.5 18.017 21.475C18.674 20.823 18.913 19.919 19 18.5M6 10.5L8 12.5M8 10.5L6 12.5M11 10.5L13 12.5M13 10.5L11 12.5M16 10.5L18 12.5M18 10.5L16 12.5M12 19.5V19.51M17 7.5H7C5.114 7.5 4.172 7.5 3.586 8.086C3 8.672 3 9.614 3 11.5C3 13.386 3 14.328 3.586 14.914C4.172 15.5 5.114 15.5 7 15.5H17C18.886 15.5 19.828 15.5 20.414 14.914C21 14.328 21 13.386 21 11.5C21 9.614 21 8.672 20.414 8.086C19.828 7.5 18.886 7.5 17 7.5Z" stroke="#204C80" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-          </svg></div>
+                <path d="M18.644 4.5C18.5083 4.13353 18.2948 3.80087 18.018 3.525C16.984 2.5 15.322 2.5 12 2.5C8.678 2.5 7.015 2.5 5.982 3.525C5.70524 3.80087 5.49165 4.13353 5.356 4.5M5 18.5C5.087 19.92 5.326 20.823 5.982 21.475C7.015 22.5 8.677 22.5 12 22.5C15.323 22.5 16.985 22.5 18.017 21.475C18.674 20.823 18.913 19.919 19 18.5M6 10.5L8 12.5M8 10.5L6 12.5M11 10.5L13 12.5M13 10.5L11 12.5M16 10.5L18 12.5M18 10.5L16 12.5M12 19.5V19.51M17 7.5H7C5.114 7.5 4.172 7.5 3.586 8.086C3 8.672 3 9.614 3 11.5C3 13.386 3 14.328 3.586 14.914C4.172 15.5 5.114 15.5 7 15.5H17C18.886 15.5 19.828 15.5 20.414 14.914C21 14.328 21 13.386 21 11.5C21 9.614 21 8.672 20.414 8.086C19.828 7.5 18.886 7.5 17 7.5Z" stroke="#204C80" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg></div>
               <input {...register('taxId', { required: true })} placeholder="Enter Tax ID" className="w-full bg-transparent outline-none" />
             </div>
           </div>
