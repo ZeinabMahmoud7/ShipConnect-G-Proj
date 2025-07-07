@@ -231,3 +231,7 @@ const PasswordInput = ({ placeholder, value, onChange }) => (
     />
   </div>
 );
+
+// validation 
+// test functionality
+// check design

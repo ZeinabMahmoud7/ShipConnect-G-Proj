@@ -14,8 +14,8 @@ export default function LoginForm() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleRegisterPath = (path) => {
-    navigate(path);
+  const handleRegisterPath = (path, role) => {
+  navigate(path, { state: { role } });
     setShowModal(false);
   };
 
@@ -114,7 +114,7 @@ export default function LoginForm() {
             <h3 className="text-lg font-semibold mb-4 text-[#10233E]">Register As</h3>
 
             <button
-              onClick={() => handleRegisterPath('/register/startup')}
+              onClick={() => handleRegisterPath('/register/startup', 'StartUp')}
               className="flex items-center justify-center w-full py-2 mb-3 bg-[#255C9C] text-white rounded-full hover:bg-[#163b61] transition"
             >
               <svg className="w-4 h-4 mr-2" fill="white" viewBox="0 0 24 24">
@@ -124,7 +124,7 @@ export default function LoginForm() {
             </button>
 
             <button
-              onClick={() => handleRegisterPath('/register/company')}
+              onClick={() => handleRegisterPath('/register/company', 'ShippingCompany')}
               className="flex items-center justify-center w-full py-2 border border-[#255C9C] text-[#255C9C] rounded-full hover:bg-[#f1f5ff] transition"
             >
               <svg className="w-4 h-4 mr-2" viewBox="0 0 22 19" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -160,3 +160,5 @@ const Field = ({ label, icon, placeholder, type = 'text', name, register }) => (
 );
 
 const PasswordField = (props) => <Field {...props} type="password" />;
+// password icon
+// validate email and password
