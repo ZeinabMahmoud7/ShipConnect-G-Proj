@@ -31,6 +31,7 @@ import LoginForm from './Components/Auth/LoginForms';
 import StartupRegisterForm from './Components/Auth/StartupRegisterForm';
 import CompanyRegisterForm from './Components/Auth/CompanyRegisterForm';
 import ForgotPassword from './Components/Auth/ForgotPassword';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   const [shipments, setShipments] = useState(mockShipments);
@@ -43,6 +44,8 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <OffersProvider>
+          <Toaster position="top-right" reverseOrder={false} />
+
           <Routes>
 
             {/* Home page route */}

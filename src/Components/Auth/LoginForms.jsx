@@ -6,39 +6,61 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../../Context/AuthContext';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 export default function LoginForm() {
-  const { register, handleSubmit } = useForm();
-  const [showModal, setShowModal] = useState(false);
-  const [error, setError] = useState('');
-  const { login } = useAuth();
   const navigate = useNavigate();
 
+  const { register, handleSubmit } = useForm();
+  const { login } = useAuth();
+
+  const [showModal, setShowModal] = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  // assign role
   const handleRegisterPath = (path, role) => {
-  navigate(path, { state: { role } });
+    navigate(path, { state: { role } });
     setShowModal(false);
   };
 
+  // submit data
   const onSubmit = async (data) => {
     setError('');
     try {
+      setLoading(true);
       const res = await axios.post('/api/Account/Login', {
         email: data.email,
         password: data.password,
         rememberMe: true,
       });
+      // success
+      toast.success('Registered successfully');
       login(res.data);
       navigate('/dashboard');
+
     } catch (err) {
+      const errorMsg =
+        err.response?.data?.message ||
+        err.response?.data?.errors?.[Object.keys(err.response.data.errors)[0]]?.[0] || 'Login failed. Please try again.';
+      // error handler
+      toast.error(errorMsg);
       setError(err.response?.data?.message || 'Login failed');
+      console.log(error)
+
+    } finally {
+      setLoading(false);
     }
   };
+
+  // display res, error msg
   const responseMessage = (response) => {
     console.log(response);
   };
   const errorMessage = (error) => {
     console.log(error);
   };
+
   return (
     <div className="flex min-h-screen items-center justify-center">
       {/* Left Side Illustration */}
@@ -47,8 +69,8 @@ export default function LoginForm() {
       </div>
 
       {/* Right Side Form */}
-      <div className="w-full md:w-1/2 md:px-16 m-9 p-9 bg-[#7EADE7] rounded-2xl shadow-lg">
-        {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
+      <div className="w-full md:w-1/2 md:px-10 m-2 p-9 bg-[#7EADE7] rounded-2xl shadow-lg">
+        {/* Header */}
         <div className="text-center mb-6">
           <div className="flex items-center justify-center px-4">
             <img src={LogoShip} alt="ShipConnect" className="h-10 w-10 object-contain" />
@@ -73,6 +95,7 @@ export default function LoginForm() {
           {/* Password Field */}
           <PasswordField label="Password" placeholder="Enter your password" name="password" register={register} />
 
+          {/* Remember checkbox + forget password */}
           <div className="flex justify-between items-center text-sm text-[#162456]">
             <label className="flex items-center gap-2">
               <input type="checkbox" className="accent-[#0A75C3]" />
@@ -81,21 +104,28 @@ export default function LoginForm() {
             <Link to="/forgot-password" className="hover:underline text-[#1447E6]">Forget Password?</Link>
           </div>
 
-          <button type="submit" className="w-full bg-[#255C9C] text-white py-2 rounded-2xl hover:bg-[#163b61]">
-            Log In
+          {/* Submit btn */}
+          <button disabled={loading}
+            type="submit" className={`w-full text-white py-2 rounded-lg transition-colors duration-300 ${loading ? 'bg-[#204C80]/70 cursor-not-allowed' : 'bg-[#204C80] hover:bg-[#163b61]'
+              }`}>
+            {loading ? 'Logging...' : 'Login'}
           </button>
         </form>
 
-        <div className="flex items-center my-4">
-          <div className="flex-grow h-px bg-[#D1D5DC]" />
-          <span className="px-3 text-sm text-[#808798]">Or Sign In With</span>
-          <div className="flex-grow h-px bg-[#D1D5DC]" />
+        {/* Sign with Google */}
+        <div>
+          <div className="flex items-center my-4">
+            <div className="flex-grow h-px bg-[#D1D5DC]" />
+            <span className="px-3 text-sm text-[#808798]">Or Sign In With</span>
+            <div className="flex-grow h-px bg-[#D1D5DC]" />
+          </div>
+
+          <div className="flex justify-center">
+            <GoogleLogin onSuccess={responseMessage} onError={errorMessage} />
+          </div>
         </div>
 
-        <div className="flex justify-center">
-          <GoogleLogin onSuccess={responseMessage} onError={errorMessage} />
-        </div>
-
+        {/* Register */}
         <p className="text-sm text-center mt-6">
           Didn’t have an account?
           <button
@@ -107,7 +137,7 @@ export default function LoginForm() {
         </p>
       </div>
 
-      {/* Register As */}
+      {/* Register As Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
           <div className="bg-white rounded-2xl p-6 w-80 shadow-lg text-center">
@@ -160,5 +190,3 @@ const Field = ({ label, icon, placeholder, type = 'text', name, register }) => (
 );
 
 const PasswordField = (props) => <Field {...props} type="password" />;
-// password icon
-// validate email and password

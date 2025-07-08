@@ -1,26 +1,35 @@
 import React, { useState } from 'react';
-import { FaLock, FaUser } from 'react-icons/fa';
 import LoginIllustration from '../../assets/Signup.png';
 import LogoShip from '../../assets/LogoShip.png';
 import { Link, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 export default function ForgotPassword() {
-  const [step, setStep] = useState(1);
-  const [email, setEmail] = useState('');
-  const [code, setCode] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const [step, setStep] = useState(1);
+
+  const [email, setEmail] = useState('');
+  const [code, setCode] = useState('');
+  const [NewPassword , setNewPassword] = useState('');
+  const [ConfirmPassword, setConfirmPassword] = useState('');
+
+  const [loading, setLoading] = useState(false);
+
+  // Step 1: send email
   const handleSendCode = async (e) => {
     e.preventDefault();
-    setError('');
     if (!email) {
-      setError('Email is required');
+      toast.error('Email is required');
       return;
     }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await fetch('/api/ResetPassword', {
@@ -28,24 +37,26 @@ export default function ForgotPassword() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       });
+
       if (res.ok) {
+        toast.success('Verification code sent!');
         setStep(2);
       } else {
         const data = await res.json();
-        setError(data.message || 'Failed to send code');
+        toast.error(data.message || 'Failed to send code');
       }
-    } catch {
-      setError('Network error');
+    } catch (err) {
+      toast.error('Network error. Please try again.');
     }
     setLoading(false);
   };
-
+  // Step 2: verify code
   const handleVerifyCode = async () => {
-    setError('');
     if (!code) {
-      setError('Code is required');
+      toast.error('Please enter the verification code');
       return;
     }
+
     setLoading(true);
     try {
       const res = await fetch('/api/ResetPassword/verifyCode', {
@@ -53,62 +64,81 @@ export default function ForgotPassword() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code }),
       });
+
       if (res.ok) {
+        toast.success('Code verified');
         setStep(3);
       } else {
         const data = await res.json();
-        setError(data.message || 'Invalid code');
+        toast.error(data.message || 'Invalid verification code');
       }
-    } catch {
-      setError('Network error');
+    } catch (err) {
+      toast.error('Network error. Please try again.');
     }
     setLoading(false);
   };
-
+  // Step 3: reset password
   const handleResetPassword = async () => {
-    setError('');
-    if (!password || !confirmPassword) {
-      setError('Both password fields are required');
+    // validation
+    if (!NewPassword  || !ConfirmPassword) {
+      toast.error('Both password fields are required');
       return;
     }
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
+    if (NewPassword .length < 6) {
+      toast.error('Password must be at least 6 characters long');
       return;
     }
+    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$/;
+    if (!passwordPattern.test(NewPassword )) {
+      toast.error('Password must contain uppercase, lowercase, number, and special character');
+      return;
+    }
+    if (NewPassword  !== ConfirmPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
+
+    // reset handle
     setLoading(true);
     try {
       const res = await fetch('/api/ResetPassword/resetPassword', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, code, NewPassword , ConfirmPassword }),
       });
+
       if (res.ok) {
+        toast.success('Password reset successfully');
         navigate('/login');
       } else {
         const data = await res.json();
-        setError(data.message || 'Failed to reset password');
+        toast.error(data.message || 'Failed to reset password');
       }
-    } catch {
-      setError('Network error');
+    } catch (err) {
+      toast.error('Network error. Please try again.');
     }
     setLoading(false);
   };
 
   return (
     <div className="flex min-h-screen items-center justify-center">
+      {/* Left Side Illustration */}
       <div className="hidden md:flex flex-col items-center justify-center w-1/2 p-10">
         <img src={LoginIllustration} alt="Forgot Password Illustration" className="w-full max-w-md" />
       </div>
 
-      <div className="h-[600px] w-full md:w-1/2 md:px-16 mr-12 bg-[#7EADE7] rounded-2xl shadow-lg flex items-center justify-center">
-        <div className="w-full px-4">
+      {/* Right Side Form */}
+      <div className="h-[550px] w-full md:w-1/2 md:px-6 mx-5 bg-[#7EADE7] rounded-2xl shadow-lg flex items-center justify-center">
+        <div className="w-full mx-4">
           <div className="text-center mb-6 text-3xl">
+            {/* Logo */}
             <div className="flex items-center justify-center px-4">
               <img src={LogoShip} alt="ShipConnect" className="h-20 w-20 object-contain" />
               <h3 className="text-white px-2 font-normal">ShipConnect</h3>
             </div>
+            {/* Form Header for each step */}
             <div className="my-5">
-              <h2 className="text-2xl font-semibold p-4">
+              <h2 className="text-2xl font-semibold p-4 text-[#162456]">
                 {step === 1 && 'Enter Your Email'}
                 {step === 2 && 'Verify Code'}
                 {step === 3 && 'Reset Password'}
@@ -120,9 +150,7 @@ export default function ForgotPassword() {
               </p>
             </div>
           </div>
-
-          {error && <div className="mb-4 text-red-500 text-center">{error}</div>}
-
+          {/* "Send Email" Form Body */}
           {step === 1 && (
             <form onSubmit={handleSendCode} className="space-y-4">
               <Field
@@ -146,48 +174,106 @@ export default function ForgotPassword() {
               </button>
             </form>
           )}
-
+          {/* "verify code" Form Body */}
           {step === 2 && (
             <div className="space-y-4">
-              <Field
-                label="Verification Code"
-                icon={<FaLock />}
-                placeholder="Enter Verification Code"
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-              />
+              <div>
+                <label className="block mb-1 text-sm font-medium text-[#204C80]">Verification Code *</label>
+                <div className="flex items-center border text-[#1CA651] rounded-xl bg-white px-3 py-2" style={{ borderColor: '#21CF61' }}>
+                  <span className="mr-1 text-[#1CA651]">
+                    <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M18.644 4.5C18.5083 4.13353 18.2948 3.80087 18.018 3.525C16.984 2.5 15.322 2.5 12 2.5C8.678 2.5 7.015 2.5 5.982 3.525C5.70524 3.80087 5.49165 4.13353 5.356 4.5M5 18.5C5.087 19.92 5.326 20.823 5.982 21.475C7.015 22.5 8.677 22.5 12 22.5C15.323 22.5 16.985 22.5 18.017 21.475C18.674 20.823 18.913 19.919 19 18.5M6 10.5L8 12.5M8 10.5L6 12.5M11 10.5L13 12.5M13 10.5L11 12.5M16 10.5L18 12.5M18 10.5L16 12.5M12 19.5V19.51M17 7.5H7C5.114 7.5 4.172 7.5 3.586 8.086C3 8.672 3 9.614 3 11.5C3 13.386 3 14.328 3.586 14.914C4.172 15.5 5.114 15.5 7 15.5H17C18.886 15.5 19.828 15.5 20.414 14.914C21 14.328 21 13.386 21 11.5C21 9.614 21 8.672 20.414 8.086C19.828 7.5 18.886 7.5 17 7.5Z"
+                        stroke="#21CF61"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </span>
+                  <input
+                    type="text"
+                    placeholder="Enter Verification Code"
+                    value={code}
+                    onChange={(e) => setCode(e.target.value)}
+                    className="outline-none w-full text-sm"
+                    required
+                  />
+                </div>
+              </div>
+
               <button
                 type="button"
                 disabled={loading}
                 onClick={handleVerifyCode}
-                className="w-full py-2 bg-blue-700 text-white rounded-2xl hover:bg-blue-800"
+                className="w-full py-2 bg-[#255C9C] text-white rounded-2xl"
               >
                 {loading ? 'Verifying...' : 'Verify Code'}
               </button>
             </div>
           )}
-
+          {/* "reset password" Form Body */}
           {step === 3 && (
             <div className="space-y-4">
-              <PasswordInput
-                placeholder="New Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              <PasswordInput
-                placeholder="Confirm Password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
+              <div>
+                <label className="block mb-1 text-sm font-medium text-[#204C80]">Password *</label>
+                <div className="flex items-center border border-[#255C9C] rounded-xl bg-white px-3 py-2">
+                  <span className="mr-1">
+                    <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M18.644 4.5C18.5083 4.13353 18.2948 3.80087 18.018 3.525C16.984 2.5 15.322 2.5 12 2.5C8.678 2.5 7.015 2.5 5.982 3.525C5.70524 3.80087 5.49165 4.13353 5.356 4.5M5 18.5C5.087 19.92 5.326 20.823 5.982 21.475C7.015 22.5 8.677 22.5 12 22.5C15.323 22.5 16.985 22.5 18.017 21.475C18.674 20.823 18.913 19.919 19 18.5M6 10.5L8 12.5M8 10.5L6 12.5M11 10.5L13 12.5M13 10.5L11 12.5M16 10.5L18 12.5M18 10.5L16 12.5M12 19.5V19.51M17 7.5H7C5.114 7.5 4.172 7.5 3.586 8.086C3 8.672 3 9.614 3 11.5C3 13.386 3 14.328 3.586 14.914C4.172 15.5 5.114 15.5 7 15.5H17C18.886 15.5 19.828 15.5 20.414 14.914C21 14.328 21 13.386 21 11.5C21 9.614 21 8.672 20.414 8.086C19.828 7.5 18.886 7.5 17 7.5Z"
+                        stroke="#204C80"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </span>
+                  <input
+                    type="password"
+                    placeholder="New Password"
+                    value={NewPassword }
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="outline-none w-full text-sm"
+                    required
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block mb-1 text-sm font-medium text-[#204C80]">Confirm Password *</label>
+                <div className="flex items-center border border-[#255C9C] rounded-xl bg-white px-3 py-2">
+                  <span className="mr-1">
+                    <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M18.644 4.5C18.5083 4.13353 18.2948 3.80087 18.018 3.525C16.984 2.5 15.322 2.5 12 2.5C8.678 2.5 7.015 2.5 5.982 3.525C5.70524 3.80087 5.49165 4.13353 5.356 4.5M5 18.5C5.087 19.92 5.326 20.823 5.982 21.475C7.015 22.5 8.677 22.5 12 22.5C15.323 22.5 16.985 22.5 18.017 21.475C18.674 20.823 18.913 19.919 19 18.5M6 10.5L8 12.5M8 10.5L6 12.5M11 10.5L13 12.5M13 10.5L11 12.5M16 10.5L18 12.5M18 10.5L16 12.5M12 19.5V19.51M17 7.5H7C5.114 7.5 4.172 7.5 3.586 8.086C3 8.672 3 9.614 3 11.5C3 13.386 3 14.328 3.586 14.914C4.172 15.5 5.114 15.5 7 15.5H17C18.886 15.5 19.828 15.5 20.414 14.914C21 14.328 21 13.386 21 11.5C21 9.614 21 8.672 20.414 8.086C19.828 7.5 18.886 7.5 17 7.5Z"
+                        stroke="#204C80"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </span>
+                  <input
+                    type="password"
+                    placeholder="Confirm your Password"
+                    value={ConfirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="outline-none w-full text-sm"
+                    required
+                  />
+                </div>
+              </div>
+
               <button
                 type="button"
                 disabled={loading}
                 onClick={handleResetPassword}
-                className="w-full py-2 bg-green-600 text-white rounded-2xl hover:bg-green-700"
+                className="w-full py-2 bg-[#255C9C] text-white rounded-2xl"
               >
                 {loading ? 'Resetting...' : 'Confirm'}
               </button>
             </div>
+
           )}
 
           <div className="text-center pt-6">
@@ -217,21 +303,3 @@ const Field = ({ label, icon, placeholder, type = 'text', value, onChange }) => 
     </div>
   </div>
 );
-
-const PasswordInput = ({ placeholder, value, onChange }) => (
-  <div className="relative">
-    <FaLock className="absolute left-3 top-3.5 text-gray-400" />
-    <input
-      type="password"
-      placeholder={placeholder}
-      value={value}
-      onChange={onChange}
-      className="pl-10 pr-4 py-2 w-full border rounded-2xl outline-none focus:ring-2 ring-blue-400"
-      required
-    />
-  </div>
-);
-
-// validation 
-// test functionality
-// check design

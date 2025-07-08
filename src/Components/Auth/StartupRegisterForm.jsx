@@ -5,25 +5,21 @@ import { FaLock } from 'react-icons/fa';
 import LogoShip from '../../assets/LogoShip.png';
 import { useNavigate } from 'react-router-dom';
 import { IoAlertCircleSharp } from "react-icons/io5";
-import { useLocation } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 export default function StartupRegisterForm() {
-  const location = useLocation();
-  const role = location.state?.role || 'StartUp'; // fallback if needed
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
   const {
     register,
     handleSubmit,
     control,
     formState: { errors }
   } = useForm({ mode: 'onTouched' });
-  const [loading, setLoading] = useState(false);
   const password = useWatch({ control, name: 'password' });
 
-  const [error, setError] = useState('password');
-  const navigate = useNavigate();
-
   const onSubmit = async (data) => {
-
     const formData = {
       companyName: data.companyName,
       email: data.email,
@@ -39,18 +35,30 @@ export default function StartupRegisterForm() {
       businessCategory: data.businessCategory,
     };
 
+    // validation
     if (!formData.acceptTerms) {
-      setError('You must accept terms and conditions.');
+      toast.error('You must accept the terms and conditions');
       return;
     }
+    console.log('Submitting formData:', formData); 
 
     try {
       setLoading(true);
       await axios.post('/api/Account/register/startUp', formData);
-      navigate('/login');
+
+      // success
+      toast.success('Registered successfully');
+      navigate('/dashboard');
+
     } catch (err) {
-      console.log(error)
-      setError(err.response?.data?.message || 'Registration failed');
+      const errorMsg =
+        err.response?.data?.message ||
+        err.response?.data?.errors?.[Object.keys(err.response.data.errors)[0]]?.[0] ||
+        'Registration failed. Please try again.';
+      // error
+      toast.error(errorMsg);
+      console.error(err);
+
     } finally {
       setLoading(false);
     }
@@ -179,11 +187,11 @@ export default function StartupRegisterForm() {
                   minLength: { value: 6, message: 'Minimum 6 characters' },
                   maxLength: { value: 25, message: 'Maximum 25 characters' },
                   pattern: {
-                    value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$/,
-                    message: 'Must include uppercase, lowercase and number'
+                    value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+[\]{}|\\:;'"<>,.?/~`-]).*$/,
+                    message: 'Must include uppercase, lowercase, number, and special character'
                   }
                 })}
-                type="password" placeholder="Confirm Password" className="w-full bg-transparent outline-none"
+                type="password" placeholder="Enter your Password" className="w-full bg-transparent outline-none"
               /></div>{errors.password && <p className="text-xs text-red-500 flex items-center pr-3"><IoAlertCircleSharp className='text-sm mr-1' />{errors.password.message}</p>}
           </div>
 
@@ -242,18 +250,19 @@ export default function StartupRegisterForm() {
             {errors.taxId && <p className="text-xs text-red-500 flex items-center pr-3 flex"><IoAlertCircleSharp className='text-sm mr-1' />{errors.taxId.message}</p>}
           </div>
 
-          {/* Website (optional) */}
+          {/* Website*/}
           <div>
             <label className="block text-sm mb-1 text-[#102C57]">
-              Link Website<span className='text-xs text-[#fcf1e5] pl-2'> (optional) </span>
+              Link Website *
             </label>
             <div className="flex items-center border rounded-2xl px-3 py-2 bg-white" style={{ borderColor: "#204C80" }}>
               <div className="text-gray-500 mr-2" ><svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M13.5 17.5H17C18.3261 17.5 19.5979 16.9732 20.5355 16.0355C21.4732 15.0979 22 13.8261 22 12.5C22 11.1739 21.4732 9.90215 20.5355 8.96447C19.5979 8.02678 18.3261 7.5 17 7.5H13.5M10.5 17.5H7C5.67392 17.5 4.40215 16.9732 3.46447 16.0355C2.52678 15.0979 2 13.8261 2 12.5C2 11.1739 2.52678 9.90215 3.46447 8.96447C4.40215 8.02678 5.67392 7.5 7 7.5H10.5M9 12.5H15" stroke="#204C80" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
               </svg></div>
               <input {...register('website', {
+                required: 'link is required',
                 pattern: {
-                  value: /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)([\/\w\-._~:?#[\]@!$&'()*+,;=]*)?$/,
+                  value: /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)([/\w\-._~:?#[\]@!$&'()*+,;=]*)?$/,
                   message: 'Enter a valid URL'
                 }
               })} placeholder="Website Link" className="w-full bg-transparent outline-none" />
@@ -295,11 +304,7 @@ export default function StartupRegisterForm() {
               placeholder="Describe your company..." rows="4" className="w-full border bg-white rounded-lg px-3 py-2 outline-none resize-none"></textarea>
             {errors.description && <p className="text-xs text-red-500 flex items-center pr-3"><IoAlertCircleSharp className='text-sm mr-1' />{errors.description.message}</p>}
           </div>
-          <input
-            type="hidden"
-            value={role}
-            {...register('role')}
-          />
+
           {/* Terms */}
           <div>
             <label className="cursor-pointer col-span-1 md:col-span-2 flex items-center gap-2 text-[#1447E6]">
@@ -320,7 +325,6 @@ export default function StartupRegisterForm() {
             )}
           </div>
 
-
           {/* Submit */}
           <div className="col-span-1 md:col-span-2">
             <button
@@ -333,7 +337,7 @@ export default function StartupRegisterForm() {
             </button>
           </div>
         </form>
-      </div >
-    </div >
+      </div>
+    </div>
   );
 }
