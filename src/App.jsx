@@ -26,6 +26,11 @@ import DeliverShippingShipment from './pages/DeliverShippingShipment';
 import OnTransitShippingShipment from './pages/OnTransitShippingShipment';
 import TrackShipment from './pages/TrackShipment';
 import PendingShippingShipment from './pages/PendingShippingShipment';
+import LayoutAdmin from './Layout/LayoutDashboardAdmin';
+import DashboardAdmin from './pages/AdminPages/DashboardAdmin';
+import SettingAdmin from './pages/AdminPages/SettingAdmin';
+import Partners from './pages/AdminPages/Partners';
+import ShippingProfile from './pages/AdminPages/ShippingProfile';
 function App() {
   const [shipments, setShipments] = useState(mockShipments);
 const [shipmentsShipping, setShipmentsShipping] = useState(mockShipping);
@@ -103,6 +108,14 @@ const [shipmentsShipping, setShipmentsShipping] = useState(mockShipping);
 
 </Route>
 
+            {/* Dashboard LayoutAdmin routes */}
+<Route path="/dashboardAdmin" element={<LayoutAdmin />}>
+  <Route index element={<DashboardAdmin />} />
+  <Route path="SettingAdmin" element={<SettingAdmin />} />
+  <Route path="Partners" element={<Partners />} />
+  <Route path="shipping-details/:id" element={<ShippingProfile />} />
+  
+</Route>
 
         </Routes>
       </OffersProvider>
