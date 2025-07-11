@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import EditShipmentForm from '../Components/EditShipmentForm'
-import styles from './Details.module.css'
+import styles from '../styles/Details.module.css'
 
 import { IoIosCheckmarkCircleOutline, IoIosTimer } from "react-icons/io"
 import { PiWarningCircle } from "react-icons/pi";

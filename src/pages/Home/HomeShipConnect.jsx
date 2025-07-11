@@ -1,23 +1,23 @@
 import React from 'react';
 
-import HeroBg1 from '../assets/hero-bg.jpg';
-import User1 from '../assets/hero-bg.jpg';
-import User2 from '../assets/hero-bg.jpg';
-import User3 from '../assets/hero-bg.jpg';
-import HeroBg2 from '../assets/Hero2.jpg'; // أضف الصور الإضافية
-import HeroBg3 from '../assets/Hero3.jpg';
+import HeroBg1 from '../../assets/hero-bg.jpg';
+import User1 from '../../assets/hero-bg.jpg';
+import User2 from '../../assets/hero-bg.jpg';
+import User3 from '../../assets/hero-bg.jpg';
+import HeroBg2 from '../../assets/Hero2.jpg'; // أضف الصور الإضافية
+import HeroBg3 from '../../assets/Hero3.jpg';
 
 import { useState, useEffect, useRef } from 'react';
-import Frame1 from '../assets/Frame1.png';
-import Frame2 from '../assets/Frame 2.png';
-import Frame3 from '../assets/Frame3.png';
-import Frame4 from '../assets/Frame4.png';
-import Frame5 from '../assets/Frame5.png';
-import Frame6 from '../assets/Frame6.png';
-import Frame7 from '../assets/Frame7.png';
-import Frame8 from '../assets/Frame8.png';
-import bgAboute from '../assets/AboutBG.jpg';
-import bgAboute1 from '../assets/AboutBg2.jpg';
+import Frame1 from '../../assets/Frame1.png';
+import Frame2 from '../../assets/Frame 2.png';
+import Frame3 from '../../assets/Frame3.png';
+import Frame4 from '../../assets/Frame4.png';
+import Frame5 from '../../assets/Frame5.png';
+import Frame6 from '../../assets/Frame6.png';
+import Frame7 from '../../assets/Frame7.png';
+import Frame8 from '../../assets/Frame8.png';
+import bgAboute from '../../assets/AboutBG.jpg';
+import bgAboute1 from '../../assets/AboutBg2.jpg';
 import PlatFormHome from '../../Components/PlatFormHome/PlatFormHome';
 import Footer from '../../Components/Footer/Footer';
 import Testimonials from '../../Components/Testimonials/Testimonials';

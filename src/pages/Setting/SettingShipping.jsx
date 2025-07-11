@@ -1,7 +1,7 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
 
-import profilePic from  '../assets/Avatar.png';
+import profilePic from  '../../assets/Avatar.png';
 
 function SettingShipping() {
   const { register, handleSubmit, reset } = useForm();
