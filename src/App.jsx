@@ -1,31 +1,31 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layout from './Layout/LayoutDashboardStartUp';
-import Dashboard from './pages/DashboardStartup';
-import Offers from './pages/OffersStartup';
+import Dashboard from './pages/Dashboard/DashboardStartup';
+import Offers from './pages/Offers/OffersStartup';
 import ChatPanel from './Components/ChatPanel/ChatPanel';
 import { OffersProvider } from './Context/OffersContext';
 import ContactForm from './Components/ContactForm/ContactForm';
-import SettingStartup from './pages/SettingStartup';
+import SettingStartup from './pages/Setting/SettingStartup';
 import ContactStartup from './pages/ContactStartup';
-import HomePage from './pages/HomeShipConnect';
-import ShipmentsList from './pages/ShipmentListStartUp';
+import HomePage from './pages/Home/HomeShipConnect';
+import ShipmentsList from './pages/ShippmentList/ShipmentListStartUp';
 import ShipmentDetails from './pages/ShipmentDetailsStartUp';
 import { mockShipments } from './Context/data/mockShipments';
 import { mockShipping } from './Context/data/mockShipping';
 import { useState } from 'react';
 import AddShipment from './Components/AddShipment';
-import ContactUs from './pages/ContactHome';
+import ContactUs from './pages/Contact/ContactHome';
 import DashboardShipping from './pages/DashboardShipping';
 import LayoutShipping from './Layout/LayoutDashboardShipping';
-import ContactShipping from './pages/ContactShipping';
-import SettingShipping from './pages/SettingShipping';
-import OffersShipping from './pages/OffersShipping';
-import OffersShippingDetailes from './pages/OffersShippingDetailes';
-import ShipmentsListShipping from './pages/ShipmentsListShipping';
-import DeliverShippingShipment from './pages/DeliverShippingShipment';
-import OnTransitShippingShipment from './pages/OnTransitShippingShipment';
+import ContactShipping from './pages/Contact/ContactShipping';
+import SettingShipping from './pages/Setting/SettingShipping';
+import OffersShipping from './pages/Offers/OffersShipping';
+import OffersShippingDetailes from './pages/Offers/OffersShippingDetailes';
+import ShipmentsListShipping from './pages/ShippmentList/ShipmentsListShipping';
+import DeliverShippingShipment from './pages/CompanyStatus/DeliverShippingShipment';
+import OnTransitShippingShipment from './pages/CompanyStatus/OnTransitShippingShipment';
 import TrackShipment from './pages/TrackShipment';
-import PendingShippingShipment from './pages/PendingShippingShipment';
+import PendingShippingShipment from './pages/CompanyStatus/PendingShippingShipment';
 import { AuthProvider } from './Context/AuthContext';
 import LoginForm from './Components/Auth/LoginForms';
 import StartupRegisterForm from './Components/Auth/StartupRegisterForm';
@@ -64,6 +64,7 @@ function App() {
               <Route path="offers" element={<Offers />} />
               <Route path="settings" element={<SettingStartup />} />
               <Route path="/dashboard/offers/chat/:id" element={<ChatPanel />} />
+
               <Route path="contact" element={<ContactStartup />} />
 
               <Route
@@ -91,6 +92,7 @@ function App() {
                 element={<AddShipment onAddShipment={handleAddShipment} />}
               />
             </Route>
+
             {/* Dashboard Shipping routes */}
             <Route path="/dashboardShipping" element={<LayoutShipping />}>
               <Route index element={<DashboardShipping />} />

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import SuccessModal from '../components/SuccessModal'
+import SuccessModal from './Modal/SuccessModal'
 
 import { PiRocketLight, PiPackageLight } from "react-icons/pi";
 import { LiaWeightHangingSolid } from "react-icons/lia";
@@ -14,7 +14,7 @@ import { CiMail, CiLocationOn, CiDeliveryTruck, CiBag1 } from "react-icons/ci";
 import { v4 as uuid } from 'uuid';
 
 
-export default function AddShipment({ onAddShipment }) {
+function AddShipment({ onAddShipment }) {
   const navigate = useNavigate()
   const [showModal, setShowModal] = useState(false)
 
@@ -404,3 +404,4 @@ export default function AddShipment({ onAddShipment }) {
     </div>
   )
 }
+export default AddShipment
