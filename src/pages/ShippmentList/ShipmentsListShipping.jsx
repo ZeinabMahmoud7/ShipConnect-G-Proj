@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import ShipmentCard from '../../Components/ShipmentCard'
+import ShipmentCard from '../../Components/ShipmentCard/ShipmentCard'
 
 // Icons
 import { CiSearch } from "react-icons/ci"

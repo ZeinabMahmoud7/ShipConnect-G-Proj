@@ -1,28 +1,70 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import ShipmentCard from '../../Components/ShipmentCard'
-
+import axios from 'axios';
+import { useEffect } from 'react';
+import { useAuth } from '../../Context/AuthContext';
 // Icons
 import { CiSearch } from "react-icons/ci"
 import { IoMdAdd, IoIosCloseCircleOutline } from "react-icons/io"
 import {
-  IoIosCheckmarkCircleOutline, 
-  IoIosTimer, 
-  IoIosInformationCircleOutline, 
+  IoIosCheckmarkCircleOutline,
+  IoIosTimer,
+  IoIosInformationCircleOutline,
   IoIosOptions
 } from "react-icons/io";
-import { PiPackageLight} from "react-icons/pi"
+import { PiPackageLight } from "react-icons/pi"
+import StartupCard from '../../Components/ShipmentCard/StartupCard'
 
-export default function ShipmentsList({ shipments, setShipments }) {
-  const navigate = useNavigate()
-  const [searchTerm, setSearchTerm] = useState('')
-  const [statusFilter, setStatusFilter] = useState('')
-  const [showFilter, setShowFilter] = useState(false)
+export default function ShipmentsListStartUp() {
+  const navigate = useNavigate();
+  const { user } = useAuth(); // get token
+  const [shipments, setShipments] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [showFilter, setShowFilter] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const filteredShipments = (shipments || []).filter((shipment) =>
-    shipment.id.toLowerCase().includes(searchTerm.toLowerCase()) &&
-    (statusFilter === '' || shipment.status === statusFilter)
-  )
+  // const filteredShipments = (shipments || []).filter((shipment) =>
+  //   shipment.id.toLowerCase().includes(searchTerm.toLowerCase()) &&
+  //   (statusFilter === '' || shipment.status === statusFilter)
+  // ) // local
+  useEffect(() => {
+    const fetchShipments = async () => {
+      try {
+        let url = '';
+
+        if (searchTerm.trim()) {
+          url = `/api/Shipment/filterWithCode/${searchTerm}`;
+        } else if (statusFilter) {
+          url = `/api/Shipment/filterWithStatus/${statusFilter.toLowerCase()}`;
+          console.log("📡 Fetching from:", url);
+
+        } else {
+          url = `/api/Shipment/AllShipments`;
+        }
+        setLoading(true)
+        const res = await axios.get(url, {
+          headers: {
+            Authorization: `Bearer ${user?.token}`
+          }
+        });
+
+        console.log("Full API response:", res.data); // check what's coming back
+        console.log("Shipments data:", res.data.data); // check if this is an array
+        setShipments(res.data?.data?.data || []);
+        setLoading(false)
+
+      } catch (err) {
+        setLoading(false)
+        console.error(' Error fetching shipments:', err?.response?.data || err.message);
+      }
+    };
+
+    if (user?.token) {
+      fetchShipments();
+    }
+  }, [searchTerm, statusFilter, user]);
+  //endpoint api
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 space-y-5">
@@ -61,7 +103,7 @@ export default function ShipmentsList({ shipments, setShipments }) {
             className="border rounded-xl py-3 px-4"
             style={{ borderColor: "var(--primary)", color: "var(--primary)" }}
           >
-            <IoIosOptions size={18}/>
+            <IoIosOptions size={18} />
           </button>
 
           {showFilter && (
@@ -70,7 +112,7 @@ export default function ShipmentsList({ shipments, setShipments }) {
                 onClick={() => { setStatusFilter(''); setShowFilter(false) }}
                 className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
               >
-                <IoIosOptions className=''/><span>All</span>
+                <IoIosOptions className='' /><span>All</span>
               </button>
               <button
                 onClick={() => { setStatusFilter('Delivered'); setShowFilter(false) }}
@@ -97,19 +139,35 @@ export default function ShipmentsList({ shipments, setShipments }) {
 
       {/* Shipment List */}
       <div className="space-y-3">
-        {filteredShipments.length > 0 ? (
-          filteredShipments.map((shipment) => (
-            <ShipmentCard key={shipment.id} shipment={shipment} />
+        {loading ? (
+          <p className="text-gray-500 italic mt-4">Loading shipments...</p>
+        ) : shipments.length > 0 ? (
+          shipments.map((shipment) => (
+            <StartupCard
+              key={shipment.id}
+              shipment={shipment}
+              onClick={() => {
+                if (shipment.status === 'Delivered') {
+                  navigate(`/dashboardShipping/shipmentsShipping/shipment/${shipment.id}`);
+                } else if (shipment.status === 'On Transit') {
+                  navigate(`/dashboardShipping/shipmentsShipping/transit/${shipment.id}`);
+                } else if (shipment.status === 'Pending') {
+                  navigate(`/dashboardShipping/shipmentsShipping/Pending/${shipment.id}`);
+                }
+              }}
+            />
           ))
         ) : (
-          <p className="text-gray-500 italic mt-4">No shipments found with that ID or status.</p>
+          <p className="text-gray-500 italic mt-4">No shipments found.</p>
         )}
+
+
       </div>
 
       {/* Add Button */}
       <div className="flex justify-end pt-4">
         <button
-          onClick={() => navigate('/add-shipment')}
+          onClick={() => navigate('/dashboard/add-shipment')}
           style={{ backgroundColor: "var(--primary)" }}
           className="flex items-center gap-2 px-12 cursor-pointer py-2 rounded-full text-white font-semibold transition"
         >

@@ -32,6 +32,10 @@ import StartupRegisterForm from './Components/Auth/StartupRegisterForm';
 import CompanyRegisterForm from './Components/Auth/CompanyRegisterForm';
 import ForgotPassword from './Components/Auth/ForgotPassword';
 import { Toaster } from 'react-hot-toast';
+import DeliverStartupShipment from './pages/StartupStatus/DeliverStartupShipment';
+import OnTransitStartupShipment from './pages/StartupStatus/OnTransitStartupShipment';
+import PendingStartupShipment from './pages/StartupStatus/PendingStartupShipment';
+import ProtectedRoute from './Components/Auth/ProtectedRoute ';
 
 function App() {
   const [shipments, setShipments] = useState(mockShipments);
@@ -47,7 +51,6 @@ function App() {
           <Toaster position="top-right" reverseOrder={false} />
 
           <Routes>
-
             {/* Home page route */}
             <Route path="/" element={<HomePage />} />
             <Route path="/contact-us" element={<ContactUs />} />
@@ -59,69 +62,47 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
 
             {/* Dashboard StartUp routes */}
-            <Route path="/dashboard" element={<Layout />}>
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Layout />
+              </ProtectedRoute>
+            }>
               <Route index element={<Dashboard />} />
               <Route path="offers" element={<Offers />} />
-              <Route path="settings" element={<SettingStartup />} />
               <Route path="/dashboard/offers/chat/:id" element={<ChatPanel />} />
 
+              <Route path="settings" element={<SettingStartup />} />
               <Route path="contact" element={<ContactStartup />} />
 
-              <Route
-                path="shipments"
-                element={
-                  <ShipmentsList
-                    shipments={shipments}
-                    setShipments={setShipments}
-                  />
-                }
-              />
+              {/* <Route path="shipments/shipment/:id" element={ <ShipmentDetails shipments={shipments} setShipments={setShipments}/>}/> */}
+              <Route path="shipments" element={<ShipmentsList shipments={shipments} setShipments={setShipments} />} />
+              <Route path="shipmentsStartup/shipment/:id" element={<DeliverStartupShipment />} />
+              <Route path="shipmentsStartup/transit/:id" element={<OnTransitStartupShipment />} />
+              <Route path="shipmentsStartup/Pending/:id" element={<PendingStartupShipment />} />
 
-              <Route
-                path="shipments/shipment/:id"
-                element={
-                  <ShipmentDetails
-                    shipments={shipments}
-                    setShipments={setShipments}
-                  />
-                }
-              />
-
-              <Route
-                path="add-shipment"
-                element={<AddShipment onAddShipment={handleAddShipment} />}
-              />
+              <Route path="add-shipment" element={<AddShipment onAddShipment={handleAddShipment} />} />
             </Route>
 
             {/* Dashboard Shipping routes */}
-            <Route path="/dashboardShipping" element={<LayoutShipping />}>
+            <Route path="/dashboardShipping" element={
+              <ProtectedRoute>
+                <LayoutShipping />
+              </ProtectedRoute>}>
               <Route index element={<DashboardShipping />} />
-              <Route path="contactShipping" element={<ContactShipping />} />
+              <Route path="offersShipping" element={<OffersShipping />} /> {/* صفحة العروض */}
+              <Route path="shipping-details" element={<OffersShippingDetailes />} />{/* صفحة التفاصيل الخاصة بالعروض */}
+
               <Route path="settingsShipping" element={<SettingShipping />} />
-
-              {/* صفحة العروض */}
-              <Route path="offersShipping" element={<OffersShipping />} />
-
-              {/* صفحة التفاصيل الخاصة بالعروض */}
-              <Route path="shipping-details" element={<OffersShippingDetailes />} />
+              <Route path="contactShipping" element={<ContactShipping />} />
 
 
-              <Route
-                path="shipmentsShipping"
-                element={
-                  <ShipmentsListShipping
-                    shipments={shipmentsShipping}
-                    setShipments={setShipmentsShipping}
-                  />
-                }
-              />
+              <Route path="shipmentsShipping" element={<ShipmentsListShipping shipments={shipmentsShipping} setShipments={setShipmentsShipping} />} />
               <Route path="shipmentsShipping/shipment/:id" element={<DeliverShippingShipment />} />
               <Route path="shipmentsShipping/transit/:id" element={<OnTransitShippingShipment />} />
               <Route path="shipmentsShipping/Pending/:id" element={<PendingShippingShipment />} />
+
               <Route path="track/:id" element={<TrackShipment />} />
-
             </Route>
-
 
           </Routes>
         </OffersProvider>

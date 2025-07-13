@@ -33,6 +33,7 @@ export default function DeliverStartupShipment() {
 
         fetchShipment()
     }, [id])
+
     const handleRatingSubmit = async () => {
         try {
             await axios.post('/api/Rating', {
@@ -49,6 +50,7 @@ export default function DeliverStartupShipment() {
     if (loading) return <div className="p-6 text-center">Loading...</div>
     if (error) return <div className="p-6 text-center text-red-600">{error}</div>
     if (!shipmentData) return <div className="p-6 text-center text-red-600">Shipment not found.</div>
+    
     return (
         <div className="min-h-screen bg-[#E4E6EC] px-4 py-6 flex justify-center">
             <div className="w-full max-w-4xl space-y-6">
