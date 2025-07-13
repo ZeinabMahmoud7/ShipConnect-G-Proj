@@ -25,17 +25,13 @@ import ShipmentsListShipping from './pages/ShippmentList/ShipmentsListShipping';
 import DeliverShippingShipment from './pages/CompanyStatus/DeliverShippingShipment';
 import OnTransitShippingShipment from './pages/CompanyStatus/OnTransitShippingShipment';
 import TrackShipment from './pages/TrackShipment';
-import PendingShippingShipment from './pages/CompanyStatus/PendingShippingShipment';
+import PendingShippingShipment from './pages/PendingShippingShipment';
 import { AuthProvider } from './Context/AuthContext';
 import LoginForm from './Components/Auth/LoginForms';
 import StartupRegisterForm from './Components/Auth/StartupRegisterForm';
 import CompanyRegisterForm from './Components/Auth/CompanyRegisterForm';
 import ForgotPassword from './Components/Auth/ForgotPassword';
 import { Toaster } from 'react-hot-toast';
-import DeliverStartupShipment from './pages/StartupStatus/DeliverStartupShipment';
-import OnTransitStartupShipment from './pages/StartupStatus/OnTransitStartupShipment';
-import PendingStartupShipment from './pages/StartupStatus/PendingStartupShipment';
-import ProtectedRoute from './Components/Auth/ProtectedRoute ';
 
 function App() {
   const [shipments, setShipments] = useState(mockShipments);
@@ -95,6 +91,14 @@ function App() {
               <Route path="settingsShipping" element={<SettingShipping />} />
               <Route path="contactShipping" element={<ContactShipping />} />
 
+            {/* Dashboard LayoutAdmin routes */}
+<Route path="/dashboardAdmin" element={<LayoutAdmin />}>
+  <Route index element={<DashboardAdmin />} />
+  <Route path="SettingAdmin" element={<SettingAdmin />} />
+  <Route path="Partners" element={<Partners />} />
+  <Route path="shipping-details/:id" element={<ShippingProfile />} />
+  
+</Route>
 
               <Route path="shipmentsShipping" element={<ShipmentsListShipping shipments={shipmentsShipping} setShipments={setShipmentsShipping} />} />
               <Route path="shipmentsShipping/shipment/:id" element={<DeliverShippingShipment />} />

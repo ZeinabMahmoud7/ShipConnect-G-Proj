@@ -41,7 +41,16 @@ const average = segments.length ? Math.round(total / segments.length) : 0;
 
 
   );
+    const ShipReq = () => (
+    
+<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M11.5 21H8.5C5.2 21 3.55 21 2.525 19.92C1.5 18.843 1.5 17.106 1.5 13.633V8.368C1.5 4.895 1.5 3.158 2.525 2.079C3.55 1 5.2 1 8.5 1H11.5C14.8 1 16.45 1 17.475 2.08C18.5 3.157 18.5 4.894 18.5 8.367V10M17 14V21M20.5 17.5H13.5" stroke="#204C80" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M6 1L6.082 1.493C6.282 2.69 6.382 3.289 6.802 3.645C7.22 4 7.827 4 9.041 4H10.958C12.171 4 12.778 4 13.198 3.645C13.618 3.289 13.718 2.69 13.917 1.493L14 1M6 15H10M6 10H14" stroke="#204C80" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
 
+
+
+  );
   const typeConfig = {
     users: {
       title: 'Shipments',
@@ -74,6 +83,13 @@ const average = segments.length ? Math.round(total / segments.length) : 0;
        Offers: {
       title: 'Offers',
       icon: <OffersIcon />,
+      bg: '#FFE1CD',
+      border: '#FFE1CD',
+      centerLabel: 'Shipping',
+    },
+          ShipmentsRequest: {
+      title: 'Shipment Request',
+      icon: <ShipReq />,
       bg: '#FFE1CD',
       border: '#FFE1CD',
       centerLabel: 'Shipping',
