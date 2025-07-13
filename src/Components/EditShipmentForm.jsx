@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import EditModal from './EditModal';
+import EditModal from './Modal/EditModal';
 
 import { IoClose } from "react-icons/io5";
 import { PiPackageLight } from 'react-icons/pi'

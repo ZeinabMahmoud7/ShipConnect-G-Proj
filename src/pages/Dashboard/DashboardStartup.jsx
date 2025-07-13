@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { WelcomeHeader } from '../components/WelcomeHeader/WelcomeHeader';
 import { StatsCard } from '../components/StatsCard/StatsCard';
@@ -370,3 +371,5 @@ const chartSeries = [
 };
 
 export default Dashboard;
+
+

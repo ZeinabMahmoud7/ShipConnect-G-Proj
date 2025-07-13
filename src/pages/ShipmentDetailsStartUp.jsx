@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import EditShipmentForm from '../Components/EditShipmentForm'
-import styles from './Details.module.css'
+import styles from '../styles/Details.module.css'
 
 import { IoIosCheckmarkCircleOutline, IoIosTimer } from "react-icons/io"
 import { PiWarningCircle } from "react-icons/pi";
@@ -14,7 +14,7 @@ import { CiDeliveryTruck } from "react-icons/ci";
 import { FaPaperPlane, FaRegCommentDots } from 'react-icons/fa'
 import { FaChevronLeft } from 'react-icons/fa6'
 
-export default function ShipmentDetails({ shipments, setShipments }) {
+function ShipmentDetails({ shipments, setShipments }) {
   const { id } = useParams()
   const navigate = useNavigate()
   const [editModalOpen, setEditModalOpen] = useState(false)
@@ -276,3 +276,4 @@ export default function ShipmentDetails({ shipments, setShipments }) {
     </div>
   )
 }
+export default ShipmentDetails
