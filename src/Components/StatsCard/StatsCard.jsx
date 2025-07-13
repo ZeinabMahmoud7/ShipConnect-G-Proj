@@ -112,28 +112,39 @@ const average = segments.length ? Math.round(total / segments.length) : 0;
       <div className="relative w-28 h-28">
         <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
           <circle cx="18" cy="18" r="15.9155" fill="none" stroke="#e5e7eb" strokeWidth="3" />
-          {segments.map((segment, index) => {
-            const gap = 4;
-            const value = segment.value - gap >= 0 ? segment.value - gap : 0;
-            const offset = segments.slice(0, index).reduce((sum, s) => sum + s.value, 0);
-            return (
-              <circle
-                key={index}
-                cx="18"
-                cy="18"
-                r="15.9155"
-                fill="none"
-                stroke={segment.color}
-                strokeWidth="3"
-                strokeDasharray={`${value} ${100 - value}`}
-                strokeDashoffset={-offset}
-                strokeLinecap="round"
-              />
-            );
-          })}
+       {segments.map((segment, index) => {
+  const gap = 4;
+
+  // حول القيمة إلى رقم، ولو مش رقم خليها 0
+  const safeValue = Number(segment.value) || 0;
+
+  // نفس الشيء لـ offset
+  const offset = segments
+    .slice(0, index)
+    .reduce((sum, s) => sum + (Number(s.value) || 0), 0);
+
+  // حساب القيمة النهائية مع طرح gap
+  const value = safeValue - gap >= 0 ? safeValue - gap : 0;
+
+  return (
+    <circle
+      key={index}
+      cx="18"
+      cy="18"
+      r="15.9155"
+      fill="none"
+      stroke={segment.color}
+      strokeWidth="3"
+      strokeDasharray={`${value} ${100 - value}`}
+      strokeDashoffset={-offset}
+      strokeLinecap="round"
+    />
+  );
+})}
+
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-          <div className="text-lg font-semibold text-gray-700">{average}</div>
+          <div className="text-lg font-semibold text-gray-700">{total}</div>
         </div>
       </div>
     </div>

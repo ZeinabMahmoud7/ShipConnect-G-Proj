@@ -40,10 +40,10 @@ import CompanyRegisterForm from './Components/Auth/CompanyRegisterForm';
 import ForgotPassword from './Components/Auth/ForgotPassword';
 import { Toaster } from 'react-hot-toast';
 
-
 function App() {
   const [shipments, setShipments] = useState(mockShipments);
   const [shipmentsShipping, setShipmentsShipping] = useState(mockShipping);
+
   const handleAddShipment = (newShipment) => {
     setShipments((prev) => [newShipment, ...prev]);
   };
@@ -55,25 +55,21 @@ function App() {
           <Toaster position="top-right" reverseOrder={false} />
 
           <Routes>
-
-            {/* Home page route */}
+            {/* Home & Auth routes */}
             <Route path="/" element={<HomePage />} />
             <Route path="/contact-us" element={<ContactUs />} />
-
-            {/* Login routes */}
             <Route path="/login" element={<LoginForm />} />
             <Route path="/register/startup" element={<StartupRegisterForm />} />
             <Route path="/register/company" element={<CompanyRegisterForm />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
 
-            {/* Dashboard StartUp routes */}
+            {/* StartUp Dashboard */}
             <Route path="/dashboard" element={<Layout />}>
               <Route index element={<Dashboard />} />
               <Route path="offers" element={<Offers />} />
               <Route path="settings" element={<SettingStartup />} />
-              <Route path="/dashboard/offers/chat/:id" element={<ChatPanel />} />
+              <Route path="offers/chat/:id" element={<ChatPanel />} />
               <Route path="contact" element={<ContactStartup />} />
-
               <Route
                 path="shipments"
                 element={
@@ -83,7 +79,6 @@ function App() {
                   />
                 }
               />
-
               <Route
                 path="shipments/shipment/:id"
                 element={
@@ -93,33 +88,19 @@ function App() {
                   />
                 }
               />
-
               <Route
                 path="add-shipment"
                 element={<AddShipment onAddShipment={handleAddShipment} />}
               />
             </Route>
-            {/* Dashboard Shipping routes */}
+
+            {/* Shipping Dashboard */}
             <Route path="/dashboardShipping" element={<LayoutShipping />}>
               <Route index element={<DashboardShipping />} />
               <Route path="contactShipping" element={<ContactShipping />} />
               <Route path="settingsShipping" element={<SettingShipping />} />
-
-              {/* صفحة العروض */}
               <Route path="offersShipping" element={<OffersShipping />} />
-
-              {/* صفحة التفاصيل الخاصة بالعروض */}
               <Route path="shipping-details" element={<OffersShippingDetailes />} />
-
-            {/* Dashboard LayoutAdmin routes */}
-<Route path="/dashboardAdmin" element={<LayoutAdmin />}>
-  <Route index element={<DashboardAdmin />} />
-  <Route path="SettingAdmin" element={<SettingAdmin />} />
-  <Route path="Partners" element={<Partners />} />
-  <Route path="shipping-details/:id" element={<ShippingProfile />} />
-  
-</Route>
-
               <Route
                 path="shipmentsShipping"
                 element={
@@ -129,14 +110,28 @@ function App() {
                   />
                 }
               />
-              <Route path="shipmentsShipping/shipment/:id" element={<DeliverShippingShipment />} />
-              <Route path="shipmentsShipping/transit/:id" element={<OnTransitShippingShipment />} />
-              <Route path="shipmentsShipping/Pending/:id" element={<PendingShippingShipment />} />
+              <Route
+                path="shipmentsShipping/shipment/:id"
+                element={<DeliverShippingShipment />}
+              />
+              <Route
+                path="shipmentsShipping/transit/:id"
+                element={<OnTransitShippingShipment />}
+              />
+              <Route
+                path="shipmentsShipping/Pending/:id"
+                element={<PendingShippingShipment />}
+              />
               <Route path="track/:id" element={<TrackShipment />} />
-
             </Route>
 
-
+            {/* Admin Dashboard ✅ أصبح الآن في مكانه الصحيح */}
+            <Route path="/dashboardAdmin" element={<LayoutAdmin />}>
+              <Route index element={<DashboardAdmin />} />
+              <Route path="SettingAdmin" element={<SettingAdmin />} />
+              <Route path="Partners" element={<Partners />} />
+              <Route path="shipping-details/:id" element={<ShippingProfile />} />
+            </Route>
           </Routes>
         </OffersProvider>
       </AuthProvider>

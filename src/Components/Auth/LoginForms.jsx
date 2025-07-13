@@ -33,8 +33,12 @@ export default function LoginForm() {
         email: data.email,
         password: data.password,
         rememberMe: true,
+        
       });
       // success
+      console.log("LOGIN RESPONSE:", res.data);
+      localStorage.setItem("token", res.data.data); 
+      localStorage.setItem("email", email);
       toast.success('Registered successfully');
       login(res.data);
       navigate('/dashboard');
