@@ -3,15 +3,17 @@ import LoginIllustration from '../../assets/Signup.png';
 import LogoShip from '../../assets/LogoShip.png';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { useLocation } from 'react-router-dom';
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [email, setEmail] = useState(location.state?.email || '');
 
   const [step, setStep] = useState(1);
 
-  const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
-  const [NewPassword , setNewPassword] = useState('');
+  const [NewPassword, setNewPassword] = useState('');
   const [ConfirmPassword, setConfirmPassword] = useState('');
 
   const [loading, setLoading] = useState(false);
@@ -80,20 +82,20 @@ export default function ForgotPassword() {
   // Step 3: reset password
   const handleResetPassword = async () => {
     // validation
-    if (!NewPassword  || !ConfirmPassword) {
+    if (!NewPassword || !ConfirmPassword) {
       toast.error('Both password fields are required');
       return;
     }
-    if (NewPassword .length < 6) {
+    if (NewPassword.length < 6) {
       toast.error('Password must be at least 6 characters long');
       return;
     }
     const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$/;
-    if (!passwordPattern.test(NewPassword )) {
+    if (!passwordPattern.test(NewPassword)) {
       toast.error('Password must contain uppercase, lowercase, number, and special character');
       return;
     }
-    if (NewPassword  !== ConfirmPassword) {
+    if (NewPassword !== ConfirmPassword) {
       toast.error('Passwords do not match');
       return;
     }
@@ -104,7 +106,7 @@ export default function ForgotPassword() {
       const res = await fetch('/api/ResetPassword/resetPassword', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, code, NewPassword , ConfirmPassword }),
+        body: JSON.stringify({ email, code, NewPassword, ConfirmPassword }),
       });
 
       if (res.ok) {
@@ -232,7 +234,7 @@ export default function ForgotPassword() {
                   <input
                     type="password"
                     placeholder="New Password"
-                    value={NewPassword }
+                    value={NewPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     className="outline-none w-full text-sm"
                     required

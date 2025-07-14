@@ -1,9 +1,14 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import profilePic from '../../assets/Avatar.png';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 function ProfileForm() {
   const { register, handleSubmit, reset } = useForm();
+  const { user } = useAuth();
+
+  const navigate = useNavigate();
 
   const onSubmit = (data) => {
     console.log("Submitted:", data);
@@ -24,10 +29,12 @@ function ProfileForm() {
             <p className="text-sm text-[#6B7280]">Shipping company Manager</p>
             <button
               type="button"
+              onClick={() => navigate('/forgot-password', { state: { email: user?.email } })}
               className="mt-2 bg-[#F9751C] px-5 py-3 hover:bg-[#e5670f] text-white  rounded-[20px] text-sm font-semibold"
             >
               Change Password
             </button>
+
           </div>
         </div>
 
