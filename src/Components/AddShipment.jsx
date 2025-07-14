@@ -28,6 +28,7 @@ function AddShipment() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     company: '',
@@ -57,7 +58,9 @@ function AddShipment() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-console.log('Current token:', user?.token)
+    setLoading(true);
+
+    console.log('Current token:', user?.token)
 
     const payload = {
       weightKg: parseFloat(formData.weightKg),
@@ -69,7 +72,7 @@ console.log('Current token:', user?.token)
       shipmentType: formData.shipmentType,
       transportType:
         formData.vehicleType === 'Truck' ? 0 :
-        formData.vehicleType === 'Van' ? 1 : 2,
+          formData.vehicleType === 'Van' ? 1 : 2,
       shippingScope: 0,
       packaging: formData.packaging,
       description: 'Shipment created from UI',
@@ -95,6 +98,9 @@ console.log('Current token:', user?.token)
     } catch (err) {
       console.error('Failed to add shipment:', err.response?.data?.errors || err.message);
       alert('Failed to add shipment');
+    } finally {
+      setLoading(false);
+
     }
   };
 
@@ -114,13 +120,13 @@ console.log('Current token:', user?.token)
   };
 
   return (
-    <div className="p-12 space-y-6 bg-[#E4E6EC] min-h-screen">
+    <div className="p-12 bg-[#E4E6EC] min-h-screen">
       <div className="flex items-center gap-2 my-4 pb-4 text-[#10233E] ">
         <FaChevronLeft className="text-xl cursor-pointer" onClick={() => navigate(-1)} />
         <span className="text-2xl text-[#1A3D65] font-bold">Shipment Data</span>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-md p-15 space-y-8 relative">
+      <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-md p-12 space-y-8 relative">
 
         {/* Sender Info */}
         <div className="space-y-4 mb-15">
@@ -263,8 +269,41 @@ console.log('Current token:', user?.token)
         </div>
 
         <div className="pt-4">
-          <button type="submit" className="w-full bg-[#255C9C] text-white py-2 rounded-full font-semibold flex items-center justify-center gap-2 hover:bg-[#163150] transition">
-            <IoMdAdd className='text-xl' /> Add
+          <button
+            type="submit"
+            disabled={loading}
+            className={`w-full py-2 rounded-full font-semibold flex items-center justify-center gap-2 transition ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#255C9C] hover:bg-[#163150]'
+              } text-white`}
+          >
+            {loading ? (
+              <>
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v8z"
+                  ></path>
+                </svg>
+                Sending...
+              </>
+            ) : (
+              <>
+                <IoMdAdd className="text-xl" /> Add
+              </>
+            )}
           </button>
         </div>
       </form>
