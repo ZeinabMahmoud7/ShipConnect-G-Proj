@@ -1,14 +1,14 @@
 
 import { useState } from 'react';
-import { WelcomeHeader } from '../components/WelcomeHeader/WelcomeHeader';
-import { StatsCard } from '../components/StatsCard/StatsCard';
-import { NotificationsList } from '../components/NotificationsList/NotificationsList';
-import ShippingCompanies from '../components/ShippingCompanies/ShippingCompanies';
-import CompanyProgress from '../components/CompanyProgress/CompanyProgress';
+import { WelcomeHeader } from '../../Components/WelcomeHeader/WelcomeHeader';
+import { StatsCard } from '../../components/StatsCard/StatsCard';
+import { NotificationsList } from '../../components/NotificationsList/NotificationsList';
+import ShippingCompanies from '../../components/ShippingCompanies/ShippingCompanies';
+import CompanyProgress from '../../components/CompanyProgress/CompanyProgress';
 import axios from "axios";
 import { useEffect } from "react";
 
-import { Check, Shipments, Message, File } from '../Components/SidebarIcon'; 
+import { Check, Shipments, Message, File } from '../../Components/SidebarIcon'; 
 const Dashboard = () => {
    const [chartData, setChartData] = useState([]);
 const [shipmentData, setShipmentData] = useState([]);
@@ -214,8 +214,7 @@ useEffect(() => {
 
 
 
-
-   const userName = 'Bayu Sasmita';
+   const userName =(localStorage.getItem("userNameStartUP") || "").split(" ").slice(0, 2).join(" ");
    const rate=4.9;
 
 

@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
-
+import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import axios from "axios";
+import { useParams } from 'react-router-dom';
 export default function OffersShippingDetailes() {
   const [showModal, setShowModal] = useState(false);
   const [shipmentDate, setShipmentDate] = useState("");
@@ -9,6 +12,8 @@ export default function OffersShippingDetailes() {
   const [showConfirm, setShowConfirm] = useState(false);
 const navigate = useNavigate();
 
+
+const { id } = useParams();
   const openModal = () => setShowModal(true);
   const closeModal = () => {
     setShowModal(false);
@@ -25,6 +30,29 @@ const navigate = useNavigate();
     alert(`Added offer on ${shipmentDate} with cost $${shipmentCost}`);
     closeModal();
   };
+
+
+  const [shipmentDetails, setShipmentDetails] = useState(null);
+ 
+useEffect(() => {
+  const fetchShipmentDetails = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.get(`/api/Shipment/ShipmentDetails/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log("oofferssDetailes",res.data);
+      setShipmentDetails(res.data);
+    } catch (err) {
+      console.error("❌ Error fetching shipment details:", err);
+    }
+  };
+
+  fetchShipmentDetails();
+}, [id]);
+
 
   return (
     <div className="min-h-screen bg-[#E5E7EB] p-4 md:p-8">
@@ -51,7 +79,7 @@ const navigate = useNavigate();
 </div>
 
           <span className="font-bold text-primaryBlue text-[20px]">
-            Transit ID <span className="text-[#10233E99] font-normal">#123abc456</span>
+            Transit ID <span className="text-[#10233E99] font-normal">#{shipmentDetails?.data?.code }</span>
           </span>
         </div>
       <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-md p-6 md:p-10">
@@ -71,7 +99,8 @@ const navigate = useNavigate();
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 text-sm">
             <div className='my-4'>
               <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Startup Name</p>
-              <p className="font-bold text-[20px] text-[#10233E]">FastTrack Logistics</p>
+               <p className="font-bold text-[#10233E] text-[20px]"> {shipmentDetails?.data?.companyName || "N/A"}</p>
+               
             </div>
             <div className='my-4'>
               <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Phone Number</p>
@@ -79,7 +108,7 @@ const navigate = useNavigate();
             </div>
             <div className='my-4'>
               <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Destination Address</p>
-              <p className="font-bold text-[#10233E] text-[20px]">22 Nile St., Giza, Egypt</p>
+              <p className="font-bold text-[#10233E] text-[20px]">  {shipmentDetails?.data?.destinationAddress || "N/A"}</p>
             </div>
             <div className='my-4'>
               <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Email</p>
@@ -130,19 +159,19 @@ const navigate = useNavigate();
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 text-sm">
             <div className='my-4'>
               <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Shipment Type</p>
-              <p className="font-bold text-[#10233E] text-[20px]">Electronics</p>
+              <p className="font-bold text-[#10233E] text-[20px]"> {shipmentDetails?.data?.shipmentType || "N/A"}</p>
             </div>
             <div className='my-4'>
               <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Quantity</p>
-              <p className="font-bold text-[#10233E] text-[20px]">3 boxes</p>
+              <p className="font-bold text-[#10233E] text-[20px]"> {shipmentDetails?.data?.quantity || "N/A"} boxes</p>
             </div>
             <div className='my-4'>
               <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Weight</p>
-              <p className="font-bold text-[#10233E] text-[20px]">12.5 kg</p>
+              <p className="font-bold text-[#10233E] text-[20px]">  {shipmentDetails?.data?.weightKg || "N/A"} kg</p>
             </div>
             <div className='my-4'>
               <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Preferred Delivery Date</p>
-              <p className="font-bold text-[#10233E] text-[20px]">2025-06-25</p>
+              <p className="font-bold text-[#10233E] text-[20px]"> {shipmentDetails?.data?.requestedPickupDate?.slice(0, 10) || "N/A"}</p>
             </div>
             <div className='my-4'>
               <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Shipping Speed</p>
@@ -150,7 +179,7 @@ const navigate = useNavigate();
             </div>
             <div className='my-4'>
               <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Budget Range</p>
-              <p className="font-bold text-[#10233E] text-[20px]">$20 - $35</p>
+              <p className="font-bold text-[#10233E] text-[20px]"> {shipmentDetails?.data?.price ? `$${shipmentDetails.data.price}` : "N/A"}</p>
             </div>
             <div className='my-4'>
               <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Preferred Vehicle Type</p>
@@ -158,11 +187,11 @@ const navigate = useNavigate();
             </div>
             <div className='my-4'>
               <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Packaging Options</p>
-              <p className="font-bold text-[#10233E] text-[20px]">Fragile Protection (Anti-shock bubble wrap)</p>
+              <p className="font-bold text-[#10233E] text-[20px]">  {shipmentDetails?.data?.packagingOptions || "N/A"}</p>
             </div>
             <div className="md:col-span-2">
               <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Dimensions (L×W×H)</p>
-              <p className="font-bold text-[#10233E] text-[20px]">40 cm × 30 cm × 25 cm</p>
+              <p className="font-bold text-[#10233E] text-[20px]">  {shipmentDetails?.data?.dimensions?.replace(/x/g, ' × ') || "N/A"}</p>
             </div>
           </div>
         </div>

@@ -31,6 +31,8 @@ function ProfileForm() {
       description: data.description,
       website: data.website,
     });
+     localStorage.setItem("userNameStartUP", data.startupName);
+    
   } catch (err) {
     console.error("❌ Failed to fetch data", err);
   }
@@ -61,10 +63,11 @@ const onSubmit = async (data) => {
         profileImageUrl: "", // لينك الصورة لو فيه
       }
     };
-
+         
+      
     console.log("📦 Sending payload to server:", payload); // ✅ شوفيه في الكونسول
-const email=localStorage.getItem("email");
-    await axios.put(`/api/StartUp?email=${email}`, payload, {
+
+    await axios.put(`/api/StartUp`, payload, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -103,7 +106,7 @@ const email=localStorage.getItem("email");
 
         {/* Form Fields */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Field label="Startup Name" placeholder="GreenBloom Store" name="startupName" register={register} />
+          <Field  label="Startup Name" placeholder="GreenBloom Store" name="startupName" register={register} />
           <Field label="Email" placeholder="info@gmail.com" name="email" register={register} type="email" />
           <Field label="Phone Number" placeholder="0231234234" name="phone" register={register} />
           <Field label="Address" placeholder="cairo,maadi.23 salah salm street" name="address" register={register} />

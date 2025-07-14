@@ -15,7 +15,7 @@ export default function LayoutShipping() {
     { to: "settingsShipping", label: "Setting",icon:Setting },
   ];
   const userName='Bayu Sasmita';
-     
+      // const userName=(localStorage.getItem("userNameShipping") || "").split(" ").slice(0, 2).join(" ");
   return (
     <div className="min-h-screen flex">
       {/* Sidebar ثابت إلا في صفحات معينة */}

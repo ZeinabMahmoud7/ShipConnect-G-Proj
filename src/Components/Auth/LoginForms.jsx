@@ -36,12 +36,13 @@ export default function LoginForm() {
         
       });
       // success
+         navigate('/dashboardShipping');
       console.log("LOGIN RESPONSE:", res.data);
       localStorage.setItem("token", res.data.data); 
       localStorage.setItem("email", email);
       toast.success('Registered successfully');
       login(res.data);
-      navigate('/dashboard');
+   
 
     } catch (err) {
       const errorMsg =

@@ -68,7 +68,10 @@ export default function Sidebar({ navLinks,userName, userAvatar }) {
       />
       <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
     </div>
-    <span className="font-semibold text-primaryBlue text-md">{userName}</span>
+   <span className="font-semibold w-100 text-primaryBlue text-md whitespace-nowrap">
+  {userName}
+</span>
+
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
       xmlns="http://www.w3.org/2000/svg">
       <path d="M18 9C18 9 13.581 15 12 15C10.419 15 6 9 6 9"

@@ -14,7 +14,7 @@ export default function Layout() {
     { to: "contact", label: "Contact",icon:Contact },
     { to: "settings", label: "Setting",icon:Setting },
   ];
-  const userName='Bayu Sasmita';
+  const userName=(localStorage.getItem("userNameStartUP") || "").split(" ").slice(0, 2).join(" ");
   return (
     <div className="min-h-screen flex">
       {/* Sidebar ثابت إلا في صفحات معينة */}

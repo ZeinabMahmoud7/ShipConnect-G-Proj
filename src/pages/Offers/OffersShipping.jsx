@@ -8,12 +8,19 @@ import {
 } from 'react-icons/fa';
 import { MessageCircle, CheckCircle, XCircle, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom'; 
+import toast from 'react-hot-toast';
+import { useEffect } from 'react';
+import axios from 'axios';
 const OffersShipping = () => {
   const [showModal, setShowModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [shipmentDate, setShipmentDate] = useState('');
   const [shipmentCost, setShipmentCost] = useState('');
   const [showConfirm, setShowConfirm] = useState(false);
+   const [price, setPrice] = useState('');
+const [estimatedDays, setEstimatedDays] = useState('');
+const [notes, setNotes] = useState('');
+
   const navigate = useNavigate();
   const openModal = () => setShowModal(true);
   const closeModal = () => {
@@ -26,43 +33,105 @@ const OffersShipping = () => {
   const handleAddClick = () => {
     setShowConfirm(true);
   };
+const [selectedShipmentId, setSelectedShipmentId] = useState(null);
+const [deliveryDate, setDeliveryDate] = useState('');
 
-  const confirmAdd = () => {
-    alert(`Added offer on ${shipmentDate} with cost $${shipmentCost}`);
-    closeModal();
+const confirmAdd = async () => {
+  if (!selectedShipmentId || !price || !deliveryDate) {
+    toast.error("Please fill in all required fields");
+    return;
+  }
+
+  const today = new Date();
+  const selected = new Date(deliveryDate);
+  const diffTime = selected.getTime() - today.getTime();
+  const estimatedDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  if (estimatedDays < 0) {
+    toast.error("Delivery date cannot be in the past");
+    return;
+  }
+
+  const offerData = {
+    shipmentId: Number(selectedShipmentId),
+    price: parseFloat(price),
+    estimatedDeliveryDays: parseInt(estimatedDays),
+    notes: notes || ''
   };
 
-  const shipments = [
-    {
-      title: "Shipment from source to destination",
-      name: "startUp Name"
-    },
-    {
-      title: "Shipment to Cairo from Giza",
-      name: "Cargo Express"
-    },
-    {
-      title: "International delivery",
-      name: "FastTrack"
-    },
-    {
-      title: "New shipment offer",
-      name: "GoShip"
-    },
-    {
-      title: "Deliver from Alexandria",
-      name: "Maritime Line"
-    },
-    {
-      title: "Package from Luxor to Aswan",
-      name: "Nile Logistics"
-    }
-  ];
+  console.log("📦 Offer being sent:", offerData);
 
-  const filteredShipments = shipments.filter(shipment =>
-    shipment.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    shipment.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  try {
+    const token = localStorage.getItem('token');
+
+    const response = await axios.post('/api/Offer',
+      offerData, // 👈 مباشرة بدون dto
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    toast.success("Offer sent successfully ✅");
+    closeModal();
+  } catch (error) {
+    console.error("❌ Error sending offer:", error);
+
+    if (error.response) {
+      console.log("🔍 Error details:", error.response.data);
+      toast.error(error.response.data.title || "Failed to send offer ❌");
+    } else {
+      toast.error("Failed to send offer ❌");
+    }
+  }
+};
+
+
+
+
+
+const [shipmentRequests, setShipmentRequests] = useState([]);
+
+useEffect(() => {
+const fetchShipments = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const res = await axios.get('/api/Shipment/ShipmentRequests?pageNumber=1&pageSize=10', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const shipments = res.data?.data?.data;
+ 
+      console.log("offffers",shipments);
+    if (!Array.isArray(shipments)) {
+      console.error("❌ Expected an array but got:", shipments);
+      return;
+    }
+
+    const formatted = shipments.map(item => ({
+      title: `Shipment from ${item.senderAddress} to ${item.destinationAddress}`,
+      name: item.startupName,
+    id: item.shipmentId,
+      ...item,
+    }));
+
+    setShipmentRequests(formatted);
+  } catch (err) {
+    console.error("❌ Error fetching shipment requests:", err);
+  }
+};
+
+
+  fetchShipments();
+}, []);
+const filteredShipments = shipmentRequests.filter(shipment =>
+  shipment.name.toLowerCase().includes(searchTerm.toLowerCase())
+);
+
+
 
   return (
     <div className="min-h-screen bg-white px-4 py-6 md:px-12">
@@ -125,34 +194,45 @@ const OffersShipping = () => {
       </div>
 
       {/* Shipment Cards */}
-      <div className="space-y-4">
-        {filteredShipments.map((item, index) => (
-<div
-  key={index}
-  onClick={() => navigate('/dashboardShipping/shipping-details', {
-    state: { shipment: item }
-  })}
-  className="flex flex-col sm:flex-row justify-between items-start sm:items-center px-4 py-4 border rounded-lg shadow-sm bg-white hover:shadow-md transition gap-3"
->
+   <div className="space-y-4">
+  {filteredShipments.map((item, index) => (
+    <div
+      key={index}
+onClick={() => {
+  console.log("testid", item.id);
+  navigate(`/dashboardShipping/shipping-details/${item.id}`);
+}}
 
 
-            <div className=''>
-              <div className="font-normal text-[#10233E] text-[28px]">{item.title}</div>
-              <div className="text-[16px] text-[#10233E99] ">{item.name}</div>
-            </div>
-           <button
+
+      className="flex flex-col sm:flex-row justify-between items-start sm:items-center px-4 py-4 border rounded-lg shadow-sm bg-white hover:shadow-md transition gap-3"
+    >
+      <div>
+        <div className="font-normal  text-[#10233E] text-[24px]">
+          {item.title}
+        </div>
+        <div className="text-[16px]  w-100 text-[#10233E99]">
+          {item.name}
+        </div>
+      </div>
+
+ <button
   onClick={(e) => {
-    e.stopPropagation(); // يمنع التنقل
+    e.stopPropagation();
+    setSelectedShipmentId(item.id); // ✅ حفظ ID الشحنة
+    console.log("idddddddddd",item.id);
     openModal();
   }}
-  className="bg-[#255C9C] text-white font-bold text-[14px] sm:text-[16px] px-4 py-2 rounded-full hover:bg-[#10233E] w-full sm:w-auto"
+  className="bg-[#255C9C] whitespace-nowrap text-white font-bold text-[14px] sm:text-[16px] px-4 py-2 rounded-full hover:bg-[#10233E] w-full sm:w-auto"
 >
   + Add Offer
 </button>
 
-          </div>
-        ))}
-      </div>
+
+    </div>
+  ))}
+</div>
+
 
       {/* Modal */}
       {showModal && (
@@ -204,9 +284,11 @@ const OffersShipping = () => {
   <div className="relative w-full">
     <input
       type="date"
+  value={deliveryDate}
+  onChange={(e) => setDeliveryDate(e.target.value)}
+    placeholder="Enter number of days"
       id="real-date"
-      value={shipmentDate}
-      onChange={(e) => setShipmentDate(e.target.value)}
+      
       className="w-full border border-[#255C9C] text-[#153052] bg-white rounded-full py-2 pr-10 pl-10 text-sm outline-none cursor-pointer"
       style={{
         appearance: 'none',
@@ -259,14 +341,28 @@ const OffersShipping = () => {
 </svg>
 
       <input
-        type="text"
-        placeholder="Enter cost..."
-        value={shipmentCost}
-        onChange={(e) => setShipmentCost(e.target.value)}
-        className="w-full outline-none bg-transparent text-sm"
-      />
+    type="number"
+    placeholder="Enter price"
+    value={price}
+    onChange={(e) => setPrice(e.target.value)}
+    className="w-full rounded-full px-4 text-sm text-[#153052] outline-none"
+  />
     </div>
   </div>
+  {/* Notes */}
+<div className="md:col-span-2">
+  <label className="block text-sm font-medium text-[#153052] mb-1">
+    Notes
+  </label>
+  <textarea
+    rows={3}
+    placeholder="Add any additional details..."
+    value={notes}
+    onChange={(e) => setNotes(e.target.value)}
+    className="w-full border border-[#255C9C] rounded-xl px-4 py-2 text-sm text-[#153052] outline-none resize-none"
+  />
+</div>
+
 </div>
 
 
