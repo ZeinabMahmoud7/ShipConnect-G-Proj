@@ -1,36 +1,60 @@
-import React, { createContext, useState, useContext } from 'react';
+import axios from 'axios';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const OffersContext = createContext();
 
 export const OffersProvider = ({ children }) => {
-  const [offers] = useState([
-    {
-      id: 'abc123',
-      company: 'Swift Shipping',
-      rating: 4.9,
-      date: '05-05-2025',
-      cost: 150,
-    },
-    {
-      id: 'xyz789',
-      company: 'Fast Express',
-      rating: 4.7,
-      date: '07-06-2025',
-      cost: 175,
-    },
-  ]);
-
+  const [offers, setOffers] = useState([]); // البيانات الأصلية من الـ API
   const [approvedChats, setApprovedChats] = useState([]);
- const [messages, setMessages] = useState({
-  abc123: [
-    { from: 'Swift Shipping', text: 'hello,shipmnnts will be packaged' },
-    { from: 'Me', text: 'ok , that is good' },
-  ]
-});
-
+  const [messages, setMessages] = useState({});
   const [input, setInput] = useState('');
-const [activeChatId, setActiveChatId] = useState("abc123");
+  const [activeChatId, setActiveChatId] = useState('');
 
+  // Fetch Offers from API
+  useEffect(() => {
+    const fetchOffers = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('/api/Offer/ShipmentOffers', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const shipmentList = response.data?.data || [];
+        setOffers(shipmentList);
+        console.log("✅ API Shipment List:", shipmentList);
+
+        // تجهيز محادثات وهمية لكل offerId
+        const initialMessages = {};
+        shipmentList.forEach((shipment) => {
+          shipment.offers.forEach((offer) => {
+            const id = offer.offerId.toString();
+            initialMessages[id] = [
+              {
+                from: shipment.shipmentCode,
+                text: 'Hello, we are interested.',
+              },
+            ];
+          });
+        });
+        setMessages(initialMessages);
+
+        // اختيار أول عرض لتفعيل المحادثة (إن وجد)
+        if (!activeChatId && shipmentList.length > 0) {
+          const firstOfferId = shipmentList[0]?.offers?.[0]?.offerId?.toString();
+          if (firstOfferId) {
+            setActiveChatId(firstOfferId);
+          }
+        }
+
+      } catch (err) {
+        console.error('❌ Error fetching offers:', err);
+      }
+    };
+
+    fetchOffers();
+  }, []);
 
   const handleApprove = (id) => {
     if (!approvedChats.includes(id)) {
@@ -43,7 +67,10 @@ const [activeChatId, setActiveChatId] = useState("abc123");
 
     setMessages((prev) => ({
       ...prev,
-      [activeChatId]: [...(prev[activeChatId] || []), { from: 'Me', text: input }],
+      [activeChatId]: [
+        ...(prev[activeChatId] || []),
+        { from: 'Me', text: input },
+      ],
     }));
     setInput('');
   };
@@ -51,9 +78,9 @@ const [activeChatId, setActiveChatId] = useState("abc123");
   return (
     <OffersContext.Provider
       value={{
-        offers,
-        approvedChats,
-        messages,
+        offers,            // [{ shipmentCode, offers: [...] }, ...]
+        approvedChats,     // [offerId, ...]
+        messages,          // { offerId: [...], ... }
         input,
         setInput,
         activeChatId,
@@ -67,5 +94,4 @@ const [activeChatId, setActiveChatId] = useState("abc123");
   );
 };
 
-// Custom hook
 export const useOffers = () => useContext(OffersContext);

@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircle, CheckCircle, XCircle, Search } from 'lucide-react';
 import PaymentModal from '../PaymentModal';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 
 export default function OffersList({ offers, approvedChats, onApprove, onConnect }) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -12,14 +14,19 @@ const [payModalOfferId, setPayModalOfferId] = useState(null);
 const [approvedLocal, setApprovedLocal] = useState(() => new Set(approvedChats));
 const navigate = useNavigate();
 
-  const filteredOffers = offers.filter((offer) => {
-    const matchesId = offer.id.toLowerCase().includes(searchTerm.toLowerCase());
+ const filteredOffers = offers.map((shipment) => ({
+  ...shipment,
+  offers: shipment.offers.filter((offer) => {
+    const matchesId = offer.offerId.toString().toLowerCase().includes(searchTerm.toLowerCase());
     let matchesPrice = true;
-    if (priceFilter === 'gt100') matchesPrice = offer.cost > 100;
-    else if (priceFilter === 'lt100') matchesPrice = offer.cost < 100;
-    else if (priceFilter === 'eq100') matchesPrice = offer.cost === 100;
+    if (priceFilter === 'gt100') matchesPrice = offer.price > 100;
+    else if (priceFilter === 'lt100') matchesPrice = offer.price < 100;
+    else if (priceFilter === 'eq100') matchesPrice = offer.price === 100;
     return matchesId && matchesPrice;
-  });
+  }),
+}));
+
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -161,101 +168,104 @@ navigate(`/dashboard/offers/chat/${id}`);
         </div>
       </div>
 
-      {filteredOffers.length > 0 ? (
-        filteredOffers.map((offer) => (
-          <div key={offer.id} className="mb-6">
-            <p className="text-sm flex mb-3 text-primaryBlue font-medium flex-wrap items-center gap-1">
-              <svg
-                width="22"
-                className="mt-1 flex-shrink-0"
-                height="22"
-                viewBox="0 0 22 22"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M11 20.1667C10.2502 20.1667 9.53333 19.8642 8.10058 19.2592C4.53383 17.7522 2.75 16.9978 2.75 15.73V6.41671M11 20.1667C11.7498 20.1667 12.4667 19.8642 13.8994 19.2592C17.4662 17.7522 19.25 16.9978 19.25 15.73V6.41671M11 20.1667V10.4088M5.5 11L7.33333 11.9167M15.5833 3.66671L6.41667 8.25004M7.63217 8.88346L4.95458 7.58821C3.48517 6.87687 2.75 6.52121 2.75 5.95837C2.75 5.39554 3.48517 5.03987 4.95458 4.32854L7.63125 3.03329C9.28583 2.23304 10.1108 1.83337 11 1.83337C11.8892 1.83337 12.7151 2.23304 14.3678 3.03329L17.0454 4.32854C18.5148 5.03987 19.25 5.39554 19.25 5.95837C19.25 6.52121 18.5148 6.87687 17.0454 7.58821L14.3688 8.88346C12.7142 9.68371 11.8892 10.0834 11 10.0834C10.1108 10.0834 9.28492 9.68371 7.63217 8.88346Z"
-                  stroke="#1A3D65"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+ {offers.length > 0 ? (
+  filteredOffers.map((shipment) => (
+    <div key={shipment.shipmentCode} className="mb-8">
+      <h3 className="text-xl font-bold text-primaryBlue mb-4">
+        Shipment Code: {shipment.shipmentCode}
+      </h3>
 
-              <span className="ms-1 text-lg font-semibold">
-                Shipment ID: <span className="text-gray">{offer.id}</span>
-              </span>
-            </p>
-            <div className="bg-white rounded-xl border border-borderGray px-4 py-5 mb-4">
-              <div className="flex flex-col  md:flex-row justify-between items-start md:items-center gap-4 md:gap-0">
-                <div className="flex flex-col items-start gap-1 max-w-full md:max-w-[70%]">
-                  <h3 className="text-2xl font-bold text-primaryBlack flex items-center gap-2 flex-wrap">
-                    {offer.company}{' '}
-                    <span className="text-primaryBlack font-normal text-lg gap-1 flex items-center">
-                      <svg
-                        width="24"
-                        className="mt-[0.5]"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M13.7282 3.44399L15.4882 6.99299C15.7282 7.48699 16.3682 7.96099 16.9082 8.05099L20.0972 8.58599C22.1372 8.92899 22.6172 10.421 21.1472 11.893L18.6672 14.393C18.2472 14.816 18.0172 15.633 18.1472 16.218L18.8572 19.313C19.4172 21.763 18.1272 22.71 15.9772 21.43L12.9872 19.645C12.4472 19.323 11.5572 19.323 11.0072 19.645L8.01919 21.43C5.87919 22.71 4.57919 21.752 5.13919 19.313L5.84919 16.218C5.97919 15.633 5.74919 14.816 5.32919 14.393L2.84919 11.893C1.39019 10.42 1.86019 8.92899 3.89919 8.58599L7.08919 8.05099C7.61919 7.96099 8.25919 7.48699 8.49919 6.99299L10.2592 3.44399C11.2192 1.51899 12.7792 1.51899 13.7292 3.44399"
-                          fill="#F7CF37"
-                        />
-                      </svg>
-                      ({offer.rating})
-                    </span>
-                  </h3>
-                  <p className="text-gray mt-1 text-sm font-normal break-words w-full">
-                    Estimated delivery Date:{' '}
-                    <span className="font-semibold text-lg text-primaryBlack">{offer.date}</span>
-                  </p>
-                  <p className="text-gray text-sm font-normal break-words w-full text-start">
-                    Cost:{' '}
-                    <span className="font-semibold text-lg text-primaryBlack">${offer.cost}</span>
-                  </p>
-                </div>
+      {shipment.offers.map((offer) => (
+        <div key={offer.offerId} className="mb-6">
+          {/* نفس تصميم العرض اللي كنتي عاملاه */}
+          <div className="bg-white rounded-xl border border-borderGray px-4 py-5 mb-4">
+            <div className="flex flex-col  md:flex-row justify-between items-start md:items-center gap-4 md:gap-0">
+              <div className="flex flex-col items-start gap-1 max-w-full md:max-w-[70%]">
+                <h3 className="text-2xl font-bold text-primaryBlack flex items-center gap-2 flex-wrap">
+                  {shipment.shipmentCode}{' '}
+                  <span className="text-primaryBlack font-normal text-lg gap-1 flex items-center">
+                   ⭐ ({offer.companyRating?.toFixed(1)})
 
-{approvedLocal.has(offer.id) ? (
-  <button
-    onClick={() => setPayModalOfferId(offer.id)}
-    className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-full flex items-center gap-1 w-full md:w-auto justify-center"
-  >
-    Pay
-  </button>
-) : (
-  <div className="flex gap-2 w-full md:w-auto flex-wrap md:flex-nowrap justify-center md:justify-start">
- <button
-  onClick={() => {
-    // لا تستدعي onApprove لمنع التنقل:
-    setApprovedLocal(prev => new Set(prev).add(offer.id));
-    // لو حابة تستدعيها لاحقاً بعد معالجة التنقل، احذفي السطر التالي:
-    // if (onApprove) onApprove(offer.id);
-  }}
-  className="border border-success text-success hover:bg-green-50 px-4 py-2 rounded-full flex items-center gap-1 flex-grow md:flex-grow-0 justify-center"
->
-  <CheckCircle size={18} /> Approve
-</button>
-
-    <button
-      onClick={() => alert('Rejected!')}
-      className="border border-error text-error hover:bg-red-50 px-4 py-2 rounded-full flex items-center gap-1 flex-grow md:flex-grow-0 justify-center"
-    >
-      <XCircle size={18} /> Reject
-    </button>
-  </div>
-)}
-
-
+                  </span>
+                </h3>
+                <p className="text-gray mt-1 text-sm font-normal break-words w-full">
+                  Estimated delivery Date: <span className="font-semibold text-lg text-primaryBlack">{offer.estimatedDeliveryDays} days</span>
+                </p>
+                <p className="text-gray text-sm font-normal break-words w-full text-start">
+                  Cost: <span className="font-semibold text-lg text-primaryBlack">${offer.price}</span>
+                </p>
+                <p className="text-gray text-sm font-normal break-words w-full text-start">
+                  Notes: <span className="text-primaryBlue">{offer.notes}</span>
+                </p>
               </div>
+
+   <div className="flex gap-4 mt-4">
+  {!approvedLocal.has(offer.offerId) && (
+    <>
+      <button
+      onClick={async () => {
+    try {
+      const token = localStorage.getItem('token'); // أو حسب مكان التخزين
+      await axios.put(`/api/Offer/acceptOffer/${offer.offerId}`, null, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setApprovedLocal((prev) => new Set(prev).add(offer.offerId));
+      onApprove?.(offer.offerId);
+      toast.success(`✅ Offer ${offer.offerId} approved successfully!`);
+    } catch (error) {
+      console.error("❌ Error approving offer:", error);
+      toast.error("Failed to approve offer. Please try again.");
+    }
+  }}
+        className="flex items-center border border-[#177D3F] gap-x-2 text-[#177D3F] rounded-[20px] px-4 py-2 hover:bg-[#177D3F]/20
+ transition"
+      >
+       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M22 12C22 6.477 17.523 2 12 2C6.477 2 2 6.477 2 12C2 17.523 6.477 22 12 22C17.523 22 22 17.523 22 12Z" stroke="#177D3F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M8 12.75C8 12.75 9.6 13.662 10.4 15C10.4 15 12.8 9.75 16 8" stroke="#177D3F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+ Approve
+      </button>
+
+      <button
+        onClick={() => {
+          // ممكن تحطي لوجيك الريجيكت هنا
+          alert('Offer rejected');
+        }}
+        className="flex items-center border border-[#CE1C17] gap-x-2 text-[#CE1C17] rounded-[20px]   px-4 py-2 hover:bg-red-50 transition"
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M15.75 15L9.75 9M9.75 15L15.75 9M22.75 12C22.75 6.477 18.273 2 12.75 2C7.227 2 2.75 6.477 2.75 12C2.75 17.523 7.227 22 12.75 22C18.273 22 22.75 17.523 22.75 12Z" stroke="#CE1C17" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+        Reject
+      </button>
+    </>
+  )}
+
+  {approvedLocal.has(offer.offerId) && (
+    <button
+      onClick={() => setPayModalOfferId(offer.offerId)}
+      className="bg-green-600 text-white rounded-lg px-4 py-2 hover:bg-green-700 transition"
+    >
+      Pay
+    </button>
+  )}
+</div>
+
             </div>
           </div>
-        ))
-      ) : (
-        <p className="text-gray-500">No offers match your search.</p>
-      )}
+        </div>
+      ))}
+    </div>
+  ))
+) : (
+  <p className="text-gray-500">No offers available.</p>
+)}
+
 {payModalOfferId && (
   <PaymentModal
     offerId={payModalOfferId}

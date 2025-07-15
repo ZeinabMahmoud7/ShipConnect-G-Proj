@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { WelcomeHeader } from '../../components/WelcomeHeader/WelcomeHeader';
+import { WelcomeHeader } from '../../Components/WelcomeHeader/WelcomeHeader';
 import { StatsCard } from '../../components/StatsCard/StatsCard';
 import { NotificationsList } from '../../components/NotificationsList/NotificationsList';
 

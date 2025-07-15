@@ -36,7 +36,13 @@ const onSubmit = async (data) => {
       password: data.password,
       rememberMe: true,
     });
-
+// new
+//         navigate('/dashboardShipping');
+ //     console.log("LOGIN RESPONSE:", res.data);
+ //     localStorage.setItem("token", res.data.data); 
+ //     localStorage.setItem("email", email);
+ //     toast.success('Registered successfully');
+//      login(res.data);
     const token = res.data.data;
     const decoded = jwtDecode(token);
     const role = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];

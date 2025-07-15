@@ -93,7 +93,8 @@ function App() {
               </ProtectedRoute>}>
               <Route index element={<DashboardShipping />} />
               <Route path="offersShipping" element={<OffersShipping />} /> {/* صفحة العروض */}
-              <Route path="shipping-details" element={<OffersShippingDetailes />} />{/* صفحة التفاصيل الخاصة بالعروض */}
+            <Route path="shipping-details/:id" element={<OffersShippingDetailes />} />
+
 
               <Route path="settingsShipping" element={<SettingShipping />} />
               <Route path="contactShipping" element={<ContactShipping />} />
