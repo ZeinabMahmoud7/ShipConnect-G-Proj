@@ -52,17 +52,18 @@ export default function LoginForm() {
         role,
         email: decoded.email || decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"],
       });
-
+        localStorage.setItem("token",token);
       toast.success('Logged in successfully');
 
       // ✅ Redirect based on role
       if (role === 'Startup') {
         navigate('/dashboard');
+      
       } else if (role === 'ShippingCompany') {
         navigate('/dashboardShipping');
       } else if (role === 'Admin'){
         console.log(role)
-        navigate('/');
+        navigate('/dashboardAdmin');
       }else {
         toast.error('Unknown role. Please contact support.');
       }

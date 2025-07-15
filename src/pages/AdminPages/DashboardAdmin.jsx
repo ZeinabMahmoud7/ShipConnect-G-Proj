@@ -3,10 +3,10 @@ import React from 'react';
 import { WelcomeHeader } from '../../Components/WelcomeHeader/WelcomeHeader';
 import { StatsCard } from '../../components/StatsCard/StatsCard';
 import { NotificationsList } from '../../components/NotificationsList/NotificationsList';
-
+import { useState,useEffect } from 'react';
 import CompanyProgress from '../../components/CompanyProgress/CompanyProgress';
 import { Check, Shipments, Message, File } from '../../Components/SidebarIcon'; 
-
+import axios from 'axios';
 const chartData = [
   { month: 'Jan', Progress: 60 },
   { month: 'Feb', Progress: 70 },
@@ -35,50 +35,224 @@ const chartSeries = [
   }
 ];
 
-             const notifications = [
-  {
-    id: 1,
-    message: ' Your shipment request has been sent to selected shipping companies',
-    date: '09-02-2024',
-    icon: Check,
-    borderColor: '#21CF61',
-    iconColor: '#21CF61',
-  },
-  {
-    id: 2,
-    message: ' Swift has accepted your shipping request',
-    date: '09-02-2024',
-    icon: Check,
-    borderColor: '#21CF61',
-    iconColor: '#21CF61',
-  },
-  {
-    id: 3,
-    message: 'Your shipment to cairo now in transit',
-    date: '09-02-2024',
-    icon: Shipments,
-    borderColor: '#F9751C',
-    iconColor: '#F9751C',
-  },
-  {
-    id: 4,
-    message: "You've received a new message from Swift",
-    date: '09-02-2024',
-    icon: Message,
-    borderColor: '#21CF61',
-    iconColor: '#21CF61',
-  },
-  {
-    id: 5,
-    message: 'Your weekly shipping performance report is ready',
-    date: '09-02-2024',
-    icon: File,
-    borderColor: '#F9751C',
-    iconColor: '#F9751C',
-  },
-];
+const userName=localStorage.getItem("userNameAdmin");
 const DashboardAdmin = () => {
-    const userName='John Smith';
+   const [totalCompanies, setTotalCompanies] = useState(null); 
+  useEffect(() => {
+    const fetchTotalCompanies = async () => {
+      try {
+        const token = localStorage.getItem('token'); // إذا كنتِ بتحتاجي التوكن
+        const response = await axios.get('/api/ShippingCompany/total-count', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+     
+        console.log("total",response);
+        setTotalCompanies(response.data.data); // ← تأكدي إذا الـ response فعلاً فيه الرقم مباشرة
+      } catch (error) {
+        console.error('Error fetching total companies:', error);
+
+if (error.response) {
+  // السيرفر ردّ لكن فيه خطأ (زي 404، 500)
+  console.error('Response Data:', error.response.data);
+  console.error('Status Code:', error.response.status);
+  console.error('Headers:', error.response.headers);
+} else if (error.request) {
+  // الطلب اتبعت لكن مفيش رد من السيرفر
+  console.error('No response received:', error.request);
+} else {
+  // مشكلة حصلت في إعداد الطلب نفسه
+  console.error('Error Message:', error.message);
+}
+
+console.error('Full Error Object:', error);
+
+      }
+    };
+
+    fetchTotalCompanies();
+  }, []);
+  const [totalStartups, setTotalStartups] = useState(null);
+
+  useEffect(() => {
+  const fetchTotalStartups = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('/api/StartUp/total-count', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log("total startups", response);
+      setTotalStartups(response.data.data);
+    } catch (error) {
+      console.error('Error fetching total startups:', error);
+
+      if (error.response) {
+        console.error('Response Data:', error.response.data);
+        console.error('Status Code:', error.response.status);
+        console.error('Headers:', error.response.headers);
+      } else if (error.request) {
+        console.error('No response received:', error.request);
+      } else {
+        console.error('Error Message:', error.message);
+      }
+
+      console.error('Full Error Object:', error);
+    }
+  };
+
+  fetchTotalStartups();
+}, []);
+  const [totalOffers, setTotalOffers] = useState(null);
+  useEffect(() => {
+  const fetchTotalOffers = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('/api/Offer/Alloffers-count', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log("total offers", response);
+      setTotalOffers(response.data.data.totalCount); // لاحظي: داخل `data`
+    } catch (error) {
+      console.error('Error fetching total offers:', error);
+
+      if (error.response) {
+        console.error('Response Data:', error.response.data);
+        console.error('Status Code:', error.response.status);
+        console.error('Headers:', error.response.headers);
+      } else if (error.request) {
+        console.error('No response received:', error.request);
+      } else {
+        console.error('Error Message:', error.message);
+      }
+
+      console.error('Full Error Object:', error);
+    }
+  };
+
+  fetchTotalOffers();
+}, []);
+const [shipmentData, setShipmentData] = useState([]);
+const [notifications, setNotifications] = useState([]);
+  useEffect(() => {
+  const fetchNotifications = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get("api/Notification/MyNotifications?pageNumber=1&pageSize=10", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log("📥 Raw notifications response:", res.data);
+
+      const formatted = res.data.data.data.map((notif, index) => {
+  let icon = File;
+  let borderColor = "#F9751C";
+  let iconColor = "#F9751C";
+
+  if (notif.notificationType === 1 ||notif.notificationType === 2) {
+    icon = Check;
+    borderColor = "#21CF61";
+    iconColor = "#21CF61";
+  } else if (notif.notificationType === 2) {
+    icon = Shipments;
+    borderColor = "#F9751C";
+    iconColor = "#F9751C";
+  } else if (notif.notificationType === 3) {
+    icon = Message;
+    borderColor = "#21CF61";
+    iconColor = "#204C80";
+  }
+
+  return {
+    id: index,
+    message: notif.message,
+    date: notif.createdAt?.split("T")[0] ?? "N/A",
+    icon,
+    borderColor,
+    iconColor,
+  };
+});
+
+
+      setNotifications(formatted);
+    } catch (error) {
+      console.error("❌ Error fetching notifications:", error);
+    }
+  };
+
+  fetchNotifications();
+}, []);
+useEffect(() => {
+  const fetchShipmentStatus = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get("/api/Shipment/Admin/StatusCount", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+     console.log("try",res.data);
+      const data = res.data.data;
+
+      const selectedKeys = ["delivered", "inTransit", "pending"];
+
+      const colorMap = {
+        delivered: "#21CF61",
+        inTransit: "#F9751C",
+        pending: "#F7CF37"
+      };
+
+      const formattedSegments = selectedKeys.map((key) => ({
+        label: key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, " $1"),
+        value: Number(data[key]) || 0,
+        color: colorMap[key]
+      }));
+
+      setShipmentData(formattedSegments);
+    } catch (error) {
+      console.error("❌ Error fetching shipment status:", error);
+    }
+  };
+
+  fetchShipmentStatus();
+}, []);
+const [offersStatusSegments, setOffersStatusSegments] = useState([]);
+
+useEffect(() => {
+  const fetchOffersStatusCount = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.get('/api/Offer/Alloffers-count', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const { accepted, rejected } = res.data.data;
+
+      const formattedSegments = [
+        { label: 'Accepted', value: Number(accepted) || 0, color: '#21CF61' },
+        { label: 'Rejected', value: Number(rejected) || 0, color: '#FD0D0D' },
+      ];
+
+      setOffersStatusSegments(formattedSegments);
+    } catch (error) {
+      console.error("❌ Error fetching offers count:", error);
+    }
+  };
+
+  fetchOffersStatusCount();
+}, []);
+
+
+
+   const userName=localStorage.getItem("userNameShipping");
     const rate =3.9;
   return (
     <div className="min-h-screen">
@@ -101,7 +275,7 @@ const DashboardAdmin = () => {
         </div>
         <div>
           <p className="text-sm text-gray-600 font-normal">Total Shipping Companies</p>
-          <p className="text-xl font-bold text-gray-800 mt-1">750</p>
+          <p className="text-xl font-bold text-gray-800 mt-1">  {totalCompanies !== null ? totalCompanies : '...'}</p>
         </div>
       </div>
 
@@ -116,7 +290,10 @@ const DashboardAdmin = () => {
         </div>
         <div>
           <p className="text-sm text-gray-600 font-normal">Total Start Up Companies</p>
-          <p className="text-xl font-bold text-gray-800 mt-1">800</p>
+          <p className="text-xl font-bold text-gray-800 mt-1">
+  {totalStartups !== null ? totalStartups : '...'}
+</p>
+
         </div>
       </div>
 
@@ -132,7 +309,10 @@ const DashboardAdmin = () => {
         </div>
         <div>
           <p className="text-sm text-gray-600 font-normal">Total Offers</p>
-          <p className="text-xl font-bold text-gray-800 mt-1">1200</p>
+          <p className="text-xl font-bold text-gray-800 mt-1">
+  {totalOffers !== null ? totalOffers : '...'}
+</p>
+
         </div>
       </div>
     </div>
@@ -141,25 +321,20 @@ const DashboardAdmin = () => {
  
             {/* Cards Section */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 flex-1 items-stretch">
-              <StatsCard  
-                type="users"
-                segments={[
-                  { label: 'Delivered', value: 70, color: '#21CF61' },
-                  { label: 'In Transit', value: 30, color: '#F9751C' },
-                  { label: 'Pending', value: 10, color: '#F7CF37' },
-                ]}
-              />
+             <StatsCard
+  type="users"
+  segments={shipmentData}
+/>
 
-              <StatsCard
-                type="ShipmentsRequest"
-                segments={[
-                  { label: 'Accepted', value: 85, color: '#21CF61' },
-                  { label: 'Rejected', value: 15, color: '#FD0D0D' },
-                ]}
-              />
+
+ 
       
-                   
-                   
+<StatsCard
+  type="ShipmentsRequest"
+  segments={offersStatusSegments}
+/>
+
+      
           
              
             </div>
@@ -173,7 +348,27 @@ const DashboardAdmin = () => {
 
 
           {/* Notifications */}
-           <NotificationsList title="Latest Notifications" notifications={notifications} />
+                        {notifications.length === 0 ? (
+  <div className="flex flex-col items-center justify-center text-center bg-white rounded-xl border border-borderGray p-6 shadow-sm">
+    <svg
+      className="w-12 h-12 text-gray-400 mb-3"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M13.5 10.5v3m0 0h-3m3 0h3m-3 0v3m0-3v-3m-6.75 9.75a8.25 8.25 0 1116.5 0 8.25 8.25 0 01-16.5 0z"
+      />
+    </svg>
+    <p className="text-sm text-gray-600 font-medium">You don't have any notifications yet</p>
+    <p className="text-xs text-gray-400 mt-1">We’ll let you know when something arrives!</p>
+  </div>
+) : (
+  <NotificationsList title="Latest Notifications" notifications={notifications} />
+)}
         </div>
       </div>
     </div>

@@ -14,8 +14,9 @@ export default function LayoutAdmin() {
 
  
   ];
-  const userName='Bayu Sasmita';
-     
+
+ const userName=localStorage.getItem("userNameAdmin");
+  console.log("ussssserName",userName);
   return (
     <div className="min-h-screen flex">
       {/* Sidebar ثابت إلا في صفحات معينة */}

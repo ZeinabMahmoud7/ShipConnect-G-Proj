@@ -240,48 +240,6 @@ const chartSeries = [
 
   }
 ];
-// const notifications = [
-//   {
-//     id: 1,
-//     message: ' Your shipment request has been sent to selected shipping companies',
-//     date: '09-02-2024',
-//     icon: Check,
-//     borderColor: '#21CF61',
-//     iconColor: '#21CF61',
-//   },
-//   {
-//     id: 2,
-//     message: ' Swift has accepted your shipping request',
-//     date: '09-02-2024',
-//     icon: Check,
-//     borderColor: '#21CF61',
-//     iconColor: '#21CF61',
-//   },
-//   {
-//     id: 3,
-//     message: 'Your shipment to cairo now in transit',
-//     date: '09-02-2024',
-//     icon: Shipments,
-//     borderColor: '#F9751C',
-//     iconColor: '#F9751C',
-//   },
-//   {
-//     id: 4,
-//     message: "You've received a new message from Swift",
-//     date: '09-02-2024',
-//     icon: Message,
-//     borderColor: '#21CF61',
-//     iconColor: '#21CF61',
-//   },
-//   {
-//     id: 5,
-//     message: 'Your weekly shipping performance report is ready',
-//     date: '09-02-2024',
-//     icon: File,
-//     borderColor: '#F9751C',
-//     iconColor: '#F9751C',
-//   },
-// ];
 
   return (
     <div className="min-h-screen">

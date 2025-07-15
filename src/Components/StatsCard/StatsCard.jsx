@@ -1,4 +1,7 @@
 import React from 'react';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
+import  { useState } from 'react';
+
 
 export function StatsCard({ type, segments }) {
 
@@ -97,9 +100,17 @@ const average = segments.length ? Math.round(total / segments.length) : 0;
   };
 
   const { title, icon, bg, border, centerLabel } = typeConfig[type];
+const [tooltip, setTooltip] = useState({
+  visible: false,
+  x: 0,
+  y: 0,
+  content: '',
+});
 
   return (
-<div className="bg-white rounded-2xl shadow border px-5 py-6 h-fit"
+
+
+<><div className="bg-white rounded-2xl shadow border px-5 py-6 h-fit"
  style={{ backgroundColor: bg, border: `1px solid ${border}` }}>
       <div className="flex items-center gap-2 mb-4">
         {icon}
@@ -127,22 +138,50 @@ const average = segments.length ? Math.round(total / segments.length) : 0;
   const value = safeValue - gap >= 0 ? safeValue - gap : 0;
 
   return (
-    <circle
-      key={index}
-      cx="18"
-      cy="18"
-      r="15.9155"
-      fill="none"
-      stroke={segment.color}
-      strokeWidth="3"
-      strokeDasharray={`${value} ${100 - value}`}
-      strokeDashoffset={-offset}
-      strokeLinecap="round"
-    />
+<circle
+  key={index}
+  cx="18"
+  cy="18"
+  r="15.9155"
+  fill="none"
+  stroke={segment.color}
+  strokeWidth="3"
+  strokeDasharray={`${value} ${100 - value}`}
+  strokeDashoffset={-offset}
+  strokeLinecap="round"
+  style={{ cursor: 'pointer' }}
+  onMouseEnter={(e) => {
+    const rect = e.target.getBoundingClientRect();
+    setTooltip({
+      visible: true,
+      x: rect.x + rect.width / 2,
+      y: rect.y - 10,
+      content: `${segment.label}: ${segment.value} (${((safeValue / total) * 100).toFixed(1)}%)`,
+    });
+  }}
+  onMouseLeave={() => setTooltip({ ...tooltip, visible: false })}
+/>
+
+
+
   );
 })}
 
         </svg>
+        {tooltip.visible && (
+  <div
+    className="fixed bg-primaryBlue text-white text-xs px-2 py-1 rounded shadow z-50"
+    style={{
+      top: tooltip.y,
+      left: tooltip.x,
+      transform: 'translate(-50%, -100%)',
+      pointerEvents: 'none',
+    }}
+  >
+    {tooltip.content}
+  </div>
+)}
+
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
           <div className="text-lg font-semibold text-gray-700">{total}</div>
         </div>
@@ -163,5 +202,7 @@ const average = segments.length ? Math.round(total / segments.length) : 0;
 
      
     </div>
+  
+</>
   );
 }

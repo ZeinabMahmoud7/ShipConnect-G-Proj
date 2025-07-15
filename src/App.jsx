@@ -39,7 +39,11 @@ import CompanyRegisterForm from './Components/Auth/CompanyRegisterForm';
 import ForgotPassword from './Components/Auth/ForgotPassword';
 import { Toaster } from 'react-hot-toast';
 import ProtectedRoute from "./Components/Auth/ProtectedRoute "
-
+import LayoutAdmin from './Layout/LayoutDashboardAdmin';
+import DashboardAdmin from './pages/AdminPages/DashboardAdmin';
+import SettingAdmin from './pages/AdminPages/SettingAdmin';
+import PartnersPage from './pages/AdminPages/Partners';
+import ShippingProfile from './pages/AdminPages/ShippingProfile';
 function App() {
   const [shipments, setShipments] = useState(mockShipments);
   const [shipmentsShipping, setShipmentsShipping] = useState(mockShipping);
@@ -99,14 +103,7 @@ function App() {
               <Route path="settingsShipping" element={<SettingShipping />} />
               <Route path="contactShipping" element={<ContactShipping />} />
 
-              {/* Dashboard LayoutAdmin routes */}
-              {/* <Route path="/dashboardAdmin" element={<LayoutAdmin />}>
-                <Route index element={<DashboardAdmin />} />
-                <Route path="SettingAdmin" element={<SettingAdmin />} />
-                <Route path="Partners" element={<Partners />} />
-                <Route path="shipping-details/:id" element={<ShippingProfile />} />
-
-              </Route> */}
+             
 
               <Route path="shipmentsShipping" element={<ShipmentsListShipping shipments={shipmentsShipping} setShipments={setShipmentsShipping} />} />
               <Route path="shipmentsShipping/shipment/:id" element={<DeliverShippingShipment />} />
@@ -115,7 +112,14 @@ function App() {
 
               <Route path="track/:id" element={<TrackShipment />} />
             </Route>
+                   {/* Dashboard LayoutAdmin routes */}
+               <Route path="/dashboardAdmin" element={<LayoutAdmin />}>
+                <Route index element={<DashboardAdmin />} />
+                <Route path="SettingAdmin" element={<SettingAdmin />} />
+                <Route path="Partners" element={<PartnersPage />} />
+                <Route path="shipping-details/:id" element={<ShippingProfile />} /> */}
 
+              </Route>
           </Routes>
         </OffersProvider>
       </AuthProvider>

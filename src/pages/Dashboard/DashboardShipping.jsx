@@ -46,8 +46,8 @@ const Star = () => (
 
 const DashboardShipping = () => {
 const [notifications, setNotifications] = useState([]);
-  const userName = 'John Smith';
-  //  const userName=(localStorage.getItem("userNameShipping") || "").split(" ").slice(0, 2).join(" ");
+
+   const userName=(localStorage.getItem("userNameShipping") || "").split(" ").slice(0, 2).join(" ");
   const rate = 3.9;
   const [shipmentData, setShipmentData] = useState([]);
   const [shippingScope, setShippingScope] = useState([]);
