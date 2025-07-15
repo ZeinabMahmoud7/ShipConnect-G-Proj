@@ -26,61 +26,61 @@ export default function LoginForm() {
   };
 
   // submit data
-const onSubmit = async (data) => {
-  setError('');
-  try {
-    setLoading(true);
+  const onSubmit = async (data) => {
+    setError('');
+    try {
+      setLoading(true);
 
-    const res = await axios.post('/api/Account/Login', {
-      email: data.email,
-      password: data.password,
-      rememberMe: true,
-    });
-// new
-//         navigate('/dashboardShipping');
- //     console.log("LOGIN RESPONSE:", res.data);
- //     localStorage.setItem("token", res.data.data); 
- //     localStorage.setItem("email", email);
- //     toast.success('Registered successfully');
-//      login(res.data);
-    const token = res.data.data;
-    const decoded = jwtDecode(token);
-    const role = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+      const res = await axios.post('/api/Account/Login', {
+        email: data.email,
+        password: data.password,
+        rememberMe: true,
+      });
+      // new
+      //         navigate('/dashboardShipping');
+      //     console.log("LOGIN RESPONSE:", res.data);
+      //     localStorage.setItem("token", res.data.data); 
+      //     localStorage.setItem("email", email);
+      //     toast.success('Registered successfully');
+      //      login(res.data);
+      const token = res.data.data;
+      const decoded = jwtDecode(token);
+      const role = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
 
-    login({
-      token,
-      role,
-      email: decoded.email || decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"],
-    });
+      login({
+        token,
+        role,
+        email: decoded.email || decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"],
+      });
 
-    toast.success('Logged in successfully');
+      toast.success('Logged in successfully');
 
-    // ✅ Redirect based on role
-    if (role === 'Startup') {
-      navigate('/dashboard');
-    } else if (role === 'ShippingCompany') {
-      navigate('/dashboardShipping');
-    } else if (role === 'Admin'){
-      console.log(role)
-      navigate('/');
-    }else {
-      toast.error('Unknown role. Please contact support.');
+      // ✅ Redirect based on role
+      if (role === 'Startup') {
+        navigate('/dashboard');
+      } else if (role === 'ShippingCompany') {
+        navigate('/dashboardShipping');
+      } else if (role === 'Admin'){
+        console.log(role)
+        navigate('/');
+      }else {
+        toast.error('Unknown role. Please contact support.');
+      }
+
+    } catch (err) {
+      const errorMsg =
+        err.response?.data?.message ||
+        err.response?.data?.errors?.[Object.keys(err.response.data.errors)[0]]?.[0] ||
+        'Login failed. Please try again.';
+
+      toast.error(errorMsg);
+      setError(err.response?.data?.message || 'Login failed');
+      console.log(err);
+
+    } finally {
+      setLoading(false);
     }
-
-  } catch (err) {
-    const errorMsg =
-      err.response?.data?.message ||
-      err.response?.data?.errors?.[Object.keys(err.response.data.errors)[0]]?.[0] ||
-      'Login failed. Please try again.';
-
-    toast.error(errorMsg);
-    setError(err.response?.data?.message || 'Login failed');
-    console.log(err);
-
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
 
 
