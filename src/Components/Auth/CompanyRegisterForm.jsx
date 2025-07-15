@@ -11,7 +11,6 @@ export default function CompanyRegisterForm() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  // validation
   const {
     register,
     handleSubmit,

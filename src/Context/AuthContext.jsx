@@ -1,49 +1,42 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
 const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+export const useAuth = () => useContext(AuthContext);
 
-  // ✅ Load token & user from localStorage on app load
-  useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
-    if (storedToken && storedUser) {
-      setUser({ token: storedToken, ...JSON.parse(storedUser) });
-    }
-  }, []);
+// فك التوكن
 function parseJwt(token) {
   try {
-    const base64Payload = token.split('.')[1];
-    const payload = atob(base64Payload); // decode base64
-    return JSON.parse(payload);
-  } catch (e) {
-    console.error('Invalid token', e);
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map((c) => {
+      return `%${('00' + c.charCodeAt(0).toString(16)).slice(-2)}`;
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
+  } catch (error) {
+    console.error('Invalid token', error);
     return null;
   }
 }
 
-  // ✅ Save token/user after login
-const login = (apiResponse) => {
-  const token = apiResponse.data; // ✅ Extract from `data.data`
-  const decodedToken = parseJwt(token); // Optional: if you want to extract user info from token
-  const userData = {
-    email: decodedToken?.email,
-    role: decodedToken?.role,
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+
+  const login = ({ token }) => {
+    const decoded = parseJwt(token);
+    if (!decoded) return;
+
+    const email = decoded.email || decoded.sub || decoded.name || '';
+    const role = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+
+    console.log("✅ Stored:", token);
+    console.log({ email, role });
+
+    setUser({ token, email, role });
   };
 
-  localStorage.setItem('token', token);
-  localStorage.setItem('user', JSON.stringify(userData));
-  console.log('✅ Stored:', token, userData);
-  setUser({ token, ...userData });
-};
-
-  const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setUser(null);
-  };
+  const logout = () => setUser(null);
 
   return (
     <AuthContext.Provider value={{ user, login, logout }}>
@@ -51,5 +44,3 @@ const login = (apiResponse) => {
     </AuthContext.Provider>
   );
 };
-
-export const useAuth = () => useContext(AuthContext);

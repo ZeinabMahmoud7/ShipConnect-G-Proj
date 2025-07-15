@@ -81,14 +81,14 @@ function App() {
               <Route path="shipments" element={<ShipmentsList shipments={shipments} setShipments={setShipments} />} />
               <Route path="shipmentsStartup/shipment/:id" element={<DeliverStartupShipment />} />
               <Route path="shipmentsStartup/transit/:id" element={<OnTransitStartupShipment />} />
-              <Route path="shipmentsStartup/Pending/:id" element={<PendingStartupShipment />} />
+              <Route path="shipmentsStartup/pending/:id" element={<PendingStartupShipment />} />
 
               <Route path="add-shipment" element={<AddShipment onAddShipment={handleAddShipment} />} />
             </Route>
 
             {/* Dashboard Shipping routes */}
             <Route path="/dashboardShipping" element={
-              <ProtectedRoute>
+              <ProtectedRoute >
                 <LayoutShipping />
               </ProtectedRoute>}>
               <Route index element={<DashboardShipping />} />

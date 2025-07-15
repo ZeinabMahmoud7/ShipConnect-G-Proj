@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import { useAuth } from '../../Context/AuthContext';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { jwtDecode } from 'jwt-decode';
 
 export default function LoginForm() {
   const navigate = useNavigate();
@@ -25,33 +26,57 @@ export default function LoginForm() {
   };
 
   // submit data
-  const onSubmit = async (data) => {
-    setError('');
-    try {
-      setLoading(true);
-      const res = await axios.post('/api/Account/Login', {
-        email: data.email,
-        password: data.password,
-        rememberMe: true,
-      });
-      // success
-      toast.success('Registered successfully');
-      login(res.data);
+const onSubmit = async (data) => {
+  setError('');
+  try {
+    setLoading(true);
+
+    const res = await axios.post('/api/Account/Login', {
+      email: data.email,
+      password: data.password,
+      rememberMe: true,
+    });
+
+    const token = res.data.data;
+    const decoded = jwtDecode(token);
+    const role = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+
+    login({
+      token,
+      role,
+      email: decoded.email || decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"],
+    });
+
+    toast.success('Logged in successfully');
+
+    // ✅ Redirect based on role
+    if (role === 'Startup') {
       navigate('/dashboard');
-
-    } catch (err) {
-      const errorMsg =
-        err.response?.data?.message ||
-        err.response?.data?.errors?.[Object.keys(err.response.data.errors)[0]]?.[0] || 'Login failed. Please try again.';
-      // error handler
-      toast.error(errorMsg);
-      setError(err.response?.data?.message || 'Login failed');
-      console.log(error)
-
-    } finally {
-      setLoading(false);
+    } else if (role === 'ShippingCompany') {
+      navigate('/dashboardShipping');
+    } else if (role === 'Admin'){
+      console.log(role)
+      navigate('/');
+    }else {
+      toast.error('Unknown role. Please contact support.');
     }
-  };
+
+  } catch (err) {
+    const errorMsg =
+      err.response?.data?.message ||
+      err.response?.data?.errors?.[Object.keys(err.response.data.errors)[0]]?.[0] ||
+      'Login failed. Please try again.';
+
+    toast.error(errorMsg);
+    setError(err.response?.data?.message || 'Login failed');
+    console.log(err);
+
+  } finally {
+    setLoading(false);
+  }
+};
+
+
 
   // display res, error msg
   const responseMessage = (response) => {
