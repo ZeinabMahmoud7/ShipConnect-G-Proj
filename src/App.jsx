@@ -44,6 +44,7 @@ import DashboardAdmin from './pages/AdminPages/DashboardAdmin';
 import SettingAdmin from './pages/AdminPages/SettingAdmin';
 import PartnersPage from './pages/AdminPages/Partners';
 import ShippingProfile from './pages/AdminPages/ShippingProfile';
+import NotFound from './pages/Not Found/NotFound';
 function App() {
   const [shipments, setShipments] = useState(mockShipments);
   const [shipmentsShipping, setShipmentsShipping] = useState(mockShipping);
@@ -120,6 +121,9 @@ function App() {
                 <Route path="shipping-details/:id" element={<ShippingProfile />} /> */}
 
               </Route>
+
+              {/* Not Found Page */}
+              <Route path="*" element={<NotFound />} />
           </Routes>
         </OffersProvider>
       </AuthProvider>
