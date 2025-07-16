@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-
+import { StatsCard } from "../../components/StatsCard/StatsCard";
 // lucide-react icons (only a few actually used; keep others if you need later)
 import {
   Mail,
@@ -15,13 +15,115 @@ import {
   ArrowLeft,
 } from "lucide-react";
 
-export default function ShippingProfile() {
+export default function ShippingDetailes() {
+      const { id } = useParams(); 
+        const numericId = parseInt(id, 10);
+const [feedbacks, setFeedbacks] = useState([]);
+useEffect(() => {
+  const fetchFeedbacks = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(`/api/Rating/CompanyRates/${numericId}?pageNumber=1&pageSize=3`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      console.log("✅ Feedback API Response:", res.data);
+
+      const data = res?.data?.data || [];
+      setFeedbacks(data);
+    } catch (error) {
+      console.error("❌ Error fetching feedbacks:", error.response || error.message);
+    }
+  };
+
+  fetchFeedbacks();
+}, [id]);
+
+const Star = () => (
+ <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12.7276 2.44418L14.4874 5.99288C14.7274 6.48687 15.3673 6.9607 15.9073 7.05143L19.0969 7.58575C21.1367 7.92853 21.6167 9.4206 20.1468 10.8925L17.6671 13.3927C17.2471 13.8161 17.0172 14.6327 17.1471 15.2175L17.8571 18.3125C18.417 20.7623 17.1271 21.71 14.9774 20.4296L11.9877 18.6452C11.4478 18.3226 10.5579 18.3226 10.0079 18.6452L7.01824 20.4296C4.87847 21.71 3.57862 20.7522 4.13856 18.3125L4.84848 15.2175C4.97846 14.6327 4.74849 13.8161 4.32853 13.3927L1.84881 10.8925C0.388969 9.4206 0.858919 7.92853 2.89869 7.58575L6.08834 7.05143C6.61828 6.9607 7.25821 6.48687 7.49818 5.99288L9.25797 2.44418C10.2179 0.518607 11.7777 0.518607 12.7276 2.44418Z" fill="#FDC700" stroke="#FDC700" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+);
   const navigate = useNavigate();
-  const { id } = useParams(); // يمسك الـ id من الـ URL
+// يمسك الـ id من الـ URL
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [shipmentData, setShipmentData] = useState([]);
+    const [shippingScope, setShippingScope] = useState([]);
+    useEffect(() => {
+  const fetchShippingScopeCount = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.get(`/api/Offer/companyOffers/${numericId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+          console.log("😶‍🌫️",res);
+      const { accepted, rejected } = res.data.data;
 
+      const formattedSegments = [
+        { label: 'Accepted', value: Number(accepted) || 0, color: '#21CF61' },
+        { label: 'Rejected', value: Number(rejected) || 0, color: '#FD0D0D' },
+      ];
+
+      setShippingScope(formattedSegments);
+    } catch (error) {
+      console.error("❌ Error fetching shipping scope count:", error);
+    }
+  };
+
+  fetchShippingScopeCount();
+}, []);
+  useEffect(() => {
+  const fetchShipmentStatus = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(`/api/Shipment/Admin/ShippingCount/${numericId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+     console.log("try",res.data);
+      const data = res.data.data;
+
+      const selectedKeys = ["delivered", "inTransit", "pending"];
+
+      const colorMap = {
+        delivered: "#21CF61",
+        inTransit: "#F9751C",
+        pending: "#F7CF37"
+      };
+
+      const formattedSegments = selectedKeys.map((key) => ({
+        label: key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, " $1"),
+        value: Number(data[key]) || 0,
+        color: colorMap[key]
+      }));
+
+      setShipmentData(formattedSegments);
+    } catch (error) {
+  if (error.response) {
+    // السيرفر رد برد لكن فيه مشكلة (مثل 400, 401, 500)
+    console.error("❌ API Error Response:");
+    console.error("Status:", error.response.status);
+    console.error("Headers:", error.response.headers);
+    console.error("Data:", error.response.data);
+  } else if (error.request) {
+    // الطلب اتبعت لكن السيرفر ما ردش
+    console.error("❌ API No Response:");
+    console.error(error.request);
+  } else {
+    // حصلت مشكلة قبل ما يتبعت الطلب
+    console.error("❌ API Setup Error:", error.message);
+  }
+  console.error("Full Error Object:", error);
+}
+
+  };
+
+  fetchShipmentStatus();
+}, []);
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -84,7 +186,7 @@ export default function ShippingProfile() {
    * -------------------------------------------------------------- */
 function InfoItem({ label, value, Icon }) {
   const isWebsite = label.toLowerCase().includes("website"); // للتحقق لو هو اللينك
-
+  
   return (
     <div className="w-full rounded-[20px] bg-[#F6F6F6] px-4 py-5 flex items-start gap-3 shadow-sm">
       <span className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-[#FFE1CD] shrink-0">
@@ -112,9 +214,6 @@ function InfoItem({ label, value, Icon }) {
 }
 
 
-  /* --------------------------------------------------------------
-   * RENDER
-   * -------------------------------------------------------------- */
   if (loading) {
     return (
     <div className="flex flex-col items-center justify-center h-64 text-gray-500">
@@ -244,7 +343,58 @@ function InfoItem({ label, value, Icon }) {
         <InfoItem label="Tax ID" value={safeData.taxId} Icon={IdCard} />
         <InfoItem label="License Number" value={safeData.licenseNumber} Icon={Hash} />
         <InfoItem label="Shipping Scope" value={safeData.shippingScopeLabel} Icon={Building2} />
+
       </div>
+<div className="flex gap-x-4 items-stretch w-full">
+  <div className="flex-1">
+    <StatsCard type="users" segments={shipmentData} />
+  </div>
+  <div className="flex-1">
+    <StatsCard type="Offers" segments={shippingScope} />
+  </div>
+</div>
+<h3 className="my-8 text-lg flex items-center font-bold text-primaryBlue mb-3"><svg className="me-2" width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M20.0744 29.5941C26.0018 29.2017 30.7221 24.4134 31.1103 18.4025C31.1853 17.2266 31.1853 16.0083 31.1103 14.8325C30.7221 8.82295 26.0018 4.03745 20.0744 3.6422C18.0272 3.50729 15.9733 3.50729 13.9261 3.6422C7.99877 4.03603 3.27843 8.82295 2.89027 14.8339C2.81522 16.0227 2.81522 17.2151 2.89027 18.4039C3.03193 20.5926 3.99952 22.6199 5.13993 24.3312C5.80152 25.5283 5.36518 27.0229 4.67527 28.3304C4.17943 29.2725 3.9301 29.7429 4.12985 30.0829C4.32818 30.4229 4.77443 30.4342 5.66552 30.4554C7.42927 30.4979 8.61785 29.9993 9.56135 29.3037C10.0954 28.9084 10.3632 28.7115 10.5474 28.6889C10.7315 28.6662 11.0956 28.8164 11.8209 29.1139C12.4726 29.383 13.2305 29.5488 13.9247 29.5955C15.9434 29.7287 18.0528 29.7287 20.0758 29.5955M16.9932 17H17.0074M22.6542 17H22.6669M11.3336 17H11.3464" stroke="#204C80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+ Feedbacks from startups</h3>
+      <section className="">
+      {/* الكروت */}
+      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        {feedbacks.map((item, index) => (
+
+          <div
+            key={index}
+            className="bg-[#F3F4F6] px-[16px] py-[20px] rounded-xl shadow-sm p-6 flex flex-col justify-between"
+          >
+            <div>
+              {/* النجوم */}
+              <div className="flex gap-[2px] mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} />
+                ))}
+              </div>
+              {/* النص */}
+              <p className="text-[#101828BF] text-[20px] leading-relaxed">
+                "{t.feedback}"
+              </p>
+            </div>
+
+            {/* الشخص */}
+            <div className="flex items-center mt-6">
+              <img
+                src={t.image}
+                alt={t.name}
+                className="w-10 h-10 rounded-full mr-4"
+              />
+              <div>
+                <p className="font-bold text-[#000000] text-[16px]">{t.name}</p>
+                <p className="text-sm text-[#99A1AF]">{t.title}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
     </div>
   );
 }

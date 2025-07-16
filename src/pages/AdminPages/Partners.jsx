@@ -57,10 +57,12 @@ export default function PartnersPage() {
         .includes(searchTerm.toLowerCase())
     );
 const handleApprove = async (uerId) => {
+  console.log("iikl",uerId);
   const token = localStorage.getItem("token");
+  console.log("ttttttt",token);
   try {
-    const res = await axios.post(
-      `/api/Account/approve-account/${uerId}`,  // هنا استخدمتي uerId مش company.id
+    const res = await axios.put(
+      `/api/Account/approve-account/${uerId}`, // بيبعت اليوزر آي دي هنا
       {},
       {
         headers: {
@@ -69,12 +71,28 @@ const handleApprove = async (uerId) => {
       }
     );
     toast.success("User approved successfully!");
-    fetchCompanies(); // لتحديث القائمة بعد الموافقة
+    fetchCompanies(); // تحديث القائمة
   } catch (err) {
-    console.error("❌ Failed to approve user:", err);
-    toast.error("Failed to approve user!");
+  console.error("❌ Failed to approve user:", err);
+
+  if (err.response) {
+    
+    console.error("Status Code:", err.response.status);
+    console.error("Response Data:", err.response.data);
+      toast.success("User approved successfully!");
+  } else if (err.request) {
+    // الطلب اتبعت بس مفيش رد
+    console.error("No response received:", err.request);
+    toast.error("No response from server.");
+  } else {
+    // مشكلة في الإعدادات أو غيره
+    console.error("Error setting up request:", err.message);
+    toast.error(`Request error: ${err.message}`);
   }
+}
+
 };
+
 
   return (
     <div className="p-4 md:p-8 min-h-screen" onClick={() => setIsDropdownOpen(false)}>
@@ -160,13 +178,25 @@ const handleApprove = async (uerId) => {
           <div
             key={company.id}
             className="bg-white px-6 py-5 rounded-2xl border border-[#CACED8] flex items-center justify-between hover:cursor-pointer"
-            onClick={() => {
-              if (company.accountType === "Shipping Company") {
-                navigate(`/dashboardAdmin/shipping-details/${company.id}`);
-              } else {
-                navigate(`/dashboardAdmin/startup-details/${company.id}`);
-              }
-            }}
+onClick={() => {
+  if (activeTab === "requests") {
+    // Requests tab → لا تغير أي حاجة
+    if (company.accountType === "Shipping Company") {
+      navigate(`/dashboardAdmin/shipping-details/${company.id}`);
+    } else {
+      navigate(`/dashboardAdmin/startup-details/${company.id}`);
+    }
+  } else {
+    // Our Companies tab → صفحات جديدة (Profiles)
+    if (company.accountType === "Shipping Company") {
+      navigate(`/dashboardAdmin/shipping-profile/${company.id}`);
+    } else {
+      navigate(`/dashboardAdmin/startup-profile/${company.id}`);
+    }
+  }
+}}
+
+
           >
             <div className="flex items-center gap-5">
               <img
@@ -186,9 +216,9 @@ const handleApprove = async (uerId) => {
 
             {activeTab === "requests" && (
               <div className="flex gap-2">
-                <button   onClick={(e) => {
+                <button     onClick={(e) => {
     e.stopPropagation();
-    handleApprove(company.id);
+    handleApprove(company.uerId); // ده المطلوب
   }} className="px-4 py-1.5 rounded-[20px] font-semibold border border-[#177D3F] text-[#177D3F] hover:bg-green-50 text-sm flex items-center gap-1">
                   <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M22.5 12.5C22.5 6.977 18.023 2.5 12.5 2.5C6.977 2.5 2.5 6.977 2.5 12.5C2.5 18.023 6.977 22.5 12.5 22.5C18.023 22.5 22.5 18.023 22.5 12.5Z" stroke="#177D3F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>

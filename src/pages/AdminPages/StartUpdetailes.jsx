@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-
+import { StatsCard } from "../../components/StatsCard/StatsCard";
 // lucide-react icons (only a few actually used; keep others if you need later)
 import {
   Mail,
@@ -15,19 +15,97 @@ import {
   ArrowLeft,
 } from "lucide-react";
 
-export default function ShippingProfile() {
+export default function StartUpDetailes() {
+      const { id } = useParams(); 
+const [shippingSegments, setShippingSegments] = useState([]); // للـ Shipping Method Count
+// عندك بالفعل، بس أأكد عليها
+
   const navigate = useNavigate();
-  const { id } = useParams(); // يمسك الـ id من الـ URL
+// يمسك الـ id من الـ URL
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [shipmentData, setShipmentData] = useState([]);
+    const [shippingScope, setShippingScope] = useState([]);
+    useEffect(() => {
+  const fetchShippingScopeCount = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.get(`/api/Offer/companyOffers/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+          console.log("😶‍🌫️",res);
+      const { accepted, rejected } = res.data.data;
+
+      const formattedSegments = [
+        { label: 'Accepted', value: Number(accepted) || 0, color: '#21CF61' },
+        { label: 'Rejected', value: Number(rejected) || 0, color: '#FD0D0D' },
+      ];
+
+      setShippingScope(formattedSegments);
+    } catch (error) {
+      console.error("❌ Error fetching shipping scope count:", error);
+    }
+  };
+
+  fetchShippingScopeCount();
+}, []);
+  useEffect(() => {
+  const fetchShipmentStatus = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(`/api/Shipment/Admin/ShippingCount/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+     console.log("try",res.data);
+      const data = res.data.data;
+
+      const selectedKeys = ["delivered", "inTransit", "pending"];
+
+      const colorMap = {
+        delivered: "#21CF61",
+        inTransit: "#F9751C",
+        pending: "#F7CF37"
+      };
+
+      const formattedSegments = selectedKeys.map((key) => ({
+        label: key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, " $1"),
+        value: Number(data[key]) || 0,
+        color: colorMap[key]
+      }));
+
+      setShipmentData(formattedSegments);
+    } catch (error) {
+  if (error.response) {
+    // السيرفر رد برد لكن فيه مشكلة (مثل 400, 401, 500)
+    console.error("❌ API Error Response:");
+    console.error("Status:", error.response.status);
+    console.error("Headers:", error.response.headers);
+    console.error("Data:", error.response.data);
+  } else if (error.request) {
+    // الطلب اتبعت لكن السيرفر ما ردش
+    console.error("❌ API No Response:");
+    console.error(error.request);
+  } else {
+    // حصلت مشكلة قبل ما يتبعت الطلب
+    console.error("❌ API Setup Error:", error.message);
+  }
+  console.error("Full Error Object:", error);
+}
+
+  };
+
+  fetchShipmentStatus();
+}, []);
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         setLoading(true);
         const token = localStorage.getItem("token");
-        const res = await axios.get(`/api/ShippingCompany/CompanyProfile/${id}` || "", {
+        const res = await axios.get(`/api/StartUp/StartUpProfile/${id}` || "", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -58,6 +136,98 @@ export default function ShippingProfile() {
     2: "regional",
     3: "global",
   };
+useEffect(() => {
+  const fetchShippingMethodCount = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.get(`/api/Shipment/Admin/ShippingMethodCount/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log("📦 Raw API Response:", res.data);
+
+      const { land, sea, air } = res.data.data;
+
+      const formattedSegments = [
+        { label: 'Land', value: land, color: '#989EAE' },
+        { label: 'Sea', value: sea, color: '#204C80' },
+        { label: 'Air', value: air, color: '#7EADE7' },
+      ];
+
+      console.log("✅ Formatted Segments:", formattedSegments);
+
+      setShippingSegments(formattedSegments);
+    } catch (error) {
+      console.error("❌ Error fetching shipping method count:", error);
+      console.error("❌ Error response:", error.response?.data);
+
+    }
+  };
+
+  fetchShippingMethodCount();
+}, []);
+useEffect(() => {
+  const fetchShipmentStatus = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(`/api/Shipment/Admin/StatusCount/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const data = res.data.data;
+        console.log("🤷‍♀️🤷‍♀️🤷‍♀️🤷‍♀️",res);
+      // فقط الحالات اللي نحتاجها
+      const selectedKeys = ["delivered", "inTransit", "pending"];
+
+      const colorMap = {
+        delivered: "#21CF61",
+        inTransit: "#F9751C",
+        pending: "#F7CF37"
+      };
+
+      const formattedSegments = selectedKeys.map((key) => ({
+        label: key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, " $1"), // Capitalized
+        value: Number(data[key]) || 0,
+        color: colorMap[key]
+      }));
+
+      setShipmentData(formattedSegments);
+    } catch (error) {
+      console.error("❌ Error fetching shipment status:", error);
+    }
+  };
+
+  fetchShipmentStatus();
+}, []);
+
+
+useEffect(() => {
+  const fetchShippingScopeCount = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.get(`/api/Shipment/Admin/ShippingScopeCount/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+          console.log("😶‍🌫️",res.data.data);
+      const { domestic, international } = res.data.data;
+
+      const formattedSegments = [
+        { label: 'Domestic', value: Number(domestic) || 0, color: '#21CF61' },
+        { label: 'International', value: Number(international) || 0, color: '#204C80' },
+      ];
+
+      setShippingScope(formattedSegments);
+    } catch (error) {
+      console.error("❌ Error fetching shipping scope count:", error);
+    }
+  };
+
+  fetchShippingScopeCount();
+}, []);
 
   // نشتق قيم آمنة للعرض + fallback للديزاين القديم (Wearly)
   const safeData = useMemo(() => {
@@ -84,7 +254,7 @@ export default function ShippingProfile() {
    * -------------------------------------------------------------- */
 function InfoItem({ label, value, Icon }) {
   const isWebsite = label.toLowerCase().includes("website"); // للتحقق لو هو اللينك
-
+  
   return (
     <div className="w-full rounded-[20px] bg-[#F6F6F6] px-4 py-5 flex items-start gap-3 shadow-sm">
       <span className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-[#FFE1CD] shrink-0">
@@ -112,9 +282,6 @@ function InfoItem({ label, value, Icon }) {
 }
 
 
-  /* --------------------------------------------------------------
-   * RENDER
-   * -------------------------------------------------------------- */
   if (loading) {
     return (
     <div className="flex flex-col items-center justify-center h-64 text-gray-500">
@@ -244,7 +411,38 @@ function InfoItem({ label, value, Icon }) {
         <InfoItem label="Tax ID" value={safeData.taxId} Icon={IdCard} />
         <InfoItem label="License Number" value={safeData.licenseNumber} Icon={Hash} />
         <InfoItem label="Shipping Scope" value={safeData.shippingScopeLabel} Icon={Building2} />
+
       </div>
+     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 flex-1">
+ 
+  <StatsCard
+    type="users"
+    segments={shipmentData} // نفس تنسيق Land, Sea, Air
+  />
+
+
+
+           <StatsCard
+  type="sales"
+  segments={shippingSegments}
+/>
+
+
+              <StatsCard
+                type="traffic"
+                segments={[
+                  { label: 'Paid', value: 85, color: '#21CF61' },
+                  { label: 'No', value: 15, color: '#FD0D0D' },
+                ]}
+              />
+
+          <StatsCard
+  type="Scope"
+  segments={shippingScope}
+/>
+
+            </div>
+
     </div>
   );
 }
