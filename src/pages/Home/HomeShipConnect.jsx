@@ -21,14 +21,15 @@ import bgAboute1 from '../../assets/AboutBg2.jpg';
 import PlatFormHome from '../../Components/PlatFormHome/PlatFormHome';
 import Footer from '../../Components/Footer/Footer';
 import Testimonials from '../../Components/Testimonials/Testimonials';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from '../../Components/Navbar/Navbar';
+import { useLocation } from 'react-router-dom';
+
 export default function HomePage() {
+  const navigate = useNavigate();
   // للقائمة الجوال
   // للقائمة المنسدلة
   const dropdownRef = useRef(null);
-
-
 
   const backgroundImages = [HeroBg1, HeroBg2, HeroBg3];
   const [bgIndex, setBgIndex] = useState(0);
@@ -124,8 +125,8 @@ export default function HomePage() {
   );
   const logos = [Frame1, Frame2, Frame3, Frame4, Frame5, Frame6, Frame7, Frame8];
   return (
-    <div className="w-full  text-gray-800">
-      <div className="relative w-full h-[600px]">
+    <div className="w-full text-gray-800 scroll-smooth" >
+      <div id='home' className="relative w-full h-[600px]">
         {/* الخلفية المتغيرة */}
         <div
           className="absolute inset-0 z-0"
@@ -166,7 +167,9 @@ export default function HomePage() {
             <p className="mt-4 text-base md:text-lg">
               {heroSlides[slideIndex].description}
             </p>
-            <button className="mt-6 bg-brandOrange py-3 px-8 hover:bg-orange-600 text-white rounded-3xl font-medium shadow">
+            <button
+              onClick={() => { navigate("/login") }}
+              className="mt-6 bg-brandOrange py-3 px-8 hover:bg-orange-600 text-white rounded-3xl font-medium shadow">
               Get Started
             </button>
           </div>
@@ -270,7 +273,7 @@ export default function HomePage() {
       </section>
 
       {/* About Us */}
-      <section className="bg-white py-12 mx-auto md:mx-20">
+      <section id='about-us' className="bg-white py-12 mx-auto md:mx-20">
         <h2
           className="text-3xl text-center text-[#10233E]  font-bold mb-8"
           style={{ textShadow: '4px 4px 15px #00000040' }}

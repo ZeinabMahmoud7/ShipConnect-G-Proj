@@ -19,12 +19,12 @@ export default function PendingStartupShipment() {
   const [shipment, setShipment] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editModalOpen, setEditModalOpen] = useState(false);
-const Info = ({ label, value }) => (
-  <div>
-    <p className="text-[#697A94] mb-1">{label}</p>
-    <p className="font-bold break-words">{value ?? 'N/A'}</p>
-  </div>
-);
+  const Info = ({ label, value }) => (
+    <div>
+      <p className="text-[#697A94] mb-1">{label}</p>
+      <p className="font-bold break-words">{value ?? 'N/A'}</p>
+    </div>
+  );
 
   useEffect(() => {
     const fetchShipment = async () => {
@@ -64,10 +64,10 @@ const Info = ({ label, value }) => (
     }
   };
 
-const handleUpdate = (updatedData) => {
-  setShipment(prev => ({ ...prev, ...updatedData }));
-  setEditModalOpen(false);
-};
+  const handleUpdate = (updatedData) => {
+    setShipment(prev => ({ ...prev, ...updatedData }));
+    setEditModalOpen(false);
+  };
   if (loading) return <div className="p-8 text-center">Loading...</div>;
   if (!shipment) return <div className="p-8 text-center text-red-600 font-bold">Shipment not found.</div>;
 
@@ -149,7 +149,7 @@ const handleUpdate = (updatedData) => {
         {/* Edit Modal */}
         {editModalOpen && (
           <EditShipmentForm
-          shipment={shipment}
+            shipment={shipment}
             onUpdate={handleUpdate}
             onClose={() => setEditModalOpen(false)}
           />

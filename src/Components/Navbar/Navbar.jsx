@@ -1,11 +1,23 @@
 import React from 'react'
 import Logo from '../../assets/LogoShip.png';
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect, useRef } from 'react';
 import avatarNav from '../../assets/AvatarNav.jpg';
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
+
+  const handleScrollToAbout = () => {
+    if (location.pathname === '/') {
+      // Already on home page, just scroll
+      const section = document.getElementById('about-us');
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth' });
+      }
+    } 
+  }
+
   const dropdownRef = useRef(null);
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -50,12 +62,12 @@ const Navbar = () => {
           >
             Contact Us
           </Link>
-          <Link
-            to="/conditions"
+          <button
+            onClick={handleScrollToAbout}
             className="hover:bg-white/20 rounded-md px-2 py-1 transition-colors"
           >
-            Conditions
-          </Link>
+            About us
+          </button>
         </nav>
         {/* صورة اليوزر + المنيو */}
         <div className="flex items-center gap-2 relative" ref={dropdownRef}>
@@ -81,13 +93,13 @@ const Navbar = () => {
               Log in
             </Link>
             <Link
-              to="/dashboard"
+              to="/register/startup"
               className="px-3 py-2 mb-2 rounded-md cursor-pointer text-center font-semibold text-primaryBlue hover:bg-gray-100 block"
             >
               Register as Startup
             </Link>
             <Link
-              to="/dashboardShipping"
+              to="/register/company"
               onClick={() => setIsDropdownOpen(false)}
               className="px-3 py-2 rounded-md cursor-pointer text-center font-semibold text-primaryBlue hover:bg-gray-100"
             >
@@ -120,9 +132,9 @@ const Navbar = () => {
       {/* قائمة الموبايل */}
       {menuOpen && (
         <nav className="lg:hidden bg-[#153052]/90 rounded-b-[20px] px-6 py-4 space-y-3 text-white font-medium text-base shadow-lg">
-          <a href="#" className="block hover:bg-white/20 rounded-md px-2 py-1 transition-colors">Home</a>
-          <a href="#" className="block hover:bg-white/20 rounded-md px-2 py-1 transition-colors">Contact Us</a>
-          <a href="#" className="block hover:bg-white/20 rounded-md px-2 py-1 transition-colors">Conditions</a>
+          <Link to="/" className="block hover:bg-white/20 rounded-md px-2 py-1 transition-colors">Home</Link>
+          <Link to="contact-us" className="block hover:bg-white/20 rounded-md px-2 py-1 transition-colors">Contact Us</Link>
+          <a href="#about-us" className="block hover:bg-white/20 rounded-md px-2 py-1 transition-colors">About Us</a>
         </nav>
       )}
     </header>

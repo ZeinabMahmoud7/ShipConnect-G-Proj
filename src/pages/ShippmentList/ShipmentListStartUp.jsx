@@ -45,6 +45,8 @@ export default function ShipmentsListStartUp() {
           const res = await axios.get(`/api/Shipment/filterWithStatus/${statusFilter}`, {
             headers: { Authorization: `Bearer ${user?.token}` },
           });
+          console.log('Statuses:', shipments.map(s => s.status));
+
           data = res.data?.data?.data || [];
         } else {
           // ✅ fallback to all shipments
@@ -136,7 +138,6 @@ export default function ShipmentsListStartUp() {
         </div>
 
         {/* Filter icon with dropdown */}
-
         <div className="relative" ref={filterRef}>
           <button
             onClick={() => setShowFilter(!showFilter)}
@@ -179,8 +180,6 @@ export default function ShipmentsListStartUp() {
             </div>
           )}
         </div>
-
-
       </div>
 
       {/* Shipment List */}
@@ -188,18 +187,23 @@ export default function ShipmentsListStartUp() {
         {loading ? (
           <Spinner />
         ) : shipments.length > 0 ? (
-          shipments.map((shipment) => (
-            <StartupCard
-              key={shipment.id}
-              shipment={shipment}
-              onClick={() => {
-                const s = shipment.status;
-                if (s === 'Delivered') navigate(`/dashboardShipping/shipmentsShipping/shipment/${shipment.id}`);
-                else if (s === 'On Transit') navigate(`/dashboardShipping/shipmentsShipping/transit/${shipment.id}`);
-                else if (s === 'Pending') navigate(`/dashboardShipping/shipmentsShipping/Pending/${shipment.id}`);
-              }}
-            />
-          ))
+          shipments // updated to show only (delivered, pending, transit) status
+            .filter(shipment =>
+              ['Delivered', 'In Transit', 'Pending'].includes(shipment.status)
+            )
+            .map((shipment) => (
+              <StartupCard
+                key={shipment.id}
+                shipment={shipment}
+                onClick={() => {
+                  const s = shipment.status;
+                  if (s === 'Delivered') navigate(`/dashboardShipping/shipmentsShipping/shipment/${shipment.id}`);
+                  else if (s === 'On Transit') navigate(`/dashboardShipping/shipmentsShipping/transit/${shipment.id}`);
+                  else if (s === 'Pending') navigate(`/dashboardShipping/shipmentsShipping/Pending/${shipment.id}`);
+                }}
+              />
+            ))
+
         ) : (
           <div className="text-center py-8">
             <p className="text-gray-500 italic">No shipments found</p>

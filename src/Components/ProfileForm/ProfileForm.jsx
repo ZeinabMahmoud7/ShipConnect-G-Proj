@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import profilePic from '../../assets/Avatar.png';
@@ -9,22 +9,23 @@ function ProfileForm() {
   const { register, handleSubmit, reset } = useForm();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [startupData, setStartupData] = useState(null);
 
+  // Fetch Startup Data
   const fetchData = async () => {
     try {
       const token = localStorage.getItem('token');
 
-      const email = localStorage.getItem("email");
-      console.log("🍉🍉🍉🍉🍉", email);
-
-      const res = await axios.get(`/api/StartUp?email=${email}`, {
+      const res = await axios.get(`/api/StartUp/me`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      const data = res.data;
-      console.log("dattaaaaa", data);
+      const data = res.data.data;
+      setStartupData(data); // to display in header
+      localStorage.setItem("userNameStartUP", data.startupName);
+
       reset({
         startupName: data.startupName,
         email: data.email,
@@ -35,18 +36,17 @@ function ProfileForm() {
         description: data.description,
         website: data.website,
       });
-      localStorage.setItem("userNameStartUP", data.startupName);
 
     } catch (err) {
       console.error("❌ Failed to fetch data", err);
     }
   };
+
   useEffect(() => {
-    fetchData(); // استدعاء الدالة هنا
+    fetchData();
   }, [reset]);
 
-
-  // ✅ إرسال التحديث عند الضغط على "Save Changes"
+  // ✅ Handle Save
   const onSubmit = async (data) => {
     try {
       const token = localStorage.getItem('token');
@@ -63,29 +63,42 @@ function ProfileForm() {
           startupName: data.startupName,
           phone: data.phone,
           email: data.email,
-          profileImageUrl: "", // لينك الصورة لو فيه
+          profileImageUrl: "", // You can later update this with image logic
         }
       };
 
-    // console.log("Submitted:", data);
-    // reset();
-      console.log("📦 Sending payload to server:", payload); // ✅ شوفيه في الكونسول
+      console.log("📦 Sending payload to server:", payload);
 
-      await axios.put(`/api/StartUp`, payload, {
+      const res = await axios.put(`/api/StartUp`, payload, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
+      reset({
+        startupName: payload.userDTO.startupName,
+        email: payload.userDTO.email,
+        phone: payload.userDTO.phone,
+        address: payload.startupDTO.address,
+        category: payload.startupDTO.businessCategory,
+        taxid: payload.startupDTO.taxId,
+        description: payload.startupDTO.description,
+        website: payload.startupDTO.website,
+      });
+
+      setStartupData(prev => ({
+        ...prev,
+        ...payload.startupDTO,
+        ...payload.userDTO,
+      }));
+
       alert('✅ Changes saved successfully!');
-      fetchData();
+
     } catch (err) {
       console.error('❌ Error updating startup:', err);
       alert('❌ Failed to update startup data');
     }
   };
-
-
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-8 bg-white">
@@ -95,18 +108,25 @@ function ProfileForm() {
       >
         {/* Header */}
         <div className="flex gap-x-3 items-start mb-6">
-          <img src={profilePic} alt="profile" className="w-32 h-32 rounded-full object-cover mb-2" />
+          <img
+            src={profilePic}
+            alt="profile"
+            className="w-32 h-32 rounded-full object-cover mb-2"
+          />
           <div>
-            <h2 className="text-2xl font-bold text-[#10233E]">Bayu Sasmita</h2>
+            <h2 className="text-2xl font-bold text-[#10233E]">
+              {startupData?.startupName || 'Startup User'}
+            </h2>
             <p className="text-sm text-[#6B7280] mb-2">Startup Manager</p>
             <button
               type="button"
-              onClick={() => navigate('/forgot-password', { state: { email: user?.email } })}
+              onClick={() => navigate('/forgot-password', {
+                state: { email: startupData?.email || user?.email }
+              })}
               className="bg-[#F9751C] px-5 py-2 hover:bg-[#e5670f] text-white rounded-[20px] text-sm font-semibold"
             >
               Change Password
             </button>
-
           </div>
         </div>
 

@@ -4,7 +4,7 @@ import {
     IoCloseCircleOutline
 } from "react-icons/io5";
 
-export default function EditModal({ onClose, onNavigate }) {
+export default function EditModal({ onClose, onConfirm }) {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
       <div className="bg-white p-6 rounded-2xl shadow-xl text-center w-full max-w-md space-y-4 animate-fade-in">
@@ -17,8 +17,8 @@ export default function EditModal({ onClose, onNavigate }) {
             <IoCloseCircleOutline size={20}/>Cancel
           </button>
           <button
-            onClick={onNavigate}
-            className="cursor-pointer flex items-center gap-2 px-6 py-2 bg-[#DF6109] text-white rounded-xl hover:bg-blue-900"
+            onClick={onConfirm}
+            className="cursor-pointer flex items-center gap-2 px-6 py-2 bg-[#DF6109] text-white rounded-xl "
           >
             <IoCheckmarkCircleOutline size={20}/>OK
           </button>

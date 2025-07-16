@@ -8,6 +8,7 @@ import { useAuth } from '../../Context/AuthContext';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { jwtDecode } from 'jwt-decode';
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 export default function LoginForm() {
   const navigate = useNavigate();
@@ -52,19 +53,19 @@ export default function LoginForm() {
         role,
         email: decoded.email || decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"],
       });
-        localStorage.setItem("token",token);
+      localStorage.setItem("token", token);
       toast.success('Logged in successfully');
 
       // ✅ Redirect based on role
       if (role === 'Startup') {
         navigate('/dashboard');
-      
+
       } else if (role === 'ShippingCompany') {
         navigate('/dashboardShipping');
-      } else if (role === 'Admin'){
+      } else if (role === 'Admin') {
         console.log(role)
         navigate('/dashboardAdmin');
-      }else {
+      } else {
         toast.error('Unknown role. Please contact support.');
       }
 
@@ -125,7 +126,7 @@ export default function LoginForm() {
             placeholder="Enter your email" name="email" type="email" register={register} />
 
           {/* Password Field */}
-          <PasswordField label="Password" placeholder="Enter your password" name="password" register={register} />
+          <PasswordField label="Password" placeholder="Enter your password" name="password" register={register} required />
 
           {/* Remember checkbox + forget password */}
           <div className="flex justify-between items-center text-sm text-[#162456]">
@@ -210,7 +211,7 @@ const Field = ({ label, icon, placeholder, type = 'text', name, register }) => (
   <div>
     <label className="block mb-1 text-sm font-medium text-[#204C80]">{label} *</label>
     <div className="flex items-center border border-[#204C80] rounded-xl bg-white px-3 py-2">
-      {icon && <span className="mr-1 text-[#204C80]">{icon}</span>}
+      {icon && <span className="text-[#204C80]">{icon}</span>}
       <input
         type={type}
         placeholder={placeholder}
@@ -221,4 +222,49 @@ const Field = ({ label, icon, placeholder, type = 'text', name, register }) => (
   </div>
 );
 
-const PasswordField = (props) => <Field {...props} type="password" />;
+function PasswordField({ label, name, register, required }) {
+  const [showPassword, setShowPassword] = useState(false);
+
+  return (
+    <div>
+      <label className="block mb-1 text-sm font-medium text-[#204C80]">
+        {label} {required && <span>*</span>}
+      </label>
+
+      <div className="flex items-center border border-[#204C80] rounded-xl bg-white px-3 py-2">
+        {/* Lock Icon */}
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="text-[#255C9C] me-2"
+          width="24" height="25"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm0-10V7a6 6 0 1112 0v2"
+          />
+        </svg>
+        {/* Input */}
+        <input
+          {...register(name)}
+          type={showPassword ? 'text' : 'password'}
+          placeholder="Enter your password"
+          className="w-full text-sm outline-none placeholder-gray-400"
+        />
+
+        {/* Toggle Button */}
+        <button
+          type="button"
+          onClick={() => setShowPassword(!showPassword)}
+          className="focus:outline-none ml-2"
+        >
+          {showPassword ? (<FiEyeOff />) : (<FiEye />)}
+        </button>
+      </div>
+    </div>
+  );
+}

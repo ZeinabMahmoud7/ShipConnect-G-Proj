@@ -4,6 +4,7 @@ import LogoShip from '../../assets/LogoShip.png';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useLocation } from 'react-router-dom';
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
@@ -81,7 +82,6 @@ export default function ForgotPassword() {
   };
   // Step 3: reset password
   const handleResetPassword = async () => {
-    // validation
     if (!NewPassword || !ConfirmPassword) {
       toast.error('Both password fields are required');
       return;
@@ -217,55 +217,19 @@ export default function ForgotPassword() {
           {/* "reset password" Form Body */}
           {step === 3 && (
             <div className="space-y-4">
-              <div>
-                <label className="block mb-1 text-sm font-medium text-[#204C80]">Password *</label>
-                <div className="flex items-center border border-[#255C9C] rounded-xl bg-white px-3 py-2">
-                  <span className="mr-1">
-                    <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path
-                        d="M18.644 4.5C18.5083 4.13353 18.2948 3.80087 18.018 3.525C16.984 2.5 15.322 2.5 12 2.5C8.678 2.5 7.015 2.5 5.982 3.525C5.70524 3.80087 5.49165 4.13353 5.356 4.5M5 18.5C5.087 19.92 5.326 20.823 5.982 21.475C7.015 22.5 8.677 22.5 12 22.5C15.323 22.5 16.985 22.5 18.017 21.475C18.674 20.823 18.913 19.919 19 18.5M6 10.5L8 12.5M8 10.5L6 12.5M11 10.5L13 12.5M13 10.5L11 12.5M16 10.5L18 12.5M18 10.5L16 12.5M12 19.5V19.51M17 7.5H7C5.114 7.5 4.172 7.5 3.586 8.086C3 8.672 3 9.614 3 11.5C3 13.386 3 14.328 3.586 14.914C4.172 15.5 5.114 15.5 7 15.5H17C18.886 15.5 19.828 15.5 20.414 14.914C21 14.328 21 13.386 21 11.5C21 9.614 21 8.672 20.414 8.086C19.828 7.5 18.886 7.5 17 7.5Z"
-                        stroke="#204C80"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </span>
-                  <input
-                    type="password"
-                    placeholder="New Password"
-                    value={NewPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    className="outline-none w-full text-sm"
-                    required
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block mb-1 text-sm font-medium text-[#204C80]">Confirm Password *</label>
-                <div className="flex items-center border border-[#255C9C] rounded-xl bg-white px-3 py-2">
-                  <span className="mr-1">
-                    <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path
-                        d="M18.644 4.5C18.5083 4.13353 18.2948 3.80087 18.018 3.525C16.984 2.5 15.322 2.5 12 2.5C8.678 2.5 7.015 2.5 5.982 3.525C5.70524 3.80087 5.49165 4.13353 5.356 4.5M5 18.5C5.087 19.92 5.326 20.823 5.982 21.475C7.015 22.5 8.677 22.5 12 22.5C15.323 22.5 16.985 22.5 18.017 21.475C18.674 20.823 18.913 19.919 19 18.5M6 10.5L8 12.5M8 10.5L6 12.5M11 10.5L13 12.5M13 10.5L11 12.5M16 10.5L18 12.5M18 10.5L16 12.5M12 19.5V19.51M17 7.5H7C5.114 7.5 4.172 7.5 3.586 8.086C3 8.672 3 9.614 3 11.5C3 13.386 3 14.328 3.586 14.914C4.172 15.5 5.114 15.5 7 15.5H17C18.886 15.5 19.828 15.5 20.414 14.914C21 14.328 21 13.386 21 11.5C21 9.614 21 8.672 20.414 8.086C19.828 7.5 18.886 7.5 17 7.5Z"
-                        stroke="#204C80"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </span>
-                  <input
-                    type="password"
-                    placeholder="Confirm your Password"
-                    value={ConfirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="outline-none w-full text-sm"
-                    required
-                  />
-                </div>
-              </div>
-
+              <PasswordField
+                label="Password"
+                value={NewPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="New Password"
+              />
+              <PasswordField
+                label="Confirm Password"
+                value={ConfirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Confirm your Password"
+              />
+              {/* Confirm Button */}
               <button
                 type="button"
                 disabled={loading}
@@ -293,7 +257,7 @@ const Field = ({ label, icon, placeholder, type = 'text', value, onChange }) => 
   <div>
     <label className="block mb-1 text-sm font-medium text-[#204C80]">{label} *</label>
     <div className="flex items-center border border-[#204C80] rounded-xl bg-white px-3 py-2">
-      <span className="mr-1 text-[#204C80]">{icon}</span>
+      <span className="text-[#204C80]">{icon}</span>
       <input
         type={type}
         placeholder={placeholder}
@@ -305,3 +269,51 @@ const Field = ({ label, icon, placeholder, type = 'text', value, onChange }) => 
     </div>
   </div>
 );
+function PasswordField({ label, value, onChange, placeholder }) {
+  const [show, setShow] = useState(false);
+
+  return (
+    <div>
+      <label className="block mb-1 text-sm font-medium text-[#204C80]">
+        {label} *
+      </label>
+
+      <div className="flex items-center border border-[#204C80] rounded-xl bg-white px-3 py-2">
+        {/* Lock Icon */}
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="text-[#255C9C] me-2"
+          width="24" height="25"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm0-10V7a6 6 0 1112 0v2"
+          />
+        </svg>
+        {/* Input */}
+        <input
+          type={show ? 'text' : 'password'}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          className="outline-none w-full text-sm placeholder-gray-400"
+          required
+        />
+
+        {/* Toggle Button */}
+        <button
+          type="button"
+          onClick={() => setShow(!show)}
+          className="focus:outline-none ml-2"
+        >
+          {show ? (<FiEyeOff />) : (<FiEye />)}
+        </button>
+      </div>
+    </div>
+  );
+}

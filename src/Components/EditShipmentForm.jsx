@@ -13,14 +13,14 @@ export default function EditShipmentForm({ shipment, onUpdate, onClose }) {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
 
-const [formData, setFormData] = useState({
-  code: shipment?.code || '',
-  requestDate: shipment?.requestDate?.slice(0, 10) || '',
-  weightKg: shipment?.weightKg || '',
-  shipmentType: shipment?.shipmentType || '',
-  dimensions: shipment?.dimensions || '',
-  destinationAddress: shipment?.destinationAddress || '',
-})
+  const [formData, setFormData] = useState({
+    code: shipment?.code || '',
+    requestDate: shipment?.requestDate?.slice(0, 10) || '',
+    weightKg: shipment?.weightKg || '',
+    shipmentType: shipment?.shipmentType || '',
+    dimensions: shipment?.dimensions || '',
+    destinationAddress: shipment?.destinationAddress || '',
+  })
 
 
   const handleChange = (field, value) => {
@@ -29,17 +29,19 @@ const [formData, setFormData] = useState({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
+    setShowModal(true)
+  }
+  const handleModalConfirm = () => {
     const updatedData = {
       id: shipment.id,
       code: shipment.code,
       requestDate: new Date(formData.requestDate).toISOString(),
-      weightKg: parseFloat(formData.weight),
+      weightKg: parseFloat(formData.weightKg),
       quantity: shipment.quantity || 1,
       price: shipment.price || 1,
       shipmentType: formData.shipmentType,
       dimensions: formData.dimensions,
-      destinationAddress: formData.recipientAddress,
+      destinationAddress: formData.destinationAddress,
       senderAddress: shipment.senderAddress || '',
       packaging: shipment.packaging || '',
       packagingOptions: shipment.packagingOptions ?? 0, // Enum int
@@ -63,19 +65,17 @@ const [formData, setFormData] = useState({
 
     console.log("🔍 formData", formData);
     console.log("🧾 updatedData", updatedData);
-onUpdate({ ...shipment, ...formData }) // نعدل البيانات القديمة بالكود الجديد أو أي تغيير
+
+    // Show modal before update to avoid unmount issue
+    onUpdate({ ...shipment, ...updatedData });
     setShowModal(true);
+
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
     onClose();
   };
-
-  const handleNavigate = () => {
-    navigate('/dashboard/shipments');
-  };
-
   if (!shipment) {
     return <p className="text-center p-8 text-red-500">Shipment not found.</p>;
   }
@@ -98,23 +98,23 @@ onUpdate({ ...shipment, ...formData }) // نعدل البيانات القديم
         </h2>
 
         <div className="grid grid-cols-2 md:grid-cols-2 gap-5">
-{/* Shipment Code */}
-<div>
-  <label className="block mb-1 text-[#204C80]">Shipment Code
-    <span className="font-normal text-xs text-[#3C4EC3]"> *</span>
-  </label>
-  <div className="flex items-center border border-[#255C9C] rounded-2xl px-3 py-2 mt-1">
-    <PiPackageLight className="text-[#204C80] mr-2 w-5 h-5" />
-    <input
-      type="text"
-      value={formData.code}
-      onChange={(e) => handleChange('code', e.target.value)}
-      placeholder="Shipment Code"
-      className="flex-1 outline-none text-sm"
-      required
-    />
-  </div>
-</div>
+          {/* Shipment Code */}
+          <div>
+            <label className="block mb-1 text-[#204C80]">Shipment Code
+              <span className="font-normal text-xs text-[#3C4EC3]"> *</span>
+            </label>
+            <div className="flex items-center border border-[#255C9C] rounded-2xl px-3 py-2 mt-1">
+              <PiPackageLight className="text-[#204C80] mr-2 w-5 h-5" />
+              <input
+                type="text"
+                value={formData.code}
+                onChange={(e) => handleChange('code', e.target.value)}
+                placeholder="Shipment Code"
+                className="flex-1 outline-none text-sm"
+                required
+              />
+            </div>
+          </div>
 
           {/* requested Date */}
           <div>
@@ -217,7 +217,7 @@ onUpdate({ ...shipment, ...formData }) // نعدل البيانات القديم
       {showModal && (
         <EditModal
           onClose={handleCloseModal}
-          onNavigate={handleNavigate}
+          onConfirm={handleModalConfirm} // new
         />
       )}
     </div>

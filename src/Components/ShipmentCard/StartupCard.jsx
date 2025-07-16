@@ -13,7 +13,7 @@ export default function StartupCard({ shipment }) {
     switch (status) {
       case 'Delivered':
         return <IoIosCheckmarkCircleOutline className="bg-[#B1F7CB] text-[#1CA651] text-lg mr-1" />;
-      case 'On Transit':
+      case 'In Transit':
         return <IoIosTimer className="bg-[#FFE1CD] text-[#DF6109] text-lg mr-1" />;
       case 'Pending':
         return <PiWarningCircle className="bg-[#FEEDAA] text-[#C5A30D] text-lg mr-1" />;
@@ -26,7 +26,7 @@ export default function StartupCard({ shipment }) {
     switch (status) {
       case 'Delivered':
         return 'bg-[#B1F7CB] text-[#1CA651]';
-      case 'On Transit':
+      case 'In Transit':
         return 'bg-[#FFE1CD] text-[#DF6109]';
       case 'Pending':
         return 'bg-[#FEEDAA] text-[#C5A30D]';
@@ -38,7 +38,7 @@ export default function StartupCard({ shipment }) {
   const handleCardClick = () => {
     if (shipment.status === 'Pending') {
       navigate(`/dashboard/shipmentsStartup/pending/${shipment.id}`);
-    } else if (shipment.status === 'On Transit') {
+    } else if (shipment.status === ('In Transit') ) {
       navigate(`/dashboard/shipmentsStartup/transit/${shipment.id}`);
     } else if (shipment.status === 'Delivered') {
       navigate(`/dashboard/shipmentsStartup/shipment/${shipment.id}`);
