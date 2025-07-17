@@ -4,13 +4,16 @@ import {
   IoIosTimer,
 } from "react-icons/io"
 import { PiWarningCircle } from "react-icons/pi";
+import { useNavigate } from 'react-router-dom';
 
-export default function ShipmentCard({ shipment, onClick }) {
+export default function ShipmentCard({ shipment }) {
+    const navigate = useNavigate();
+
   const getStatusIcon = (status) => {
     switch (status) {
       case 'Delivered':
         return <IoIosCheckmarkCircleOutline className="bg-[#B1F7CB] text-[#1CA651] text-lg mr-1" />
-      case 'On Transit':
+      case 'In Transit':
         return <IoIosTimer className="bg-[#FFE1CD] text-[#DF6109] text-lg mr-1" />
       case 'Pending':
         return <PiWarningCircle className="bg-[#FEEDAA] text-[#C5A30D] text-lg mr-1" />
@@ -23,7 +26,7 @@ export default function ShipmentCard({ shipment, onClick }) {
     switch (status) {
       case 'Delivered':
         return 'bg-[#B1F7CB] text-[#1CA651]'
-      case 'On Transit':
+      case 'In Transit':
         return 'bg-[#FFE1CD] text-[#DF6109]'
       case 'Pending':
         return 'bg-[#FEEDAA] text-[#C5A30D]'
@@ -31,17 +34,25 @@ export default function ShipmentCard({ shipment, onClick }) {
         return 'bg-gray-100 text-gray-700'
     }
   }
-
+  const handleCardClick = () => {
+    if (shipment.status === 'Pending') {
+      navigate(`/dashboardShipping/shipmentsShipping/Pending/${shipment.id}`);
+    } else if (shipment.status === ('In Transit') ) {
+      navigate(`/dashboardShipping/shipmentsShipping/transit/${shipment.id}`);
+    } else if (shipment.status === 'Delivered') {
+      navigate(`/dashboardShipping/shipmentsShipping/shipment/${shipment.id}`);
+    }
+  };
   return (
     <div
-      onClick={onClick} // نستخدم onClick الممرر من الأب
+      onClick={handleCardClick} 
       style={{ borderColor: "#B0B6C4" }}
       className="cursor-pointer border rounded-lg p-4 shadow-xs hover:shadow-sm transition"
     >
       <div className="flex justify-between items-center">
         <p className="font-normal text-xl text-slate-800">ID #{shipment.id}</p>
 
-        <span className={`flex items-center gap-1 text-sm px-5 py-3 rounded-sm w-[140px]
+        <span className={`flex items-center gap-1 text-sm px-5 py-3 rounded-sm w-[140px] 
           ${getStatusColor(shipment.status)}`}>
           {getStatusIcon(shipment.status)}
           {shipment.status}
@@ -49,13 +60,11 @@ export default function ShipmentCard({ shipment, onClick }) {
       </div>
 
       <p className="text-gray-500 text-sm">
-        {shipment.status && `${
-          new Date(shipment.requestDate).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-          })
-        }`}
+        {shipment.requestedPickupDate && new Date(shipment.requestedPickupDate).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        })}
       </p>
     </div>
   )

@@ -95,7 +95,7 @@ export default function OnTransitStartupShipment() {
           {/* Track Button */}
           <div className="pt-2">
             <button
-              onClick={() => navigate(`/dashboardShipping/track/${shipment.id}`)}
+              onClick={() => navigate(`/dashboardShipping/track/${shipment.id}`)}  // <- company + startup Tracking shipment
               className="flex items-center gap-x-1 bg-[#F26C1D] text-white px-6 py-2 rounded-full text-sm font-medium"
             >
               <svg width="25" height="25" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">

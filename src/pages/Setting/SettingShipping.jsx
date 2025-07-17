@@ -3,12 +3,14 @@ import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import defaultAvatar from '../../assets/AvatarNav.jpg';
+import { useNavigate } from 'react-router-dom';
 
 function SettingShipping() {
-  const { register, handleSubmit, reset } = useForm();
+  const { register, handleSubmit, reset , watch} = useForm();
   const [profileImageUrl, setProfileImageUrl] = useState('');
   const [phoneValue, setPhoneValue] = useState('');
   const [userId, setUserId] = useState('');
+  const navigate = useNavigate();
 
   const convertToBase64 = (file) => {
     return new Promise((resolve, reject) => {
@@ -120,11 +122,12 @@ function SettingShipping() {
             <h2 className="text-2xl font-bold text-[#10233E]">Shipping Company</h2>
             <p className="text-sm text-[#6B7280] mb-2">Manage your information</p>
             <button
-              type="button"
-              className="bg-[#F9751C] px-5 py-2 hover:bg-[#e5670f] text-white rounded-full text-sm font-semibold"
-            >
-              Change Password
-            </button>
+  type="button"
+  className="bg-[#F9751C] px-5 py-2 hover:bg-[#e5670f] text-white rounded-full text-sm font-semibold"
+  onClick={() => navigate('/forgot-password', { state: { email: watch('email') } })}
+>
+  Change Password
+</button>
           </div>
         </div>
 

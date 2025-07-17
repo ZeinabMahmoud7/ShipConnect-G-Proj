@@ -69,6 +69,10 @@ function App() {
             <Route path="/register/company" element={<CompanyRegisterForm />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
 
+
+
+
+
             {/* Dashboard StartUp routes */}
             <Route path="/dashboard" element={
               <ProtectedRoute>
@@ -98,13 +102,10 @@ function App() {
               </ProtectedRoute>}>
               <Route index element={<DashboardShipping />} />
               <Route path="offersShipping" element={<OffersShipping />} /> {/* صفحة العروض */}
-            <Route path="shipping-details/:id" element={<OffersShippingDetailes />} />
-
+              <Route path="shipping-details/:id" element={<OffersShippingDetailes />} />
 
               <Route path="settingsShipping" element={<SettingShipping />} />
               <Route path="contactShipping" element={<ContactShipping />} />
-
-             
 
               <Route path="shipmentsShipping" element={<ShipmentsListShipping shipments={shipmentsShipping} setShipments={setShipmentsShipping} />} />
               <Route path="shipmentsShipping/shipment/:id" element={<DeliverShippingShipment />} />
@@ -113,17 +114,21 @@ function App() {
 
               <Route path="track/:id" element={<TrackShipment />} />
             </Route>
-                   {/* Dashboard LayoutAdmin routes */}
-               <Route path="/dashboardAdmin" element={<LayoutAdmin />}>
-                <Route index element={<DashboardAdmin />} />
-                <Route path="SettingAdmin" element={<SettingAdmin />} />
-                <Route path="Partners" element={<PartnersPage />} />
-                <Route path="shipping-details/:id" element={<ShippingProfile />} /> */}
 
-              </Route>
 
-              {/* Not Found Page */}
-              <Route path="*" element={<NotFound />} />
+
+
+            {/* Dashboard LayoutAdmin routes */}
+            <Route path="/dashboardAdmin" element={<LayoutAdmin />}>
+              <Route index element={<DashboardAdmin />} />
+              <Route path="SettingAdmin" element={<SettingAdmin />} />
+              <Route path="Partners" element={<PartnersPage />} />
+              <Route path="shipping-details/:id" element={<ShippingProfile />} />
+
+            </Route>
+
+            {/* Not Found Page */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </OffersProvider>
       </AuthProvider>

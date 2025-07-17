@@ -1,98 +1,156 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import ShipmentCard from '../../Components/ShipmentCard/ShipmentCard'
+import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+import { useAuth } from '../../Context/AuthContext';
+import ShipmentCard from '../../Components/ShipmentCard/ShipmentCard';
 
 // Icons
-import { CiSearch } from "react-icons/ci"
-import { IoMdAdd, IoIosCloseCircleOutline } from "react-icons/io"
+import { CiSearch } from 'react-icons/ci';
+import { IoMdAdd, IoIosCloseCircleOutline } from 'react-icons/io';
 import {
   IoIosCheckmarkCircleOutline,
   IoIosTimer,
   IoIosInformationCircleOutline,
-  IoIosOptions
-} from "react-icons/io";
-import { PiPackageLight } from "react-icons/pi"
+  IoIosOptions,
+} from 'react-icons/io';
+import { PiPackageLight } from 'react-icons/pi';
 
-function ShipmentsListShipping({ shipments, setShipments }) {
-  const navigate = useNavigate()
-  const [searchTerm, setSearchTerm] = useState('')
-  const [statusFilter, setStatusFilter] = useState('')
-  const [showFilter, setShowFilter] = useState(false)
+// Spinner component
+const Spinner = () => (
+  <div className="flex justify-center items-center py-8">
+    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary" style={{ borderColor: "var(--primary)" }}></div>
+  </div>
+);
 
-  const filteredShipments = (shipments || []).filter((shipment) =>
-    shipment.id.toLowerCase().includes(searchTerm.toLowerCase()) &&
-    (statusFilter === '' || shipment.status === statusFilter)
-  )
+export default function ShipmentsListShipping() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const filterRef = useRef();
+
+  const [allShipments, setAllShipments] = useState([]);
+  const [shipments, setShipments] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [showFilter, setShowFilter] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchShipments = async () => {
+      setLoading(true);
+      try {
+        const res = await axios.get(`/api/Shipment/AllShipments`, {
+          headers: { Authorization: `Bearer ${user?.token}` },
+        });
+
+        const data = res.data?.data?.data || [];
+
+        // Save all for local filtering
+        setAllShipments(data);
+      } catch (err) {
+        const msg = err.response?.data?.message || err.message;
+        toast.error(msg || 'Failed to fetch shipments');
+        console.error(msg || 'Failed to fetch shipments');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user?.token) {
+      fetchShipments();
+    }
+  }, [user]);
+
+  useEffect(() => {
+    let filtered = [...allShipments];
+
+    if (searchTerm.trim()) {
+      filtered = filtered.filter((shipment) =>
+        shipment.code?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    if (statusFilter) {
+      filtered = filtered.filter((shipment) => shipment.status === statusFilter);
+    }
+
+
+    setShipments(filtered);
+  }, [searchTerm, statusFilter, allShipments]);
+
+  // Close filter dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (filterRef.current && !filterRef.current.contains(event.target)) {
+        setShowFilter(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 space-y-5">
       <h2 className="text-2xl font-normal text-slate-800 flex items-center gap-2">
-        <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M17 31.1666C15.8412 31.1666 14.7333 30.6991 12.5191 29.7641C7.00683 27.4351 4.25 26.2692 4.25 24.31V9.91665M17 31.1666C18.1588 31.1666 19.2667 30.6991 21.4809 29.7641C26.9932 27.4351 29.75 26.2692 29.75 24.31V9.91665M17 31.1666V16.0862M8.5 17L11.3333 18.4166M24.0833 5.66665L9.91667 12.75M11.7952 13.7289L7.65708 11.7271C5.38617 10.6278 4.25 10.0781 4.25 9.20831C4.25 8.33848 5.38617 7.78881 7.65708 6.68948L11.7937 4.68773C14.3508 3.45098 15.6258 2.83331 17 2.83331C18.3742 2.83331 19.6506 3.45098 22.2048 4.68773L26.3429 6.68948C28.6138 7.78881 29.75 8.33848 29.75 9.20831C29.75 10.0781 28.6138 10.6278 26.3429 11.7271L22.2062 13.7289C19.6492 14.9656 18.3742 15.5833 17 15.5833C15.6258 15.5833 14.3494 14.9656 11.7952 13.7289Z" stroke="#1A3D65" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-        <span className='font-normal text-[28px] text-primaryBlue'>Shipments</span>
+        <PiPackageLight className="text-3xl" />
+        <span className="text-[28px] text-primaryBlue">Shipments</span>
       </h2>
 
-      {/* Search + Filter Icon */}
+      {/* Search + Filter */}
       <div className="flex items-center gap-2">
-        <div
-          style={{ borderColor: "var(--primary)" }}
-          className="flex items-center flex-1 border rounded-2xl bg-white"
-        >
-          <CiSearch style={{ color: "var(--primary)" }} className="text-xl mx-3" />
+        <div className="flex items-center flex-1 border rounded-2xl bg-white" style={{ borderColor: '#204C80' }}>
+          <CiSearch className="text-xl mx-3" style={{ color: '#204C80' }} />
           <input
             type="text"
-            placeholder="Search For ID"
+            placeholder="Search For Code"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="flex-1 py-2 pr-10 focus:outline-none"
+            className="flex-1 py-2 pr-10 rounded-2xl focus:outline-none"
           />
           {searchTerm && (
-            <button
-              onClick={() => setSearchTerm('')}
-              className="pr-3 hover:text-slate-700"
-            >
-              <IoIosCloseCircleOutline style={{ color: "var(--primary)" }} size={18} />
+            <button onClick={() => setSearchTerm('')} className="pr-3 hover:text-slate-700">
+              <IoIosCloseCircleOutline style={{ color: '#204C80' }} size={18} />
             </button>
           )}
         </div>
 
-        {/* Filter icon with dropdown */}
-        <div className="relative">
+        {/* Filter Dropdown */}
+        <div className="relative" ref={filterRef}>
           <button
             onClick={() => setShowFilter(!showFilter)}
-            className="border rounded-xl py-3 px-4"
-            style={{ borderColor: "var(--primary)", color: "var(--primary)" }}
+            className="border rounded-xl py-3 px-4 transition text-sm font-medium hover:bg-blue-50"
+            style={{ borderColor: '#204C80', color: '#204C80' }}
           >
             <IoIosOptions size={18} />
           </button>
 
           {showFilter && (
-            <div style={{ borderColor: "#B0B6C4" }} className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg z-20">
-              <button
-                onClick={() => { setStatusFilter(''); setShowFilter(false) }}
-                className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
-              >
-                <IoIosOptions className='' /><span>All</span>
-              </button>
-              <button
-                onClick={() => { setStatusFilter('Delivered'); setShowFilter(false) }}
-                className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
-              >
-                <IoIosCheckmarkCircleOutline className="text-green-500" /> Delivered
-              </button>
-              <button
-                onClick={() => { setStatusFilter('On Transit'); setShowFilter(false) }}
-                className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
-              >
-                <IoIosTimer className="text-blue-500" /> On Transit
-              </button>
-              <button
-                onClick={() => { setStatusFilter('Pending'); setShowFilter(false) }}
-                className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
-              >
-                <IoIosInformationCircleOutline className="text-yellow-500" /> Pending
-              </button>
+            <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg z-20 overflow-hidden">
+              {[
+                { label: 'All', value: '', icon: <IoIosOptions /> },
+                { label: 'Delivered', value: 'Delivered', icon: <IoIosCheckmarkCircleOutline className="text-green-500" /> },
+                { label: 'In Transit', value: 'In Transit', icon: <IoIosTimer className="text-blue-500" /> },
+                { label: 'Pending', value: 'Pending', icon: <IoIosInformationCircleOutline className="text-yellow-500" /> }
+              ]
+                .map(({ label, value, icon }) => (
+                  <button
+                    key={label}
+                    onClick={() => {
+                      setStatusFilter(value);
+                      setShowFilter(false);
+                    }}
+                    className={`
+                                  w-full flex items-center gap-2 px-4 py-2 text-left
+                                  transition-all duration-200 ease-in-out
+                                  ${statusFilter === value
+                        ? 'bg-blue-100 text-blue-700 font-semibold'
+                        : 'hover:bg-slate-100 text-gray-800'
+                      }
+                              `}
+                  > {icon}
+                    <span>{label}</span>
+                  </button>
+                ))}
             </div>
           )}
         </div>
@@ -100,42 +158,44 @@ function ShipmentsListShipping({ shipments, setShipments }) {
 
       {/* Shipment List */}
       <div className="space-y-3">
-        {filteredShipments.length > 0 ? (
-          filteredShipments.map((shipment) => (
-            <ShipmentCard
-              key={shipment.id}
-              shipment={shipment}
-              onClick={() => {
-                console.log("ffffffffffffff", shipment.status);
-                if (shipment.status === 'Delivered') {
-                  navigate(`/dashboardShipping/shipmentsShipping/shipment/${shipment.id}`);
-                } else if (shipment.status === 'On Transit') {
-                  navigate(`/dashboardShipping/shipmentsShipping/transit/${shipment.id}`);
-                } else if (shipment.status === 'Pending') {
-                  navigate(`/dashboardShipping/shipmentsShipping/Pending/${shipment.id}`);
-                }
+        {loading ? (
+          <Spinner />
+        ) : shipments.length > 0 ? (
+          shipments // updated to show only (delivered, pending, transit) status
+            .filter(shipment =>
+              ['Delivered', 'In Transit', 'Pending'].includes(shipment.status)
+            )
+            .map((shipment) => (
+              <ShipmentCard
+                key={shipment.id}
+                shipment={shipment}
+                onClick={() => {
+                  const s = shipment.status;
+                  if (s === 'Delivered') navigate(`/dashboardShipping/shipmentsShipping/shipment/${shipment.id}`);
+                  else if (s === 'In Transit') navigate(`/dashboardShipping/shipmentsShipping/transit/${shipment.id}`);
+                  else if (s === 'Pending') navigate(`/dashboardShipping/shipmentsShipping/Pending/${shipment.id}`);
+                }}
+              />
+            ))
 
-              }}
-            />
-
-
-          ))
         ) : (
-          <p className="text-gray-500 italic mt-4">No shipments found with that ID or status.</p>
+          <div className="text-center py-8">
+            <p className="text-gray-500 italic">No shipments found</p>
+            {(searchTerm || typeof statusFilter === 'number') && (
+              <button
+                onClick={() => {
+                  setSearchTerm('');
+                  setStatusFilter(undefined);
+                }}
+                className="mt-2 text-blue-500 hover:underline"
+              >
+                Clear search/filter
+              </button>
+            )}
+          </div>
         )}
       </div>
 
-      {/* Add Button */}
-      <div className="flex justify-end pt-4">
-        <button
-          onClick={() => navigate('/dashboard/add-shipment')}
-          style={{ backgroundColor: "var(--primary)" }}
-          className="flex items-center gap-2 px-12 cursor-pointer py-2 rounded-full text-white font-semibold transition"
-        >
-          <IoMdAdd className='text-xl' /> Add Shipment
-        </button>
-      </div>
     </div>
-  )
+  );
 }
-export default ShipmentsListShipping

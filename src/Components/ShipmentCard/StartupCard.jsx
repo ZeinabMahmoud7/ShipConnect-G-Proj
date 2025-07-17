@@ -54,7 +54,8 @@ export default function StartupCard({ shipment }) {
       <div className="flex justify-between items-center">
         <p className="font-normal text-xl text-slate-800">ID #{shipment.id}</p>
 
-        <span className={`flex items-center gap-1 text-sm px-5 py-3 rounded-sm w-[140px] ${getStatusColor(shipment.status)}`}>
+        <span className={`flex items-center gap-1 text-sm px-5 py-3 rounded-sm w-[140px] 
+          ${getStatusColor(shipment.status)}`}>
           {getStatusIcon(shipment.status)}
           {shipment.status}
         </span>

@@ -1,13 +1,14 @@
-import { FaChevronLeft } from 'react-icons/fa6';
-import { IoIosCheckmarkCircleOutline } from 'react-icons/io';
-import { FaRegCommentDots, FaPaperPlane } from 'react-icons/fa';
-import { BsStarFill } from 'react-icons/bs';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import styles from '../../styles/Details.module.css';
 import { useAuth } from '../../Context/AuthContext';
 import toast from 'react-hot-toast';
+import { FaChevronLeft } from 'react-icons/fa6';
+import { IoIosCheckmarkCircleOutline } from 'react-icons/io';
+import { FaRegCommentDots, FaPaperPlane } from 'react-icons/fa';
+import { BsStarFill } from 'react-icons/bs';
+
 
 export default function DeliverStartupShipment() {
     const navigate = useNavigate();
@@ -106,7 +107,7 @@ export default function DeliverStartupShipment() {
                             </div>
                             <div>
                                 <p className="text-[#10233E99] mb-1">Shipping Cost</p>
-                                <p className="font-bold">{shipmentData.price ?? 0} EGP</p>
+                                <p className="font-bold">${shipmentData.price ?? 0}</p>
                             </div>
                             <div>
                                 <p className="text-[#10233E99] mb-1">Tracking Number</p>
@@ -126,7 +127,7 @@ export default function DeliverStartupShipment() {
                             </div>
                             <div>
                                 <p className="text-[#10233E99] mb-1">Delivery Date</p>
-                                <p className="font-bold">
+                                <p className="font-bold"> Delivered:
                                     {shipmentData.deliveryDate
                                         ? new Date(shipmentData.deliveryDate).toLocaleDateString()
                                         : 'N/A'}

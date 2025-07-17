@@ -83,7 +83,6 @@ export default function ShipmentsListStartUp() {
     }
   }, [searchTerm, statusFilter, user]);
 
-
   // Filter on search or status
   useEffect(() => {
     let filtered = allShipments;
@@ -100,6 +99,7 @@ export default function ShipmentsListStartUp() {
 
     setShipments(filtered);
   }, [searchTerm, statusFilter, allShipments]);
+
   // Close filter when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -113,6 +113,7 @@ export default function ShipmentsListStartUp() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 space-y-5">
       <h2 className="text-2xl font-normal text-slate-800 flex items-center gap-2">
@@ -128,7 +129,7 @@ export default function ShipmentsListStartUp() {
             placeholder="Search For Code"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full py-2 pr-10 focus:outline-none rounded-2xl"
+            className="w-full py-2 pr-10 focus:outline-none"
           />
           {searchTerm && (
             <button onClick={() => setSearchTerm('')} className="pr-3 hover:text-slate-700">
@@ -143,8 +144,8 @@ export default function ShipmentsListStartUp() {
             onClick={() => setShowFilter(!showFilter)}
             className="border rounded-xl py-3 px-4 transition text-sm font-medium hover:bg-blue-50"
             style={{
-              borderColor: "var(--primary)",
-              color: "var(--primary)"
+              borderColor: "#204C80",
+              color: "#204C80"
             }}
           >
             <IoIosOptions size={18} />
@@ -165,15 +166,14 @@ export default function ShipmentsListStartUp() {
                     setShowFilter(false);
                   }}
                   className={`
-            w-full flex items-center gap-2 px-4 py-2 text-left
-            transition-all duration-200 ease-in-out
-            ${statusFilter === value
+                      w-full flex items-center gap-2 px-4 py-2 text-left
+                      transition-all duration-200 ease-in-out
+                      ${statusFilter === value
                       ? 'bg-blue-100 text-blue-700 font-semibold'
                       : 'hover:bg-slate-100 text-gray-800'
                     }
-          `}
-                >
-                  {icon}
+                  `}
+                  > {icon}
                   <span>{label}</span>
                 </button>
               ))}
@@ -197,9 +197,9 @@ export default function ShipmentsListStartUp() {
                 shipment={shipment}
                 onClick={() => {
                   const s = shipment.status;
-                  if (s === 'Delivered') navigate(`/dashboardShipping/shipmentsShipping/shipment/${shipment.id}`);
-                  else if (s === 'On Transit') navigate(`/dashboardShipping/shipmentsShipping/transit/${shipment.id}`);
-                  else if (s === 'Pending') navigate(`/dashboardShipping/shipmentsShipping/Pending/${shipment.id}`);
+                  if (s === 'Delivered') navigate(`/dashboard/shipmentsStartup/shipment/${shipment.id}`);
+                  else if (s === 'In Transit') navigate(`/dashboard/shipmentsStartup/transit/${shipment.id}`);
+                  else if (s === 'Pending') navigate(`/dashboard/shipmentsStartup/pending/${shipment.id}`);
                 }}
               />
             ))
