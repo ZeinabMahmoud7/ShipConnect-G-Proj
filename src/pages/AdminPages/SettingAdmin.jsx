@@ -18,6 +18,37 @@ function SettingAdmin() {
       reader.onerror = (error) => reject(error);
     });
   };
+     
+const fetchStartUpProfile = async () => {
+
+  try {
+    const token = localStorage.getItem('token');
+         const id = 2; // ID ثابت للتجربة
+         console.log(typeof id);
+  const res = await axios.get(`/api/Rating/CompanyRates/${2}`|| "", {
+  headers: { Authorization: `Bearer ${token}` },
+});
+
+    
+    const data = res.data;
+    console.log('✅ StartUp Profile:', data);
+
+    toast.success('✅ StartUpProfile fetched successfully!');
+  }
+  
+  catch (err) {
+    console.error('❌ Failed to fetch StartUpProfile', err);
+    if (err.response) {
+      toast.error(`❌ Error ${err.response.status}: ${err.response.data.message || 'Server error'}`);
+    } else {
+      toast.error('❌ Network error or invalid request');
+    }
+  }
+};
+
+useEffect(() => {
+  fetchStartUpProfile();
+}, []);
 
   // ✅ جلب بيانات الأدمن
   const fetchAdminData = async () => {

@@ -3,7 +3,6 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
-// lucide-react icons (only a few actually used; keep others if you need later)
 import {
   Mail,
   Phone,
@@ -18,31 +17,55 @@ import {
 export default function ShippingProfile() {
   const navigate = useNavigate();
   const { id } = useParams(); // يمسك الـ id من الـ URL
+  const numericId = parseInt(id, 10);
+  console.log(typeof id , typeof numericId);
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+console.log("idparam",id);
+    const token = localStorage.getItem("token");
+    console.log("tooken",token);
+useEffect(() => {
+  const fetchProfile = async () => {
+    try {
+      setLoading(true);
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        setLoading(true);
-        const token = localStorage.getItem("token");
-        const res = await axios.get(`/api/ShippingCompany/CompanyProfile/${id}` || "", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setProfileData(res?.data?.data ?? null);
-      } catch (err) {
-        console.error("❌ Error fetching company profile", err);
-        setError("تعذر جلب بيانات الشركة");
-      } finally {
+      // تأمين: لو الـ id مش رقم صالح
+      if (Number.isNaN(numericId)) {
+        setError("Invalid ID.");
         setLoading(false);
+        return;
       }
-    };
 
-    fetchProfile();
-  }, [id]);
+  
+      
+      const res = await axios.get(`/api/StartUp/StartUpProfile/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setProfileData(res?.data?.data ?? null);
+    } catch (err) {
+      console.error("❌ Error fetching company profile start:", err);
+      if (err.response) {
+        const status = err.response.status;
+        const message =
+          err.response.data?.message || "Server error, please try again later.";
+        setError(`Error (${status}): ${message}`);
+      } else if (err.request) {
+        setError("No response from server. Please check your internet connection.");
+      } else {
+        setError(`Request setup error: ${err.message}`);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchProfile();
+  // 👇 فاضية: تشغّل المرة الأولى فقط
+}, []);
+
+
 
   const transportTypeMap = {
     0: "Both",
@@ -127,19 +150,20 @@ function InfoItem({ label, value, Icon }) {
     );
   }
 
-  if (error) {
-    return (
-      <div className="min-h-screen p-6 text-[#111827] font-sans flex flex-col items-center justify-center gap-4">
-        <p className="text-red-600 font-semibold">{error}</p>
-        <button
-          onClick={() => navigate(-1)}
-          className="px-4 py-2 rounded-md bg-[#204C80] text-white text-sm font-bold hover:opacity-90"
-        >
-          رجوع
-        </button>
-      </div>
-    );
-  }
+if (error) {
+  return (
+    <div className="min-h-screen p-6 text-[#111827] font-sans flex flex-col items-center justify-center gap-4">
+      <p className="text-red-600 font-semibold">{error}</p>
+      <button
+        onClick={() => navigate(-1)}
+        className="px-4 py-2 rounded-md bg-[#204C80] text-white text-sm font-bold hover:opacity-90"
+      >
+        رجوع
+      </button>
+    </div>
+  );
+}
+
 
   return (
     <div className="min-h-screen p-6 text-[#111827] font-sans">
@@ -239,11 +263,10 @@ function InfoItem({ label, value, Icon }) {
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mb-8"
         /* NOTE: عند 5 عناصر هيترتبوا 3 فوق + 2 تحت تلقائياً */
       >
-        <InfoItem label="Transport Type" value={safeData.transportTypeLabel} Icon={Truck} />
+        <InfoItem label="Business Category" value={safeData.transportTypeLabel} Icon={Truck} />
         <InfoItem label="Website Link" value={safeData.website} Icon={Globe} />
         <InfoItem label="Tax ID" value={safeData.taxId} Icon={IdCard} />
-        <InfoItem label="License Number" value={safeData.licenseNumber} Icon={Hash} />
-        <InfoItem label="Shipping Scope" value={safeData.shippingScopeLabel} Icon={Building2} />
+     
       </div>
     </div>
   );

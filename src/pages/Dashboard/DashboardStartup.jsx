@@ -175,7 +175,7 @@ useEffect(() => {
 
       const formatted = res.data.data.data.map((notif, index) => {
   let icon = File;
-  let borderColor = "#D1D5DC";
+  let borderColor = "#F9751C";
   let iconColor = "#6B7280";
 
   if (notif.notificationType === 1) {
@@ -188,7 +188,7 @@ useEffect(() => {
     iconColor = "#F9751C";
   } else if (notif.notificationType === 3) {
     icon = Message;
-    borderColor = "#21CF61";
+    borderColor = "#F9751C";
     iconColor = "#204C80";
   }
 

@@ -97,23 +97,16 @@ useEffect(() => {
             <span className="font-bold text-[28px] text-primaryBlue">Sender Data (Startup)</span>
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 text-sm">
-            <div className='my-4'>
-              <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Startup Name</p>
-               <p className="font-bold text-[#10233E] text-[20px]"> {shipmentDetails?.data?.companyName || "N/A"}</p>
-               
-            </div>
+        
             <div className='my-4'>
               <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Phone Number</p>
               <p className="font-bold text-[#10233E] text-[20px]">+012004040598</p>
             </div>
             <div className='my-4'>
-              <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Destination Address</p>
-              <p className="font-bold text-[#10233E] text-[20px]">  {shipmentDetails?.data?.destinationAddress || "N/A"}</p>
+              <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Sender Address</p>
+              <p className="font-bold text-[#10233E] text-[20px]">  {shipmentDetails?.data?.senderAddress || "N/A"}</p>
             </div>
-            <div className='my-4'>
-              <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Email</p>
-              <p className="font-bold text-[#10233E] text-[20px]">companyname@gmail.com</p>
-            </div>
+         
           </div>
         </div>
 
@@ -132,13 +125,10 @@ useEffect(() => {
               <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Startup Name</p>
               <p className="font-bold text-[#10233E] text-[20px]">SwiftLogistic</p>
             </div>
-            <div className='my-4'>
-              <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Phone Number</p>
-              <p className="font-bold text-[#10233E] text-[20px]">+09172971271298</p>
-            </div>
+        
             <div className='my-4'>
               <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Destination Address</p>
-              <p className="font-bold text-[#10233E] text-[20px]">22 Nile St., Giza, Egypt</p>
+              <p className="font-bold text-[#10233E] text-[20px]">{shipmentDetails?.data?.destinationAddress || "N/A"}</p>
             </div>
             <div className='my-4'>
               <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Email</p>
@@ -148,53 +138,80 @@ useEffect(() => {
         </div>
 
         {/* Shipment Data */}
-        <div className="mb-8">
-          <h2 className="text-lg font-semibold text-[#204C80] flex items-center space-x-2">
-            <span><svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M19 34.8334C17.7048 34.8334 16.4667 34.3109 13.9919 33.2659C7.83117 30.6629 4.75 29.3598 4.75 27.1701V11.0834M19 34.8334C20.2952 34.8334 21.5333 34.3109 24.0081 33.2659C30.1688 30.6629 33.25 29.3598 33.25 27.1701V11.0834M19 34.8334V17.9788M9.5 19.0001L12.6667 20.5834M26.9167 6.33341L11.0833 14.2501M13.1828 15.3442L8.55792 13.1069C6.01983 11.8782 4.75 11.2639 4.75 10.2917C4.75 9.31958 6.01983 8.70525 8.55792 7.47658L13.1812 5.23933C16.0392 3.85708 17.4642 3.16675 19 3.16675C20.5358 3.16675 21.9624 3.85708 24.8172 5.23933L29.4421 7.47658C31.9802 8.70525 33.25 9.31958 33.25 10.2917C33.25 11.2639 31.9802 11.8782 29.4421 13.1069L24.8188 15.3442C21.9608 16.7264 20.5358 17.4167 19 17.4167C17.4642 17.4167 16.0376 16.7264 13.1828 15.3442Z" stroke="#204C80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-</span>
-            <span className="font-bold text-primaryBlue text-[28px]">Shipment Data</span>
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 text-sm">
-            <div className='my-4'>
-              <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Shipment Type</p>
-              <p className="font-bold text-[#10233E] text-[20px]"> {shipmentDetails?.data?.shipmentType || "N/A"}</p>
-            </div>
-            <div className='my-4'>
-              <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Quantity</p>
-              <p className="font-bold text-[#10233E] text-[20px]"> {shipmentDetails?.data?.quantity || "N/A"} boxes</p>
-            </div>
-            <div className='my-4'>
-              <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Weight</p>
-              <p className="font-bold text-[#10233E] text-[20px]">  {shipmentDetails?.data?.weightKg || "N/A"} kg</p>
-            </div>
-            <div className='my-4'>
-              <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Preferred Delivery Date</p>
-              <p className="font-bold text-[#10233E] text-[20px]"> {shipmentDetails?.data?.requestedPickupDate?.slice(0, 10) || "N/A"}</p>
-            </div>
-            <div className='my-4'>
-              <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Shipping Speed</p>
-              <p className="font-bold text-[#10233E] text-[20px]">Express</p>
-            </div>
-            <div className='my-4'>
-              <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Budget Range</p>
-              <p className="font-bold text-[#10233E] text-[20px]"> {shipmentDetails?.data?.price ? `$${shipmentDetails.data.price}` : "N/A"}</p>
-            </div>
-            <div className='my-4'>
-              <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Preferred Vehicle Type</p>
-              <p className="font-bold text-[#10233E] text-[20px]">Small Van</p>
-            </div>
-            <div className='my-4'>
-              <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Packaging Options</p>
-              <p className="font-bold text-[#10233E] text-[20px]">  {shipmentDetails?.data?.packagingOptions || "N/A"}</p>
-            </div>
-            <div className="md:col-span-2">
-              <p className="text-[#10233E99] text-[20px] mb-3 font-normal">Dimensions (L×W×H)</p>
-              <p className="font-bold text-[#10233E] text-[20px]">  {shipmentDetails?.data?.dimensions?.replace(/x/g, ' × ') || "N/A"}</p>
-            </div>
-          </div>
-        </div>
+      <div className="mb-8">
+  <h2 className="text-lg font-semibold text-[#204C80] flex items-center space-x-2">
+    <span>
+      <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M19 34.8334C17.7048 34.8334 16.4667 34.3109 13.9919 33.2659C7.83117 30.6629 4.75 29.3598 4.75 27.1701V11.0834M19 34.8334C20.2952 34.8334 21.5333 34.3109 24.0081 33.2659C30.1688 30.6629 33.25 29.3598 33.25 27.1701V11.0834M19 34.8334V17.9788M9.5 19.0001L12.6667 20.5834M26.9167 6.33341L11.0833 14.2501M13.1828 15.3442L8.55792 13.1069C6.01983 11.8782 4.75 11.2639 4.75 10.2917C4.75 9.31958 6.01983 8.70525 8.55792 7.47658L13.1812 5.23933C16.0392 3.85708 17.4642 3.16675 19 3.16675C20.5358 3.16675 21.9624 3.85708 24.8172 5.23933L29.4421 7.47658C31.9802 8.70525 33.25 9.31958 33.25 10.2917C33.25 11.2639 31.9802 11.8782 29.4421 13.1069L24.8188 15.3442C21.9608 16.7264 20.5358 17.4167 19 17.4167C17.4642 17.4167 16.0376 16.7264 13.1828 15.3442Z"
+          stroke="#204C80" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+        />
+      </svg>
+    </span>
+    <span className="font-bold text-primaryBlue text-[28px]">Shipment Data</span>
+  </h2>
+
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 text-sm">
+    <div className="my-4">
+      <p className="text-[#10233E99] text-[20px] mb-3">Shipment Type</p>
+      <p className="font-bold text-[#10233E] text-[20px]">{shipmentDetails?.data?.shipmentType || "N/A"}</p>
+    </div>
+    <div className="my-4">
+      <p className="text-[#10233E99] text-[20px] mb-3">Weight</p>
+      <p className="font-bold text-[#10233E] text-[20px]">{shipmentDetails?.data?.weightKg} kg</p>
+    </div>
+
+    <div className="my-4">
+      <p className="text-[#10233E99] text-[20px] mb-3">Dimensions (L×W×H)</p>
+      <p className="font-bold text-[#10233E] text-[20px]">{shipmentDetails?.data?.dimensions?.replace(/x/gi, ' × ') || "N/A"} cm</p>
+    </div>
+    <div className="my-4">
+      <p className="text-[#10233E99] text-[20px] mb-3">Code</p>
+      <p className="font-bold text-[#10233E] text-[20px]">{shipmentDetails?.data?.code}</p>
+    </div>
+
+    <div className="my-4">
+      <p className="text-[#10233E99] text-[20px] mb-3">Send Date</p>
+      <p className="font-bold text-[#10233E] text-[20px]">{shipmentDetails?.data?.sentDate?.slice(0,10) || "N/A"}</p>
+    </div>
+    <div className="my-4">
+      <p className="text-[#10233E99] text-[20px] mb-3">Quantity</p>
+      <p className="font-bold text-[#10233E] text-[20px]">{shipmentDetails?.data?.quantity} boxes</p>
+    </div>
+
+    <div className="my-4">
+      <p className="text-[#10233E99] text-[20px] mb-3">Budget Range</p>
+      <p className="font-bold text-[#10233E] text-[20px]">${shipmentDetails?.data?.price}</p>
+    </div>
+    <div className="my-4">
+      <p className="text-[#10233E99] text-[20px] mb-3">Preferred Delivery Date</p>
+      <p className="font-bold text-[#10233E] text-[20px]">{shipmentDetails?.data?.requestedPickupDate?.slice(0,10) || "N/A"}</p>
+    </div>
+
+    <div className="my-4">
+      <p className="text-[#10233E99] text-[20px] mb-3">Offer Count</p>
+      <p className="font-bold text-[#10233E] text-[20px]">{shipmentDetails?.data?.offersCount}</p>
+    </div>
+    <div className="my-4">
+      <p className="text-[#10233E99] text-[20px] mb-3">Packaging Options</p>
+      <p className="font-bold text-[#10233E] text-[20px]">{shipmentDetails?.data?.packagingOptions}</p>
+    </div>
+
+    <div className="my-4">
+      <p className="text-[#10233E99] text-[20px] mb-3">Shipping Scope</p>
+      <p className="font-bold text-[#10233E] text-[20px]">{shipmentDetails?.data?.shippingScope}</p>
+    </div>
+    <div className="my-4">
+      <p className="text-[#10233E99] text-[20px] mb-3">Transport Type</p>
+      <p className="font-bold text-[#10233E] text-[20px]">{shipmentDetails?.data?.transportType}</p>
+    </div>
+
+    <div className="md:col-span-2 my-4">
+      <p className="text-[#10233E99] text-[20px] mb-3">Description</p>
+      <p className="font-bold text-[#10233E] text-[20px]">{shipmentDetails?.data?.description}</p>
+    </div>
+  </div>
+</div>
 
         {/* Add Offer Button */}
         <div className="flex justify-center">

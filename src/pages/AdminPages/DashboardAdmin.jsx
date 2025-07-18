@@ -252,7 +252,7 @@ useEffect(() => {
 
 
 
-   const userName=localStorage.getItem("userNameShipping");
+   const userName=localStorage.getItem("userNameAdmin");
     const rate =3.9;
   return (
     <div className="min-h-screen">
