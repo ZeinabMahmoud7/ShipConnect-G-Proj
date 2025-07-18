@@ -8,7 +8,9 @@ import { FaChevronLeft } from 'react-icons/fa6';
 import { IoIosCheckmarkCircleOutline } from 'react-icons/io';
 import { FaRegCommentDots, FaPaperPlane } from 'react-icons/fa';
 import { BsStarFill } from 'react-icons/bs';
-
+import {
+  PiRocketLight, PiPackageLight,
+} from "react-icons/pi";
 
 export default function DeliverStartupShipment() {
     const navigate = useNavigate();
@@ -98,6 +100,23 @@ export default function DeliverStartupShipment() {
 
                 {/* Main Card */}
                 <div className="bg-white rounded-2xl shadow p-4 sm:p-6 space-y-6">
+                    {/* Sender Info */}
+                            <div className="space-y-4 mb-15">
+                              <h3 className="text-lg font-bold text-[#1A3D65] flex gap-2 items-center">
+                                <PiRocketLight className='text-xl' /> Sender Information
+                              </h3>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                
+                                  <div >
+                                    <label className="block mb-1 text-[#204C80]">label
+                                      <span className="text-xs text-[#3C4EC3] pl-1">*</span>
+                                    </label>
+                                    <div className="flex items-center border border-[#255C9C] rounded-2xl p-3 mt-1">
+                                      some data here
+                                    </div>
+                                  </div>
+                              </div>
+                            </div>
                     {/* Info Grid */}
                     <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-sm w-full text-[#10233E]">
