@@ -20,21 +20,22 @@ export default function ShippingDetailes() {
         const numericId = parseInt(id, 10);
 const [feedbacks, setFeedbacks] = useState([]);
 useEffect(() => {
-  const fetchFeedbacks = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get(`/api/Rating/CompanyRates/${numericId}?pageNumber=1&pageSize=3`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+ const fetchFeedbacks = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const res = await axios.get(`/api/Rating/CompanyRates/${2}?pageNumber=1&pageSize=3`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
-      console.log("✅ Feedback API Response:", res.data);
+    console.log("✅ Feedback API Response:", res.data);
 
-      const data = res?.data?.data || [];
-      setFeedbacks(data);
-    } catch (error) {
-      console.error("❌ Error fetching feedbacks:", error.response || error.message);
-    }
-  };
+    const feedbackArray = res?.data?.data?.data || [];
+    setFeedbacks(feedbackArray);
+  } catch (error) {
+    console.error("❌ Error fetching feedbacks:", error.response || error.message);
+  }
+};
+
 
   fetchFeedbacks();
 }, [id]);
@@ -56,7 +57,7 @@ const Star = () => (
   const fetchShippingScopeCount = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get(`/api/Offer/companyOffers/${numericId}`, {
+      const res = await axios.get(`/api/Offer/companyOffers/${2}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -81,7 +82,7 @@ const Star = () => (
   const fetchShipmentStatus = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get(`/api/Shipment/Admin/ShippingCount/${numericId}`, {
+      const res = await axios.get(`/api/Shipment/Admin/ShippingCount/${2}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
      console.log("try",res.data);
@@ -107,7 +108,7 @@ const Star = () => (
     // السيرفر رد برد لكن فيه مشكلة (مثل 400, 401, 500)
     console.error("❌ API Error Response:");
     console.error("Status:", error.response.status);
-    console.error("Headers:", error.response.headers);
+    console.error("Headers shhhaaaapments:", error.response.headers);
     console.error("Data:", error.response.data);
   } else if (error.request) {
     // الطلب اتبعت لكن السيرفر ما ردش
@@ -359,41 +360,43 @@ function InfoItem({ label, value, Icon }) {
  Feedbacks from startups</h3>
       <section className="">
       {/* الكروت */}
-      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-        {feedbacks.map((item, index) => (
-
-          <div
-            key={index}
-            className="bg-[#F3F4F6] px-[16px] py-[20px] rounded-xl shadow-sm p-6 flex flex-col justify-between"
-          >
-            <div>
-              {/* النجوم */}
-              <div className="flex gap-[2px] mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} />
-                ))}
-              </div>
-              {/* النص */}
-              <p className="text-[#101828BF] text-[20px] leading-relaxed">
-                "{t.feedback}"
-              </p>
-            </div>
-
-            {/* الشخص */}
-            <div className="flex items-center mt-6">
-              <img
-                src={t.image}
-                alt={t.name}
-                className="w-10 h-10 rounded-full mr-4"
-              />
-              <div>
-                <p className="font-bold text-[#000000] text-[16px]">{t.name}</p>
-                <p className="text-sm text-[#99A1AF]">{t.title}</p>
-              </div>
-            </div>
+     <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+  {feedbacks.length > 0 ? (
+    feedbacks.map((item, index) => (
+      <div
+        key={index}
+        className="bg-[#F3F4F6] px-[16px] py-[20px] rounded-xl shadow-sm flex flex-col justify-between"
+      >
+        <div>
+          {/* النجوم */}
+          <div className="flex gap-[2px] mb-4">
+            {[...Array(item.score)].map((_, i) => <Star key={i} />)}
           </div>
-        ))}
+          {/* النص */}
+          <p className="text-[#101828BF] text-[16px] leading-relaxed">
+            "{item.comment}"
+          </p>
+        </div>
+
+        {/* الشخص */}
+        <div className="flex items-center mt-6">
+          <img
+            src={item.imageUrl || "/images/default-user.png"}
+            alt={item.startUpName}
+            className="w-10 h-10 rounded-full mr-4"
+          />
+          <div>
+            <p className="font-bold text-[#000000] text-[16px]">{item.startUpName}</p>
+            <p className="text-sm text-[#99A1AF]">{item.shipmentCode}</p>
+          </div>
+        </div>
       </div>
+    ))
+  ) : (
+    <p className="text-gray-500">No feedback available</p>
+  )}
+</div>
+
     </section>
     </div>
   );

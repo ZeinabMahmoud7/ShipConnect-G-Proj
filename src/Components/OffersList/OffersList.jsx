@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircle, CheckCircle, XCircle, Search } from 'lucide-react';
-import PaymentModal from '../PaymentModal';
+import PaymentModal from '../PaymentSuccess';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { jwtDecode } from "jwt-decode";
 
 export default function OffersList({ offers, approvedChats, onApprove, onConnect }) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -37,13 +38,40 @@ const navigate = useNavigate();
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-const handleConfirmPayment = (id) => {
-  alert(`Payment done for ${id}`);
-  setPayModalOfferId(null);
-navigate(`/dashboard/offers/chat/${id}`);
+const token = localStorage.getItem("token");
+const decoded = jwtDecode(token);
+const payerId = decoded.sub || decoded.id;
+console.log("paaaaaaaaaaaaayer",payerId);
+const handleConfirmPayment = async (offerId, amount) => {
+  try {
+    const payload = {
+      amount: amount,
+      offerId: offerId,
+      payerId: payerId,
+      notes: `Payment for offer ${offerId}`,
+    };
 
+    const response = await axios.post(
+      "/api/Payment/create-order",
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
+    if (response.data?.paymentUrl) {
+      window.location.href = response.data.paymentUrl; // Redirect to payment gateway
+    } else {
+      toast.error("Payment URL not returned by the server.");
+    }
+  } catch (error) {
+    console.error("❌ Error creating payment order:", error);
+    toast.error("Failed to create payment order. Please try again.");
+  }
 };
+
 
   return (
     <div className="relative px-4 sm:px-6 md:px-8 max-w-screen-xl mx-auto">
@@ -247,12 +275,13 @@ navigate(`/dashboard/offers/chat/${id}`);
   )}
 
   {approvedLocal.has(offer.offerId) && (
-    <button
-      onClick={() => setPayModalOfferId(offer.offerId)}
-      className="bg-green-600 text-white rounded-lg px-4 py-2 hover:bg-green-700 transition"
-    >
-      Pay
-    </button>
+ <button
+  onClick={() => handleConfirmPayment(offer.offerId, offer.price)}
+  className="bg-green-600 text-white rounded-lg px-4 py-2 hover:bg-green-700 transition"
+>
+  Pay
+</button>
+
   )}
 </div>
 

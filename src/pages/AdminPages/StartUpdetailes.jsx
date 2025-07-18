@@ -31,7 +31,7 @@ const [shippingSegments, setShippingSegments] = useState([]); // للـ Shipping
   const fetchShippingScopeCount = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get(`/api/Offer/companyOffers/${id}`, {
+      const res = await axios.get(`/api/Offer/companyOffers/${2}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -56,7 +56,7 @@ const [shippingSegments, setShippingSegments] = useState([]); // للـ Shipping
   const fetchShipmentStatus = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get(`/api/Shipment/Admin/ShippingCount/${id}`, {
+      const res = await axios.get(`/api/Shipment/Admin/ShippingCount/${2}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
      console.log("try",res.data);
@@ -140,7 +140,7 @@ useEffect(() => {
   const fetchShippingMethodCount = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get(`/api/Shipment/Admin/ShippingMethodCount/${id}`, {
+      const res = await axios.get(`/api/Shipment/Admin/ShippingMethodCount/${2}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -156,7 +156,7 @@ useEffect(() => {
         { label: 'Air', value: air, color: '#7EADE7' },
       ];
 
-      console.log("✅ Formatted Segments:", formattedSegments);
+     
 
       setShippingSegments(formattedSegments);
     } catch (error) {
@@ -172,7 +172,7 @@ useEffect(() => {
   const fetchShipmentStatus = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get(`/api/Shipment/Admin/StatusCount/${id}`, {
+      const res = await axios.get(`/api/Shipment/Admin/StatusCount/${2}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -207,12 +207,12 @@ useEffect(() => {
   const fetchShippingScopeCount = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get(`/api/Shipment/Admin/ShippingScopeCount/${id}`, {
+      const res = await axios.get(`/api/Shipment/Admin/ShippingScopeCount/${2}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-          console.log("😶‍🌫️",res.data.data);
+          console.log("😶‍🌫️😂😂😂",res.data.data);
       const { domestic, international } = res.data.data;
 
       const formattedSegments = [

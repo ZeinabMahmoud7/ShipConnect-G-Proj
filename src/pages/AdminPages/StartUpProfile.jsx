@@ -39,7 +39,7 @@ useEffect(() => {
 
   
       
-      const res = await axios.get(`/api/StartUp/StartUpProfile/${numericId}`, {
+      const res = await axios.get(`/api/StartUp/StartUpProfile/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
