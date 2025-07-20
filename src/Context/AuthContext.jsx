@@ -27,13 +27,14 @@ export const AuthProvider = ({ children }) => {
     const decoded = parseJwt(token);
     if (!decoded) return;
 
-    const email = decoded.email || decoded.sub || decoded.name || '';
-    const role = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+const email = decoded.email || decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"];
+  const role = decoded.role || decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+  const userId = decoded.sub || decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
 
     console.log("✅ Stored:", token);
     console.log({ email, role });
 
-    setUser({ token, email, role });
+    setUser({ token, email, role, userId });
   };
 
   const logout = () => setUser(null);

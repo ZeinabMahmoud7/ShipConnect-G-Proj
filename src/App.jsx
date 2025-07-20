@@ -48,6 +48,8 @@ import NotFound from './pages/Not Found/NotFound';
 import StartUpProfile from './pages/AdminPages/StartUpProfile';
 import ShippingDetailes from './pages/AdminPages/Shippingdetailes';
 import StartUpDetailes from './pages/AdminPages/StartUpdetailes';
+import PaymentSuccess from './Components/PaymentSuccess'
+
 function App() {
   const [shipments, setShipments] = useState(mockShipments);
   const [shipmentsShipping, setShipmentsShipping] = useState(mockShipping);
@@ -117,17 +119,19 @@ function App() {
 
               <Route path="track/:id" element={<TrackShipment />} />
             </Route>
-                   {/* Dashboard LayoutAdmin routes */}
-               <Route path="/dashboardAdmin" element={<LayoutAdmin />}>
-                <Route index element={<DashboardAdmin />} />
-                <Route path="SettingAdmin" element={<SettingAdmin />} />
-                <Route path="Partners" element={<PartnersPage />} />
-                <Route path="shipping-details/:id" element={<ShippingProfile />} /> */}
+            {/* Dashboard LayoutAdmin routes */}
+            <Route path="/dashboardAdmin" element={<LayoutAdmin />}>
+              <Route index element={<DashboardAdmin />} />
+              <Route path="SettingAdmin" element={<SettingAdmin />} />
+              <Route path="Partners" element={<PartnersPage />} />
+              <Route path="shipping-details/:id" element={<ShippingProfile />} />
 
-              </Route>
+            </Route>
+<Route path="/payment" element={<PaymentSuccess />} />
 
             {/* Not Found Page */}
             <Route path="*" element={<NotFound />} />
+            
           </Routes>
         </OffersProvider>
       </AuthProvider>

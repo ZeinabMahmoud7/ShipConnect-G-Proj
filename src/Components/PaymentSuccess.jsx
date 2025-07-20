@@ -5,7 +5,7 @@ import { CheckCircle, XCircle, Loader2 } from "lucide-react";
 
 export default function PaymentSuccess() {
   const [searchParams] = useSearchParams();
-  const orderId = searchParams.get("orderId");
+  const orderId = searchParams.get("token");
   const [status, setStatus] = useState("processing");
   const navigate = useNavigate();
 
@@ -14,24 +14,22 @@ export default function PaymentSuccess() {
       try {
         const token = localStorage.getItem("token");
 
-        const response = await axios.post(
-          `/api/Payment/capture-order/${orderId}`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+        const response = axios.post(`/api/Payment/capture-order/${orderId}`, null, {
+          headers: {
+            Authorization: `Bearer ${token}`
           }
-        );
+        });
 
         if (response.status === 200) {
           setStatus("success");
           setTimeout(() => navigate("/dashboard"), 3000);
         } else {
           setStatus("failed");
+          console.log(response?.data);
         }
       } catch (error) {
-        console.error("Error capturing payment:", error);
+        console.log(error.response?.data); 
+
         setStatus("failed");
       }
     };
@@ -62,7 +60,7 @@ export default function PaymentSuccess() {
             </h2>
             <p className="text-gray-600 mt-2">
               Thank you for your payment. Redirecting to your dashboard...
-            </p>
+            </p>-
           </>
         )}
 

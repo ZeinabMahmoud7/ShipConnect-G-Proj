@@ -10,24 +10,22 @@ export default function OffersList({ offers, approvedChats, onApprove, onConnect
   const [searchTerm, setSearchTerm] = useState('');
   const [filterOpen, setFilterOpen] = useState(false);
   const [priceFilter, setPriceFilter] = useState('');
+  const [approvedLocal, setApprovedLocal] = useState(() => new Set(approvedChats));
   const filterRef = useRef(null);
-const [payModalOfferId, setPayModalOfferId] = useState(null);
-const [approvedLocal, setApprovedLocal] = useState(() => new Set(approvedChats));
-const navigate = useNavigate();
-
- const filteredOffers = offers.map((shipment) => ({
-  ...shipment,
-  offers: shipment.offers.filter((offer) => {
-    const matchesId = offer.offerId.toString().toLowerCase().includes(searchTerm.toLowerCase());
-    let matchesPrice = true;
-    if (priceFilter === 'gt100') matchesPrice = offer.price > 100;
-    else if (priceFilter === 'lt100') matchesPrice = offer.price < 100;
-    else if (priceFilter === 'eq100') matchesPrice = offer.price === 100;
-    return matchesId && matchesPrice;
-  }),
-}));
+  const navigate = useNavigate();
 
 
+  const filteredOffers = offers.map((shipment) => ({
+    ...shipment,
+    offers: shipment.offers.filter((offer) => {
+      const matchesId = offer.offerId.toString().toLowerCase().includes(searchTerm.toLowerCase());
+      let matchesPrice = true;
+      if (priceFilter === 'gt100') matchesPrice = offer.price > 100;
+      else if (priceFilter === 'lt100') matchesPrice = offer.price < 100;
+      else if (priceFilter === 'eq100') matchesPrice = offer.price === 100;
+      return matchesId && matchesPrice;
+    }),
+  }));
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -38,45 +36,49 @@ const navigate = useNavigate();
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-const token = localStorage.getItem("token");
-const decoded = jwtDecode(token);
-const payerId = decoded.sub || decoded.id;
-console.log("paaaaaaaaaaaaayer",payerId);
-const handleConfirmPayment = async (offerId, amount) => {
-  try {
-    const payload = {
-      amount: amount,
-      offerId: offerId,
-      payerId: payerId,
-      notes: `Payment for offer ${offerId}`,
-    };
 
-    const response = await axios.post(
-      "/api/Payment/create-order",
-      payload,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+  // pay btn
+  const [payModalOfferId, setPayModalOfferId] = useState(null);
+  const token = localStorage.getItem("token");
+  const decoded = jwtDecode(token);
+  const payerId = decoded.sub || decoded.id;
+  console.log("paaaaaaaaaaaaayer", payerId);
+
+  const handleConfirmPayment = async (offerId, amount) => {
+    try {
+      const payload = {
+        amount: amount,
+        offerId: offerId,
+        payerId: payerId,
+        notes: `Payment for offer ${offerId}`,
+      };
+
+      const response = await axios.post(
+        "/api/Payment/create-order",
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data?.paymentUrl) {
+        window.location.href = response.data.paymentUrl; // Redirect to payment gateway
+      } else {
+        toast.error("Payment URL not returned by the server.");
       }
-    );
-
-    if (response.data?.paymentUrl) {
-      window.location.href = response.data.paymentUrl; // Redirect to payment gateway
-    } else {
-      toast.error("Payment URL not returned by the server.");
+    } catch (error) {
+      console.error("❌ Error creating payment order:", error);
+      toast.error("Failed to create payment order. Please try again.");
     }
-  } catch (error) {
-    console.error("❌ Error creating payment order:", error);
-    toast.error("Failed to create payment order. Please try again.");
-  }
-};
+  };
 
 
   return (
     <div className="relative px-4 sm:px-6 md:px-8 max-w-screen-xl mx-auto">
       <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2 flex-wrap">
-        
+
         <svg
           width="34"
           height="34"
@@ -155,18 +157,16 @@ const handleConfirmPayment = async (offerId, amount) => {
 
           <div
             ref={filterRef}
-            className={`absolute top-12 right-0 w-56 bg-white rounded-lg shadow-lg p-4 z-50 transition-transform duration-300 ease-in-out ${
-              filterOpen ? 'translate-x-0 opacity-100' : 'translate-x-5 opacity-0 pointer-events-none'
-            }`}
+            className={`absolute top-12 right-0 w-56 bg-white rounded-lg shadow-lg p-4 z-50 transition-transform duration-300 ease-in-out ${filterOpen ? 'translate-x-0 opacity-100' : 'translate-x-5 opacity-0 pointer-events-none'
+              }`}
           >
             <div
               onClick={() => {
                 setPriceFilter('gt100');
                 setFilterOpen(false);
               }}
-              className={`px-3 py-2 mb-2 rounded-md cursor-pointer transition text-primaryBlue ${
-                priceFilter === 'gt100' ? 'bg-borderGray font-semibold' : 'hover:bg-borderGray'
-              }`}
+              className={`px-3 py-2 mb-2 rounded-md cursor-pointer transition text-primaryBlue ${priceFilter === 'gt100' ? 'bg-borderGray font-semibold' : 'hover:bg-borderGray'
+                }`}
             >
               Greater than $100
             </div>
@@ -175,9 +175,8 @@ const handleConfirmPayment = async (offerId, amount) => {
                 setPriceFilter('lt100');
                 setFilterOpen(false);
               }}
-              className={`px-3 py-2 mb-2 rounded-md cursor-pointer transition text-primaryBlue ${
-                priceFilter === 'lt100' ? 'bg-borderGray font-semibold' : 'hover:bg-borderGray'
-              }`}
+              className={`px-3 py-2 mb-2 rounded-md cursor-pointer transition text-primaryBlue ${priceFilter === 'lt100' ? 'bg-borderGray font-semibold' : 'hover:bg-borderGray'
+                }`}
             >
               Less than $100
             </div>
@@ -186,9 +185,8 @@ const handleConfirmPayment = async (offerId, amount) => {
                 setPriceFilter('eq100');
                 setFilterOpen(false);
               }}
-              className={`px-3 py-2 rounded-md cursor-pointer transition text-primaryBlue ${
-                priceFilter === 'eq100' ? 'bg-borderGray font-semibold' : 'hover:bg-borderGray'
-              }`}
+              className={`px-3 py-2 rounded-md cursor-pointer transition text-primaryBlue ${priceFilter === 'eq100' ? 'bg-borderGray font-semibold' : 'hover:bg-borderGray'
+                }`}
             >
               Equal to $100
             </div>
@@ -196,115 +194,121 @@ const handleConfirmPayment = async (offerId, amount) => {
         </div>
       </div>
 
- {offers.length > 0 ? (
-  filteredOffers.map((shipment) => (
-    <div key={shipment.shipmentCode} className="mb-8">
-      <h3 className="text-xl font-bold text-primaryBlue mb-4">
-        Shipment Code: {shipment.shipmentCode}
-      </h3>
+      {offers.length > 0 ? (
+        filteredOffers.map((shipment) => (
+          <div key={shipment.shipmentCode} className="mb-8">
+            <h3 className="text-xl font-bold text-primaryBlue mb-4">
+              Shipment Code: {shipment.shipmentCode}
+            </h3>
 
-      {shipment.offers.map((offer) => (
-        <div key={offer.offerId} className="mb-6">
-          {/* نفس تصميم العرض اللي كنتي عاملاه */}
-          <div className="bg-white rounded-xl border border-borderGray px-4 py-5 mb-4">
-            <div className="flex flex-col  md:flex-row justify-between items-start md:items-center gap-4 md:gap-0">
-              <div className="flex flex-col items-start gap-1 max-w-full md:max-w-[70%]">
-                <h3 className="text-2xl font-bold text-primaryBlack flex items-center gap-2 flex-wrap">
-                  {shipment.shipmentCode}{' '}
-                  <span className="text-primaryBlack font-normal text-lg gap-1 flex items-center">
-                   ⭐ ({offer.companyRating?.toFixed(1)})
+            {shipment.offers.map((offer) => (
+              <div key={offer.offerId} className="mb-6">
+                {/* Same offer design as before */}
+                <div className="bg-white rounded-xl border border-borderGray px-4 py-5 mb-4">
+                  <div className="flex flex-col  md:flex-row justify-between items-start md:items-center gap-4 md:gap-0">
+                    <div className="flex flex-col items-start gap-1 max-w-full md:max-w-[70%]">
+                      <h3 className="text-2xl font-bold text-primaryBlack flex items-center gap-2 flex-wrap">
+                        {shipment.shipmentCode}{' '}
+                        <span className="text-primaryBlack font-normal text-lg gap-1 flex items-center">
+                          ⭐ ({offer.companyRating?.toFixed(1)})
 
-                  </span>
-                </h3>
-                <p className="text-gray mt-1 text-sm font-normal break-words w-full">
-                  Estimated delivery Date: <span className="font-semibold text-lg text-primaryBlack">{offer.estimatedDeliveryDays} days</span>
-                </p>
-                <p className="text-gray text-sm font-normal break-words w-full text-start">
-                  Cost: <span className="font-semibold text-lg text-primaryBlack">${offer.price}</span>
-                </p>
-                <p className="text-gray text-sm font-normal break-words w-full text-start">
-                  Notes: <span className="text-primaryBlue">{offer.notes}</span>
-                </p>
-              </div>
+                        </span>
+                      </h3>
+                      <p className="text-gray mt-1 text-sm font-normal break-words w-full">
+                        Estimated delivery Date: <span className="font-semibold text-lg text-primaryBlack">{offer.estimatedDeliveryDays} days</span>
+                      </p>
+                      <p className="text-gray text-sm font-normal break-words w-full text-start">
+                        Cost: <span className="font-semibold text-lg text-primaryBlack">${offer.price}</span>
+                      </p>
+                      <p className="text-gray text-sm font-normal break-words w-full text-start">
+                        Notes: <span className="text-primaryBlue">{offer.notes}</span>
+                      </p>
+                    </div>
 
-   <div className="flex gap-4 mt-4">
-  {!approvedLocal.has(offer.offerId) && (
-    <>
-      <button
-      onClick={async () => {
-    try {
-      const token = localStorage.getItem('token'); // أو حسب مكان التخزين
-      await axios.put(`/api/Offer/acceptOffer/${offer.offerId}`, null, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+                    <div className="flex gap-4 mt-4">
+                      {!approvedLocal.has(offer.offerId) && (
+                        <>
+                          <button
+                            onClick={async () => {
+                              try {
+                                const token = localStorage.getItem('token'); // Or wherever you store the token
+                                await axios.put(`/api/Offer/acceptOffer/${offer.offerId}`, null, {
+                                  headers: {
+                                    Authorization: `Bearer ${token}`,
+                                  },
+                                });
 
-      setApprovedLocal((prev) => new Set(prev).add(offer.offerId));
-      onApprove?.(offer.offerId);
-      toast.success(`✅ Offer ${offer.offerId} approved successfully!`);
-    } catch (error) {
-      console.error("❌ Error approving offer:", error);
-      toast.error("Failed to approve offer. Please try again.");
-    }
-  }}
-        className="flex items-center border border-[#177D3F] gap-x-2 text-[#177D3F] rounded-[20px] px-4 py-2 hover:bg-[#177D3F]/20
+                                setApprovedLocal((prev) => new Set(prev).add(offer.offerId));
+                                onApprove?.(offer.offerId);
+                                toast.success(`✅ Offer ${offer.offerId} approved successfully!`);
+                              } catch (error) {
+                                console.error("❌ Error approving offer:", error);
+                                toast.error("Failed to approve offer. Please try again.");
+                              }
+                            }}
+                            className="flex items-center border border-[#177D3F] gap-x-2 text-[#177D3F] rounded-[20px] px-4 py-2 hover:bg-[#177D3F]/20
  transition"
-      >
-       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M22 12C22 6.477 17.523 2 12 2C6.477 2 2 6.477 2 12C2 17.523 6.477 22 12 22C17.523 22 22 17.523 22 12Z" stroke="#177D3F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 12.75C8 12.75 9.6 13.662 10.4 15C10.4 15 12.8 9.75 16 8" stroke="#177D3F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
- Approve
-      </button>
+                          >
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M22 12C22 6.477 17.523 2 12 2C6.477 2 2 6.477 2 12C2 17.523 6.477 22 12 22C17.523 22 22 17.523 22 12Z" stroke="#177D3F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                              <path d="M8 12.75C8 12.75 9.6 13.662 10.4 15C10.4 15 12.8 9.75 16 8" stroke="#177D3F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            Approve
+                          </button>
 
-      <button
-        onClick={() => {
-          // ممكن تحطي لوجيك الريجيكت هنا
-          alert('Offer rejected');
-        }}
-        className="flex items-center border border-[#CE1C17] gap-x-2 text-[#CE1C17] rounded-[20px]   px-4 py-2 hover:bg-red-50 transition"
-      >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M15.75 15L9.75 9M9.75 15L15.75 9M22.75 12C22.75 6.477 18.273 2 12.75 2C7.227 2 2.75 6.477 2.75 12C2.75 17.523 7.227 22 12.75 22C18.273 22 22.75 17.523 22.75 12Z" stroke="#CE1C17" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
+                          <button
+                            onClick={() => {
+                              // You can add reject logic here
+                              alert('Offer rejected');
+                            }}
+                            className="flex items-center border border-[#CE1C17] gap-x-2 text-[#CE1C17] rounded-[20px]   px-4 py-2 hover:bg-red-50 transition"
+                          >
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M15.75 15L9.75 9M9.75 15L15.75 9M22.75 12C22.75 6.477 18.273 2 12.75 2C7.227 2 2.75 6.477 2.75 12C2.75 17.523 7.227 22 12.75 22C18.273 22 22.75 17.523 22.75 12Z" stroke="#CE1C17" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
 
-        Reject
-      </button>
-    </>
-  )}
+                            Reject
+                          </button>
+                        </>
+                      )}
 
-  {approvedLocal.has(offer.offerId) && (
- <button
-  onClick={() => handleConfirmPayment(offer.offerId, offer.price)}
-  className="bg-green-600 text-white rounded-lg px-4 py-2 hover:bg-green-700 transition"
->
-  Pay
-</button>
+                      {approvedLocal.has(offer.offerId) && (
+                        <button
+                          onClick={() => handleConfirmPayment(offer.offerId, offer.price)}
+                          className="bg-green-600 text-white rounded-lg px-4 py-2 hover:bg-green-700 transition"
+                        >
+                          Pay
+                        </button>
 
-  )}
-</div>
+                      )}
+                      {/* Temporary Test Chat Button */}
+                      <button
+                        onClick={() => onConnect(offer.offerId)}
+                        className="bg-blue-500 text-white rounded-lg px-4 py-2 hover:bg-blue-600 transition"
+                      >
+                        Test Chat
+                      </button>
+                    </div>
 
-            </div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
-      ))}
-    </div>
-  ))
-) : (
-  <p className="text-gray-500">No offers available.</p>
-)}
+        ))
+      ) : (
+        <p className="text-gray-500">No offers available.</p>
+      )}
 
-{payModalOfferId && (
-  <PaymentModal
-    offerId={payModalOfferId}
-    onClose={() => setPayModalOfferId(null)}
-    onConfirm={handleConfirmPayment}
-  />
-)}
-
-
+      {payModalOfferId && (
+        <PaymentModal
+          offerId={payModalOfferId}
+          onClose={() => setPayModalOfferId(null)}
+          onConfirm={handleConfirmPayment}
+        />
+      )}
 
     </div>
   );
 }
+
