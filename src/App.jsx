@@ -96,6 +96,7 @@ function App() {
               <Route path="shipmentsStartup/shipment/:id" element={<DeliverStartupShipment />} />
               <Route path="shipmentsStartup/transit/:id" element={<OnTransitStartupShipment />} />
               <Route path="shipmentsStartup/pending/:id" element={<PendingStartupShipment />} />
+              <Route path="track/:id" element={<TrackShipment />} />
 
               <Route path="add-shipment" element={<AddShipment onAddShipment={handleAddShipment} />} />
             </Route>
@@ -117,7 +118,6 @@ function App() {
               <Route path="shipmentsShipping/transit/:id" element={<OnTransitShippingShipment />} />
               <Route path="shipmentsShipping/Pending/:id" element={<PendingShippingShipment />} />
 
-              <Route path="track/:id" element={<TrackShipment />} />
             </Route>
             {/* Dashboard LayoutAdmin routes */}
             <Route path="/dashboardAdmin" element={<LayoutAdmin />}>
