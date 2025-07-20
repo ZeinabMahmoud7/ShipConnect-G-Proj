@@ -117,6 +117,7 @@ function App() {
               <Route path="shipmentsShipping/shipment/:id" element={<DeliverShippingShipment />} />
               <Route path="shipmentsShipping/transit/:id" element={<OnTransitShippingShipment />} />
               <Route path="shipmentsShipping/Pending/:id" element={<PendingShippingShipment />} />
+              <Route path="track/:id" element={<TrackShipment />} />
 
             </Route>
             {/* Dashboard LayoutAdmin routes */}
@@ -127,11 +128,11 @@ function App() {
               <Route path="shipping-details/:id" element={<ShippingProfile />} />
 
             </Route>
-<Route path="/payment" element={<PaymentSuccess />} />
+            <Route path="/payment" element={<PaymentSuccess />} />
 
             {/* Not Found Page */}
             <Route path="*" element={<NotFound />} />
-            
+
           </Routes>
         </OffersProvider>
       </AuthProvider>
