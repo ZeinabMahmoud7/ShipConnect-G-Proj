@@ -31,7 +31,8 @@ import DeliverStartupShipment from './pages/StartupStatus/DeliverStartupShipment
 import OnTransitStartupShipment from './pages/StartupStatus/OnTransitStartupShipment';
 import PendingStartupShipment from './pages/StartupStatus/PendingStartupShipment';
 
-import TrackShipment from './pages/TrackShipment';
+import TrackShipment from './pages/Traking/TrackShipment';
+import TrackShippingCompanyShipment from './pages/Traking/TrackShippingCompanyShipment';
 import { AuthProvider } from './Context/AuthContext';
 import LoginForm from './Components/Auth/LoginForms';
 import StartupRegisterForm from './Components/Auth/StartupRegisterForm';
@@ -117,7 +118,7 @@ function App() {
               <Route path="shipmentsShipping/shipment/:id" element={<DeliverShippingShipment />} />
               <Route path="shipmentsShipping/transit/:id" element={<OnTransitShippingShipment />} />
               <Route path="shipmentsShipping/Pending/:id" element={<PendingShippingShipment />} />
-              <Route path="track/:id" element={<TrackShipment />} />
+              <Route path="track/:id" element={<TrackShippingCompanyShipment />} />
 
             </Route>
             {/* Dashboard LayoutAdmin routes */}
