@@ -210,11 +210,12 @@ const DashboardShipping = () => {
                     </p>
                   </div>
                   <div className="flex items-center mt-6">
-                    <img
-                      src={lastRating.imageUrl || 'https://via.placeholder.com/40'}
-                      alt={lastRating.startUpName}
-                      className="w-10 h-10 rounded-full mr-4 object-cover"
-                    />
+                 <img
+  src={lastRating.imageUrl ? `http://localhost:5092${lastRating.imageUrl}` : 'https://via.placeholder.com/40'}
+  alt={lastRating.startUpName}
+  className="w-10 h-10 rounded-full mr-4 object-cover"
+/>
+
                     <div>
                       <p className="font-bold text-[#000000] text-[16px]">{lastRating.startUpName}</p>
                       <p className="text-sm text-[#99A1AF]"> {lastRating.shipmentCode}</p>

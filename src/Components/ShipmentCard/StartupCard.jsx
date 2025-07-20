@@ -52,7 +52,7 @@ export default function StartupCard({ shipment }) {
       className="cursor-pointer border rounded-lg p-4 shadow-xs hover:shadow-sm transition"
     >
       <div className="flex justify-between items-center">
-        <p className="font-normal text-xl text-slate-800">ID #{shipment.id}</p>
+        <p className="font-normal text-xl text-slate-800">#{shipment.code}</p>
 
         <span className={`flex items-center gap-1 text-sm px-5 py-3 rounded-sm w-[140px] 
           ${getStatusColor(shipment.status)}`}>

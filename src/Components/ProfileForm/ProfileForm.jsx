@@ -1,49 +1,49 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import profilePic from '../../assets/AvatarNav.jpg';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Context/AuthContext';
+import toast from 'react-hot-toast';
 
 function ProfileForm() {
-  const { register, handleSubmit, reset } = useForm();
+  const { register, handleSubmit, reset, setValue } = useForm();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [startupData, setStartupData] = useState(null);
-// مكان state في الأعلى
-const [profileImage, setProfileImage] = useState(localStorage.getItem("profileImage") || profilePic);
+  const [profileImage, setProfileImage] = useState(localStorage.getItem("profileImage") || profilePic);
+  const fileInputRef = useRef(null); // ✅ بدل ما نجيب بالـ DOM
 
-// تغيير الصورة عند الرفع
-const handleImageChange = (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setProfileImage(reader.result);
-      localStorage.setItem("profileImage", reader.result); // حفظ الصورة
-    };
-    reader.readAsDataURL(file);
-  }
-};
+  // ✅ Preview + تحديث قيمة RHF
+  const handleImageChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfileImage(reader.result);
+        localStorage.setItem("profileImage", reader.result);
+      };
+      reader.readAsDataURL(file);
 
-// تفعيل اختيار الملف عند الضغط على الصورة
-const handleImageClick = () => {
-  document.getElementById("imageUploadInput").click();
-};
+      // سجّل الملف في react-hook-form (مهم)
+      setValue("profileImageFile", e.target.files, { shouldDirty: true });
+    }
+  };
+
+  const handleImageClick = () => {
+    fileInputRef.current?.click();
+  };
 
   // Fetch Startup Data
   const fetchData = async () => {
     try {
       const token = localStorage.getItem('token');
-
       const res = await axios.get(`/api/StartUp/me`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       const data = res.data.data;
-      setStartupData(data); // to display in header
+      setStartupData(data);
       localStorage.setItem("userNameStartUP", data.startupName);
 
       reset({
@@ -59,66 +59,47 @@ const handleImageClick = () => {
 
     } catch (err) {
       console.error("❌ Failed to fetch data", err);
+      toast.error("فشل في جلب بيانات الحساب.");
     }
   };
 
   useEffect(() => {
     fetchData();
-  }, [reset]);
+  }, []); // ✅ مرة واحدة
 
   // ✅ Handle Save
-  const onSubmit = async (data) => {
-    try {
-      const token = localStorage.getItem('token');
+const onSubmit = async (data) => {
+  try {
+    const token = localStorage.getItem('token');
+    const formData = new FormData();
 
-      const payload = {
-        startupDTO: {
-          description: data.description,
-          businessCategory: data.category,
-          address: data.address,
-          website: data.website,
-          taxId: data.taxid,
-        },
-        userDTO: {
-          startupName: data.startupName,
-          phone: data.phone,
-          email: data.email,
-          profileImageUrl: "", // You can later update this with image logic
-        }
-      };
+    formData.append("requestDto.startupDTO.description", data.description ?? "");
+    formData.append("requestDto.startupDTO.businessCategory", data.category ?? "");
+    formData.append("requestDto.startupDTO.address", data.address ?? "");
+    formData.append("requestDto.startupDTO.website", data.website ?? "");
+    formData.append("requestDto.startupDTO.taxId", data.taxid ?? "");
 
-      console.log("📦 Sending payload to server:", payload);
+    formData.append("requestDto.userDTO.startupName", data.startupName ?? "");
+    formData.append("requestDto.userDTO.phone", data.phone ?? "");
+    formData.append("requestDto.userDTO.email", data.email ?? "");
 
-      const res = await axios.put(`/api/StartUp`, payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      reset({
-        startupName: payload.userDTO.startupName,
-        email: payload.userDTO.email,
-        phone: payload.userDTO.phone,
-        address: payload.startupDTO.address,
-        category: payload.startupDTO.businessCategory,
-        taxid: payload.startupDTO.taxId,
-        description: payload.startupDTO.description,
-        website: payload.startupDTO.website,
-      });
-
-      setStartupData(prev => ({
-        ...prev,
-        ...payload.startupDTO,
-        ...payload.userDTO,
-      }));
-
-      alert('✅ Changes saved successfully!');
-
-    } catch (err) {
-      console.error('❌ Error updating startup:', err);
-      alert('❌ Failed to update startup data');
+    if (data.profileImageFile && data.profileImageFile.length > 0) {
+      formData.append("requestDto.userDTO.profileImageFile", data.profileImageFile[0]);
     }
-  };
+
+    const res = await axios.put(`/api/StartUp`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        
+      },
+    });
+
+    toast.success('✅ Changes saved successfully!');
+  } catch (err) {
+    console.error('❌ Error updating startup:', err);
+    toast.error('❌ Failed to update startup data');
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-8 bg-white">
@@ -128,19 +109,21 @@ const handleImageClick = () => {
       >
         {/* Header */}
         <div className="flex gap-x-3 items-start mb-6">
-    <img
-  src={profileImage}
-  alt="profile"
-  className="w-32 h-32 rounded-full object-cover mb-2 cursor-pointer"
-  onClick={handleImageClick}
-/>
-<input
-  type="file"
-  id="imageUploadInput"
-  accept="image/*"
-  className="hidden"
-  onChange={handleImageChange}
-/>
+          <img
+            src={profileImage}
+            alt="profile"
+            className="w-32 h-32 rounded-full object-cover mb-2 cursor-pointer"
+            onClick={handleImageClick}
+          />
+          <input
+            type="file"
+            id="imageUploadInput"
+            accept="image/*"
+            {...register("profileImageFile")} 
+            ref={fileInputRef}
+            className="hidden"
+            onChange={handleImageChange}
+          />
 
           <div>
             <h2 className="text-2xl font-bold text-[#10233E]">
@@ -149,9 +132,11 @@ const handleImageClick = () => {
             <p className="text-sm text-[#6B7280] mb-2">Startup Manager</p>
             <button
               type="button"
-              onClick={() => navigate('/forgot-password', {
-                state: { email: startupData?.email || user?.email }
-              })}
+              onClick={() =>
+                navigate('/forgot-password', {
+                  state: { email: startupData?.email || user?.email },
+                })
+              }
               className="bg-[#F9751C] px-5 py-2 hover:bg-[#e5670f] text-white rounded-[20px] text-sm font-semibold"
             >
               Change Password
@@ -194,7 +179,7 @@ const Field = ({ label, placeholder, type = "text", name, register, isTextArea =
         {...register(name)}
         className="w-full border rounded-2xl p-3 outline-none resize-none h-32 text-sm bg-white"
         style={{ borderColor: "#204C80" }}
-      ></textarea>
+      />
     ) : (
       <input
         type={type}
