@@ -3,11 +3,16 @@ import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import defaultAvatar from '../../assets/AvatarNav.jpg';
 import { toast } from 'react-hot-toast';
+import { data } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../Context/AuthContext';
 
 function SettingAdmin() {
-  const { register, handleSubmit, reset } = useForm();
+  const { register, handleSubmit, reset , watch} = useForm();
   const [profileImageUrl, setProfileImageUrl] = useState('');
   const [phoneValue, setPhoneValue] = useState('');
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   // 🔧 تحويل الصورة إلى Base64
   const convertToBase64 = (file) => {
@@ -18,37 +23,38 @@ function SettingAdmin() {
       reader.onerror = (error) => reject(error);
     });
   };
-     
-const fetchStartUpProfile = async () => {
 
-  try {
-    const token = localStorage.getItem('token');
-         const id = 2; // ID ثابت للتجربة
-         console.log(typeof id);
-  const res = await axios.get(`/api/Rating/CompanyRates/${2}`|| "", {
-  headers: { Authorization: `Bearer ${token}` },
-});
+  const fetchStartUpProfile = async () => {
 
-    
-    const data = res.data;
-    console.log('✅ StartUp Profile:', data);
+    try {
+      const token = localStorage.getItem('token');
+      const id = 2; // ID ثابت للتجربة
+      console.log(typeof id);
+      //  const res = await axios.get(`/api/Rating/CompanyRates/${2}`|| "", 
+      const res = await axios.get(`/api/Rating/CompanyRates/${2}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-    toast.success('✅ StartUpProfile fetched successfully!');
-  }
-  
-  catch (err) {
-    console.error('❌ Failed to fetch StartUpProfile', err);
-    if (err.response) {
-      toast.error(`❌ Error ${err.response.status}: ${err.response.data.message || 'Server error'}`);
-    } else {
-      toast.error('❌ Network error or invalid request');
+
+      const data = res.data;
+      console.log('✅ StartUp Profile:', data);
+
+      toast.success('✅ StartUpProfile fetched successfully!');
     }
-  }
-};
 
-useEffect(() => {
-  fetchStartUpProfile();
-}, []);
+    catch (err) {
+      console.error('❌ Failed to fetch StartUpProfile', err);
+      if (err.response) {
+        toast.error(`❌ Error ${err.response.status}: ${err.response.data.message || 'Server error'}`);
+      } else {
+        toast.error('❌ Network error or invalid request');
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchStartUpProfile();
+  }, []);
 
   // ✅ جلب بيانات الأدمن
   const fetchAdminData = async () => {
@@ -67,9 +73,9 @@ useEffect(() => {
         email: data.email,
         phone: data.phone,
       });
-       localStorage.setItem("userNameAdmin", data.name);
+      localStorage.setItem("userNameAdmin", data.name);
     }
-       
+
     catch (err) {
       console.error('❌ Failed to fetch admin profile', err);
       toast.error('❌ Failed to load profile data');
@@ -111,41 +117,44 @@ useEffect(() => {
       >
         {/* Header */}
         <div className="flex flex-col md:flex-row items-center gap-6 mb-10">
-       <div className="flex flex-col items-center">
-  <label htmlFor="avatar-upload" className="cursor-pointer">
-    <img
-      src={profileImageUrl && profileImageUrl.trim() !== '' ? profileImageUrl : defaultAvatar}
-      onError={(e) => {
-        e.target.onerror = null;
-        e.target.src = defaultAvatar;
-      }}
-      alt="profile"
-      className="w-28 h-28 rounded-full object-cover ring-2 ring-[#F9751C] transition-transform hover:scale-105 duration-300"
-    />
-  </label>
+          <div className="flex flex-col items-center">
+            <label htmlFor="avatar-upload" className="cursor-pointer">
+              <img
+                src={profileImageUrl && profileImageUrl.trim() !== '' ? profileImageUrl : defaultAvatar}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = defaultAvatar;
+                }}
+                alt="profile"
+                className="w-28 h-28 rounded-full object-cover ring-2 ring-[#F9751C] transition-transform hover:scale-105 duration-300"
+              />
+            </label>
 
-  <input
-    type="file"
-    id="avatar-upload"
-    accept="image/*"
-    className="hidden"
-    onChange={async (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const base64 = await convertToBase64(file);
-        setProfileImageUrl(base64);
-      }
-    }}
-  />
-</div>
+            <input
+              type="file"
+              id="avatar-upload"
+              accept="image/*"
+              className="hidden"
+              onChange={async (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                  const base64 = await convertToBase64(file);
+                  setProfileImageUrl(base64);
+                }
+              }}
+            />
+          </div>
 
-
+          {/* Change Password */}
           <div className="text-center md:text-left">
             <h2 className="text-2xl font-bold text-[#10233E]">Admin</h2>
             <p className="text-sm text-[#6B7280] mb-2">Shipping company Manager</p>
             <button
               type="button"
               className="bg-[#F9751C] px-5 py-2 hover:bg-[#e5670f] text-white rounded-full text-sm font-semibold"
+              onClick={() => navigate('/forgot-password', 
+                { state: { email: watch('email') } })}
+              
             >
               Change Password
             </button>

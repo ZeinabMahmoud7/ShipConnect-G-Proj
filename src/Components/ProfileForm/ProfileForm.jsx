@@ -113,6 +113,7 @@ function ProfileForm() {
             alt="profile"
             className="w-32 h-32 rounded-full object-cover mb-2"
           />
+          {/* Change Password */}
           <div>
             <h2 className="text-2xl font-bold text-[#10233E]">
               {startupData?.startupName || 'Startup User'}
@@ -128,6 +129,7 @@ function ProfileForm() {
               Change Password
             </button>
           </div>
+
         </div>
 
         {/* Form Fields */}

@@ -6,7 +6,7 @@ import defaultAvatar from '../../assets/AvatarNav.jpg';
 import { useNavigate } from 'react-router-dom';
 
 function SettingShipping() {
-  const { register, handleSubmit, reset , watch} = useForm();
+  const { register, handleSubmit, reset, watch } = useForm();
   const [profileImageUrl, setProfileImageUrl] = useState('');
   const [phoneValue, setPhoneValue] = useState('');
   const [userId, setUserId] = useState('');
@@ -30,7 +30,7 @@ function SettingShipping() {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-        
+
       const data = response.data.data;
       setProfileImageUrl(data.profileImageUrl || '');
       setPhoneValue(data.phone);
@@ -47,9 +47,9 @@ function SettingShipping() {
         shippingScope: String(data.shippingScope),
         transportType: String(data.transportType),
       }
-    );
-     localStorage.setItem("userNameShipping", data.companyName);
-     console.log("😊😊😊",data.companyName);
+      );
+      localStorage.setItem("userNameShipping", data.companyName);
+      console.log("😊😊😊", data.companyName);
     } catch (error) {
       toast.error('❌ Failed to load data');
     }
@@ -117,17 +117,17 @@ function SettingShipping() {
               }}
             />
           </div>
-
+          {/* Change Password */}
           <div className="text-center md:text-left">
             <h2 className="text-2xl font-bold text-[#10233E]">Shipping Company</h2>
             <p className="text-sm text-[#6B7280] mb-2">Manage your information</p>
             <button
-  type="button"
-  className="bg-[#F9751C] px-5 py-2 hover:bg-[#e5670f] text-white rounded-full text-sm font-semibold"
-  onClick={() => navigate('/forgot-password', { state: { email: watch('email') } })}
->
-  Change Password
-</button>
+              type="button"
+              className="bg-[#F9751C] px-5 py-2 hover:bg-[#e5670f] text-white rounded-full text-sm font-semibold"
+              onClick={() => navigate('/forgot-password', { state: { email: watch('email') } })}
+            >
+              Change Password
+            </button>
           </div>
         </div>
 
