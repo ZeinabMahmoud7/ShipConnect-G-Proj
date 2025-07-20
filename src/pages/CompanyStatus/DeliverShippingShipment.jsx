@@ -5,10 +5,10 @@ import { FaChevronLeft } from 'react-icons/fa6';
 import { PiPackageLight } from 'react-icons/pi';
 import axios from 'axios';
 import { useAuth } from '../../Context/AuthContext';
-import avatarImg from '../../assets/Avatar.png';
-import { IoIosCheckmarkCircleOutline } from 'react-icons/io'; // For Delivered status icon
+// import avatarImg from '../../assets/Avatar.png'; // No longer needed if using placeholder
+import { IoIosCheckmarkCircleOutline } from 'react-icons/io';
 import { FaRegCommentDots, FaPaperPlane } from 'react-icons/fa';
-import { BsStarFill } from 'react-icons/bs'; // For star icons
+import { BsStarFill } from 'react-icons/bs';
 
 export default function DeliverShippingShipment() {
   const navigate = useNavigate();
@@ -41,7 +41,7 @@ export default function DeliverShippingShipment() {
         });
         setRatingData(res.data.data);
       } catch (err) {
-        setRatingData(null);
+        setRatingData(null); // Set to null if no rating is found or on error
       }
     };
 
@@ -65,8 +65,8 @@ export default function DeliverShippingShipment() {
 
     switch (status) {
       case 'Delivered':
-        bgColor = 'bg-[#B1F7CB]'; // Matches image
-        textColor = 'text-[#1CA651]'; // Matches image
+        bgColor = 'bg-[#B1F7CB]';
+        textColor = 'text-[#1CA651]';
         icon = <IoIosCheckmarkCircleOutline className="text-lg" />;
         break;
       case 'In Transit':
@@ -78,10 +78,9 @@ export default function DeliverShippingShipment() {
       case 'Preparing':
         bgColor = 'bg-yellow-100';
         textColor = 'text-yellow-600';
-        icon = <LuHourglass className="text-lg" />; // Using hourglass for pending/preparing too
+        icon = <LuHourglass className="text-lg" />;
         break;
       default:
-        // Default to a generic icon if status is unknown
         icon = <PiPackageLight className='text-lg' />;
         break;
     }
@@ -252,16 +251,18 @@ export default function DeliverShippingShipment() {
                   <p className="text-[#10233E] text-sm leading-relaxed">
                     {ratingData.comment || 'No comment provided.'}
                   </p>
-
+                  {/* image section here */}
                   <div className="flex items-center gap-3 pt-2">
                     <img
                       src={
                         ratingData.imageUrl
-                          ? (ratingData.imageUrl.startsWith('http') ? ratingData.imageUrl : `${import.meta.env.VITE_API_URL}${ratingData.imageUrl}`)
-                          : avatarImg
+                          ? (ratingData.imageUrl.startsWith('http')
+                            ? ratingData.imageUrl
+                            : `http://localhost:5092${ratingData.imageUrl}`) // Hardcoded base URL
+                          : 'https://via.placeholder.com/40x40' // Placeholder image
                       }
                       alt={ratingData.startUpName}
-                      className="w-10 h-10 rounded-full object-cover"
+                      className="w-10 h-10 rounded-full mr-4 object-cover" // Added mr-4
                     />
                     <div>
                       <p className="text-[#10233E] font-bold">{ratingData.startUpName}</p>

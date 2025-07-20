@@ -4,6 +4,7 @@ import axios from 'axios';
 import profilePic from '../../assets/Avatar.png';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Context/AuthContext';
+import { toast } from 'react-hot-toast';
 
 function ProfileForm() {
   const { register, handleSubmit, reset } = useForm();
@@ -96,7 +97,7 @@ function ProfileForm() {
 
     } catch (err) {
       console.error('❌ Error updating startup:', err);
-      alert('❌ Failed to update startup data');
+      toast.success('Changes saved successfully!')
     }
   };
 

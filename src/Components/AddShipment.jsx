@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SuccessModal from './Modal/SuccessModal';
 
@@ -12,8 +12,8 @@ import {
   HiOutlineCalendarDateRange
 } from "react-icons/hi2";
 import {
-  IoIosTimer, IoIosArrowDown, IoMdAdd
-} from "react-icons/io";
+  IoIosTimer, IoMdAdd
+} from "react-icons/io"; // Removed IoIosArrowDown
 import {
   BsPerson
 } from "react-icons/bs";
@@ -23,6 +23,7 @@ import {
 
 import axios from 'axios';
 import { useAuth } from '../Context/AuthContext';
+import toast from 'react-hot-toast'; // Import toast for notifications
 
 function AddShipment() {
   const navigate = useNavigate();
@@ -45,11 +46,45 @@ function AddShipment() {
     quantity: 1,
     requestDate: '',
     price: 0.1,
-    shippingSpeed: '',
-    vehicleType: '',
-    packaging: '',
-    status: 'Pending',
+    shippingSpeed: '', // This will map to PackagingOptions or TransportType, or be ignored by API
+    vehicleType: '',   // This will map to TransportType
+    packaging: '',     // This will map to PackagingOptions
+    status: 'Pending', // This should likely be set by the backend
   });
+
+  // Effect to fetch startup user's profile and pre-fill sender data
+  useEffect(() => {
+    const fetchStartupProfile = async () => {
+      if (user?.token) {
+        try {
+          const response = await axios.get('/api/StartUp/me', {
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+            },
+          });
+          if (response.data.success && response.data.data) {
+            const profile = response.data.data;
+            setFormData((prev) => ({
+              ...prev,
+              company: profile.startupName || '', // Corrected: Using startupName from API
+              email: profile.email || user.email || '',
+              phone: profile.phone || '', // Corrected: Using phone from API
+              address: profile.address || '',
+            }));
+          } else {
+            console.warn('Failed to fetch startup profile:', response.data.message);
+            toast.error('Could not load sender profile data.');
+          }
+        } catch (error) {
+          console.error('Error fetching startup profile:', error);
+          toast.error('Error fetching sender profile data.');
+        }
+      }
+    };
+
+    fetchStartupProfile();
+  }, [user]); // Re-run when user object changes (e.g., after login)
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -62,24 +97,34 @@ function AddShipment() {
 
     console.log('Current token:', user?.token)
 
+    // Map frontend values to backend enum integers
+    const packagingOptionsMap = {
+      'Box': 0, // Standard
+      'Envelope': 1, // Fragile Protection (assuming this mapping for demo)
+      'Crate': 2, // Temperature Controlled (assuming this mapping for demo)
+    };
+
+    const transportTypeMap = {
+      'Truck': 0, // Land
+      'Van': 1,   // Sea (assuming this mapping for demo)
+      'Bike': 2,  // Air (assuming this mapping for demo)
+    };
+
     const payload = {
       weightKg: parseFloat(formData.weightKg),
       dimensions: formData.dimensions,
       quantity: parseInt(formData.quantity),
       price: parseFloat(formData.price),
       destinationAddress: formData.recipientAddress,
-      packagingOptions: 0,
+      packagingOptions: packagingOptionsMap[formData.packaging] ?? 0, // Default to 0 if not found
       shipmentType: formData.shipmentType,
-      transportType:
-        formData.vehicleType === 'Truck' ? 0 :
-          formData.vehicleType === 'Van' ? 1 : 2,
-      shippingScope: 0,
-      packaging: formData.packaging,
-      description: 'Shipment created from UI',
-      requestedPickupDate: new Date(formData.requestDate).toISOString(),
+      transportType: transportTypeMap[formData.vehicleType] ?? 0, // Default to 0 if not found
+      shippingScope: 0, // Assuming 'Local' (0) as default, adjust if UI has this field
+      description: 'Shipment created from UI', // Fixed description, or add a textarea field
+      requestedPickupDate: formData.requestDate ? new Date(formData.requestDate).toISOString() : null,
       senderPhone: formData.phone,
       senderAddress: formData.address,
-      sentDate: new Date().toISOString(),
+      sentDate: new Date().toISOString(), // Sent date is current date
       recipientName: formData.recipientCompany,
       recipientEmail: formData.recipientEmail,
       recipientPhone: formData.recipientPhone
@@ -94,18 +139,19 @@ function AddShipment() {
       });
 
       console.log('Shipment added:', res.data);
+      toast.success('Shipment added successfully!');
       setShowModal(true);
     } catch (err) {
       console.error('Failed to add shipment:', err.response?.data?.errors || err.message);
-      alert('Failed to add shipment');
+      toast.error(err.response?.data?.message || 'Failed to add shipment. Please check your inputs.');
     } finally {
       setLoading(false);
-
     }
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
+    // Reset form data after successful submission
     setFormData({
       company: '', email: '', phone: '', address: '',
       recipientCompany: '', recipientEmail: '', recipientPhone: '', recipientAddress: '',
@@ -113,6 +159,8 @@ function AddShipment() {
       requestDate: '', price: 0.1, shippingSpeed: '', vehicleType: '', packaging: '',
       status: 'Pending'
     });
+    // Re-fetch user profile to re-populate sender fields if needed
+    // This will be handled by the useEffect on user change, but can be explicitly called if desired.
   };
 
   const handleNavigate = () => {
@@ -150,7 +198,8 @@ function AddShipment() {
                     name={name}
                     type={type || 'text'}
                     placeholder={`Enter ${label}`}
-                    value={formData[name]} onChange={handleChange}
+                    value={formData[name]}
+                    onChange={handleChange}
                     className="flex-1 outline-none text-sm"
                     required
                   />
@@ -200,12 +249,12 @@ function AddShipment() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
               { label: 'Shipment Type', name: 'shipmentType', icon: <PiPackageLight /> },
-              { label: 'Weight', name: 'weightKg', icon: <LiaWeightHangingSolid /> },
+              { label: 'Weight', name: 'weightKg', icon: <LiaWeightHangingSolid />, type: 'number', step: '0.1' },
               { label: 'Dimensions', name: 'dimensions', icon: <RxDimensions /> },
-              { label: 'Quantity', name: 'quantity', icon: <PiPackageLight /> },
+              { label: 'Quantity', name: 'quantity', icon: <PiPackageLight />, type: 'number', step: '1' },
               { label: 'Preferred Delivery Date', name: 'requestDate', icon: <HiOutlineCalendarDateRange />, type: 'date' },
-              { label: 'Budget Range', name: 'price', icon: <CiBag1 /> }
-            ].map(({ label, name, icon, type }) => (
+              { label: 'Budget Range', name: 'price', icon: <CiBag1 />, type: 'number', step: '0.1' }
+            ].map(({ label, name, icon, type, step }) => (
               <div key={name}>
                 <label className="block mb-1 text-[#204C80]">{label}
                   <span className="text-xs text-[#3C4EC3] pl-1">*</span>
@@ -219,6 +268,7 @@ function AddShipment() {
                     value={formData[name]} onChange={handleChange}
                     className="flex-1 outline-none text-sm"
                     required
+                    step={step}
                   />
                 </div>
               </div>
@@ -250,14 +300,16 @@ function AddShipment() {
                   <span className="text-xs text-[#3C4EC3] pl-1">*</span>
                 </label>
                 <div className="relative">
+                  {/* Only one icon now, no separate IoIosArrowDown */}
                   {React.cloneElement(icon, { className: "absolute left-3 top-1/2 transform -translate-y-1/2 text-[#204C80] w-5 h-5" })}
-                  <IoIosArrowDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#204C80] w-5 h-5 pointer-events-none" />
                   <select
                     name={name}
                     value={formData[name]}
                     onChange={handleChange}
                     required
-                    className="w-full pl-10 pr-10 py-3 border border-[#255C9C] rounded-2xl text-[#204C80] bg-white appearance-none"
+                    // Added appearance-none to remove default browser arrow
+                    // Added pr-10 to make space for the custom arrow/icon if needed later, or just for consistent padding
+                    className="w-full pl-10 pr-10 py-3 border border-[#255C9C] rounded-2xl text-[#204C80] bg-white appearance-none focus:ring-2 focus:ring-[#255C9C] focus:border-transparent"
                   >
                     <option value="" hidden>Select {label}</option>
                     {options.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
@@ -272,7 +324,7 @@ function AddShipment() {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-2 rounded-full font-semibold flex items-center justify-center gap-2 transition ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#255C9C] hover:bg-[#163150]'
+            className={`w-full py-2 rounded-full font-semibold flex items-center justify-center gap-2 transition ${loading ? 'bg-[#255C9C] opacity-50 cursor-not-allowed' : 'bg-[#255C9C] hover:bg-[#163150]'
               } text-white`}
           >
             {loading ? (

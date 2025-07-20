@@ -282,12 +282,12 @@ export default function OffersList({ offers, approvedChats, onApprove, onConnect
 
                       )}
                       {/* Temporary Test Chat Button */}
-                      <button
+                      {/* <button
                         onClick={() => onConnect(offer.offerId)}
                         className="bg-blue-500 text-white rounded-lg px-4 py-2 hover:bg-blue-600 transition"
                       >
                         Test Chat
-                      </button>
+                      </button> */}
                     </div>
 
                   </div>

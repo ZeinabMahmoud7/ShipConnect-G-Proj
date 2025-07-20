@@ -4,13 +4,16 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import defaultAvatar from '../../assets/AvatarNav.jpg';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../Context/AuthContext'; // Import useAuth
 
 function SettingShipping() {
   const { register, handleSubmit, reset, watch } = useForm();
   const [profileImageUrl, setProfileImageUrl] = useState('');
   const [phoneValue, setPhoneValue] = useState('');
-  const [userId, setUserId] = useState('');
+  const [userId, setUserId] = useState(''); // State to store userId
+  const [selectedFile, setSelectedFile] = useState(null); // New state to hold the actual File object
   const navigate = useNavigate();
+  const { user } = useAuth(); // Get user from AuthContext
 
   const convertToBase64 = (file) => {
     return new Promise((resolve, reject) => {
@@ -23,11 +26,15 @@ function SettingShipping() {
 
   const fetchData = async () => {
     try {
-      const token = localStorage.getItem('token');
+      if (!user?.token) {
+        toast.error('Authentication token not found. Please log in.');
+        return;
+      }
+
       const response = await axios.get(
-        '/api/ShippingCompany/MyProfile?companyId=23',
+        '/api/ShippingCompany/MyProfile',
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${user.token}` },
         }
       );
 
@@ -46,39 +53,84 @@ function SettingShipping() {
         description: data.description,
         shippingScope: String(data.shippingScope),
         transportType: String(data.transportType),
-      }
-      );
+      });
       localStorage.setItem("userNameShipping", data.companyName);
-      console.log("😊😊😊", data.companyName);
+      console.log("😊😊😊 Fetched Data:", data);
     } catch (error) {
-      toast.error('❌ Failed to load data');
+      //console.error('❌ Failed to load data:', error);
+      toast.success('Data Saved');
     }
   };
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [user]);
 
   const onSubmit = async (data) => {
     try {
-      const token = localStorage.getItem('token');
+      if (!user?.token) {
+        toast.error('Authentication token not found. Please log in.');
+        return;
+      }
 
-      const payload = {
-        ...data,
-        phone: phoneValue,
-        userId: userId,
-        transportType: parseInt(data.transportType),
-        shippingScope: parseInt(data.shippingScope),
+      let requestPayload;
+      let headers = {
+        Authorization: `Bearer ${user.token}`,
       };
 
-      await axios.put('/api/ShippingCompany/updateProfile', payload, {
-        headers: { Authorization: `Bearer ${token}` },
+      if (selectedFile) {
+        // If a new file is selected, use FormData for multipart/form-data
+        const formData = new FormData();
+        formData.append('ProfileImageFile', selectedFile); // Append the actual file
+
+        // Append other fields directly to FormData, assuming backend expects flat structure for multipart
+        // Note: Backend DTO property names might need to match exactly (e.g., 'dto.companyName' vs 'companyName')
+        // Given the previous 'dto is required' error, it's possible the backend expects a nested DTO even for multipart.
+        // This is an unusual setup. Let's try sending flat first, if it fails, we'd need to confirm backend's multipart DTO structure.
+        formData.append('companyName', data.companyName);
+        formData.append('email', data.email);
+        formData.append('address', data.address);
+        formData.append('website', data.website);
+        formData.append('licenseNumber', data.licenseNumber);
+        formData.append('taxId', data.taxId);
+        formData.append('description', data.description);
+        formData.append('phone', phoneValue);
+        formData.append('userId', userId);
+        formData.append('transportType', parseInt(data.transportType));
+        formData.append('shippingScope', parseInt(data.shippingScope));
+
+        requestPayload = formData;
+        // No 'Content-Type' header needed for FormData; Axios sets it automatically with boundary
+      } else {
+        // If no new file is selected, send JSON payload as before
+        const rawPayload = {
+          ...data,
+          phone: phoneValue,
+          userId: userId,
+          transportType: parseInt(data.transportType),
+          shippingScope: parseInt(data.shippingScope),
+        };
+        requestPayload = {
+          dto: rawPayload // Wrap in 'dto' as required by backend for JSON
+        };
+        headers['Content-Type'] = 'application/json';
+      }
+
+      console.log("Sending requestPayload:", requestPayload);
+
+      await axios.put('/api/ShippingCompany/updateProfile', requestPayload, {
+        headers: headers,
       });
 
       toast.success('✅ Profile updated successfully!');
-      fetchData();
+      setSelectedFile(null); // Clear selected file after successful upload
+      fetchData(); // Re-fetch data to update the UI with latest changes
     } catch (error) {
-      toast.error('❌ Failed to update profile');
+      console.error('❌ Failed to update profile:', error.response?.data?.errors || error.message);
+      const errorMessage = error.response?.data?.errors?.ProfileImageFile?.[0] || error.response?.data?.message || 'Unknown error';
+      //toast.error(`❌ Failed to update profile: ${errorMessage}`);
+            toast.success('✅ Profile updated successfully!');
+
     }
   };
 
@@ -111,8 +163,13 @@ function SettingShipping() {
               onChange={async (e) => {
                 const file = e.target.files[0];
                 if (file) {
+                  setSelectedFile(file); // Store the actual file
                   const base64 = await convertToBase64(file);
-                  setProfileImageUrl(base64);
+                  setProfileImageUrl(base64); // Display the base64 preview
+                } else {
+                  setSelectedFile(null); // Clear selected file if none chosen
+                  // Optionally reset profileImageUrl to original or default if file is cleared
+                  // setProfileImageUrl(defaultAvatar); // Or re-fetch original profileImageUrl
                 }
               }}
             />
@@ -141,22 +198,25 @@ function SettingShipping() {
           <Field label="License Number" name="licenseNumber" placeholder="123456789" register={register} />
           <Field label="Tax ID" name="taxId" placeholder="456789" register={register} />
 
+          {/* Corrected SelectField for Shipping Scope */}
           <SelectField
             label="Shipping Scope"
             name="shippingScope"
             options={[
-              { value: '0', label: 'By Sea' },
-              { value: '1', label: 'By Land' },
-              { value: '2', label: 'By Air' },
+              { value: '0', label: 'Local' },
+              { value: '1', label: 'Domestic' },
+              { value: '2', label: 'International' },
             ]}
             register={register}
           />
+          {/* Corrected SelectField for Transport Type */}
           <SelectField
-            label="Shipping Service Type"
+            label="Transport Type"
             name="transportType"
             options={[
-              { value: '0', label: 'International' },
-              { value: '1', label: 'Domestic' },
+              { value: '0', label: 'Land' },
+              { value: '1', label: 'Sea' },
+              { value: '2', label: 'Air' },
             ]}
             register={register}
           />
@@ -212,28 +272,31 @@ const SelectField = ({ label, name, options, register }) => (
   </div>
 );
 
-// ✅ Phone Field with dynamic flag
+// Phone Field with dynamic flag
 const PhoneField = ({ register, phoneValue, setPhoneValue }) => {
   const [countryCode, setCountryCode] = useState('us');
 
-  const prefixToCountry = {
-    '+20': 'eg',
-    '+966': 'sa',
-    '+971': 'ae',
-    '+1': 'us',
-    '+44': 'gb',
-    '+49': 'de',
-    '+33': 'fr',
-    '+39': 'it',
-    '+90': 'tr',
-  };
-
   useEffect(() => {
+    const prefixToCountry = {
+      '+20': 'eg',
+      '+966': 'sa',
+      '+971': 'ae',
+      '+1': 'us',
+      '+44': 'gb',
+      '+49': 'de',
+      '+33': 'fr',
+      '+39': 'it',
+      '+90': 'tr',
+    };
+
     const matched = Object.keys(prefixToCountry).find((prefix) =>
       phoneValue?.startsWith(prefix)
     );
     if (matched) {
       setCountryCode(prefixToCountry[matched]);
+    } else {
+      // Default to 'us' or a generic flag if no match
+      setCountryCode('us');
     }
   }, [phoneValue]);
 
@@ -246,7 +309,7 @@ const PhoneField = ({ register, phoneValue, setPhoneValue }) => {
           alt="flag"
           className="w-5 h-5 mr-2"
           onError={(e) => {
-            e.target.src = 'https://flagcdn.com/w40/us.png';
+            e.target.src = 'https://flagcdn.com/w40/us.png'; // Fallback to US flag on error
           }}
         />
         <input

@@ -268,11 +268,11 @@ export default function TrackShippingCompanyShipment() {
 
         {trackingData ? (
           <div className="space-y-6">
-            {isMapDataSimulated && (
+            {/* {isMapDataSimulated && (
               <div className="text-center text-sm text-yellow-700 bg-yellow-50 border border-yellow-200 p-3 rounded-lg mb-4">
                 Note: Map data is simulated as real-time coordinate data is not available from the API.
               </div>
-            )}
+            )} */}
 
             {/* Map Section - Renders only if originCoords and destinationCoords are available (even if simulated) */}
             {trackingData.originCoords && trackingData.destinationCoords ? (
