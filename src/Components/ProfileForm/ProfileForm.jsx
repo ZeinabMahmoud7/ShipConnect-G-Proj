@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
-import profilePic from '../../assets/Avatar.png';
+import profilePic from '../../assets/AvatarNav.jpg';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Context/AuthContext';
 
@@ -10,6 +10,26 @@ function ProfileForm() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [startupData, setStartupData] = useState(null);
+// مكان state في الأعلى
+const [profileImage, setProfileImage] = useState(localStorage.getItem("profileImage") || profilePic);
+
+// تغيير الصورة عند الرفع
+const handleImageChange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setProfileImage(reader.result);
+      localStorage.setItem("profileImage", reader.result); // حفظ الصورة
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
+// تفعيل اختيار الملف عند الضغط على الصورة
+const handleImageClick = () => {
+  document.getElementById("imageUploadInput").click();
+};
 
   // Fetch Startup Data
   const fetchData = async () => {
@@ -108,11 +128,20 @@ function ProfileForm() {
       >
         {/* Header */}
         <div className="flex gap-x-3 items-start mb-6">
-          <img
-            src={profilePic}
-            alt="profile"
-            className="w-32 h-32 rounded-full object-cover mb-2"
-          />
+    <img
+  src={profileImage}
+  alt="profile"
+  className="w-32 h-32 rounded-full object-cover mb-2 cursor-pointer"
+  onClick={handleImageClick}
+/>
+<input
+  type="file"
+  id="imageUploadInput"
+  accept="image/*"
+  className="hidden"
+  onChange={handleImageChange}
+/>
+
           <div>
             <h2 className="text-2xl font-bold text-[#10233E]">
               {startupData?.startupName || 'Startup User'}

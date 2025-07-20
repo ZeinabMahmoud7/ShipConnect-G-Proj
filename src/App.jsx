@@ -125,7 +125,9 @@ function App() {
               <Route path="SettingAdmin" element={<SettingAdmin />} />
               <Route path="Partners" element={<PartnersPage />} />
               <Route path="shipping-details/:id" element={<ShippingProfile />} />
-
+               <Route path="startup-details/:id" element={<StartUpProfile />} />
+                <Route path="shipping-profile/:id" element={<ShippingDetailes />} />
+                <Route path="startup-profile/:id" element={<StartUpDetailes />} />
             </Route>
 <Route path="/payment" element={<PaymentSuccess />} />
 

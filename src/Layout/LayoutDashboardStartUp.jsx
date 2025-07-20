@@ -1,7 +1,7 @@
 import Sidebar from '../Components/Sidebar/Sidebar';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Dash,Ship,Offers,Contact,Setting } from '../Components/SidebarIcon';
-import Avatar2 from '../assets/Avatar2.jpg';
+import Avatar2 from '../assets/AvatarNav.jpg';
 export default function Layout() {
   const location = useLocation();
 
@@ -15,10 +15,11 @@ export default function Layout() {
     { to: "settings", label: "Setting",icon:Setting },
   ];
   const userName=(localStorage.getItem("userNameStartUP") || "").split(" ").slice(0, 2).join(" ");
+    const userAvatar =  Avatar2;
   return (
     <div className="min-h-screen flex">
       {/* Sidebar ثابت إلا في صفحات معينة */}
-      {!hideSidebar && <Sidebar userName={userName} userAvatar={Avatar2} navLinks={navLinks} />}
+      {!hideSidebar && <Sidebar userName={userName}    userAvatar={userAvatar} navLinks={navLinks} />}
 
       {/* Main Content */}
    <main className="flex-1 p-4 overflow-y-auto">

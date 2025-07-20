@@ -272,11 +272,12 @@ function InfoItem({ label, value, Icon }) {
       <div className="bg-[#FFE1CD] rounded-xl p-6 mb-6 flex flex-col gap-8 relative overflow-hidden">
         {/* top row */}
         <div className="flex items-start gap-9">
-          <img
-            src={safeData.profileImageUrl}
-            alt="Logo"
-            className="w-20 h-20 rounded-full object-cover bg-white/50"
-          />
+      <img 
+  src={`http://localhost:5092${safeData.profileImageUrl}`} 
+  alt="Logo" 
+  className="w-16 h-16 rounded-full object-cover"
+/>
+
           <div className="space-y-1">
             <h2 className="text-xl text-[#10233E] font-bold">{safeData.companyName}</h2>
             <p className="text-sm leading-relaxed">
@@ -380,11 +381,8 @@ function InfoItem({ label, value, Icon }) {
 
         {/* الشخص */}
         <div className="flex items-center mt-6">
-          <img
-            src={item.imageUrl || "/images/default-user.png"}
-            alt={item.startUpName}
-            className="w-10 h-10 rounded-full mr-4"
-          />
+        <img src={item.imageUrl ? `http://localhost:5092${item.imageUrl}` : "/images/default-user.png"} alt={item.startUpName} className="w-10 h-10 rounded-full mr-4" />
+
           <div>
             <p className="font-bold text-[#000000] text-[16px]">{item.startUpName}</p>
             <p className="text-sm text-[#99A1AF]">{item.shipmentCode}</p>

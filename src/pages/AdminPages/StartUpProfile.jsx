@@ -14,7 +14,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 
-export default function ShippingProfile() {
+export default function StartupgProfile() {
   const navigate = useNavigate();
   const { id } = useParams(); // يمسك الـ id من الـ URL
   const numericId = parseInt(id, 10);
@@ -25,36 +25,45 @@ export default function ShippingProfile() {
 console.log("idparam",id);
     const token = localStorage.getItem("token");
     console.log("tooken",token);
+   
 useEffect(() => {
   const fetchProfile = async () => {
     try {
       setLoading(true);
 
-      // تأمين: لو الـ id مش رقم صالح
       if (Number.isNaN(numericId)) {
         setError("Invalid ID.");
         setLoading(false);
         return;
       }
 
-  
-      
       const res = await axios.get(`/api/StartUp/StartUpProfile/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
+      console.log("✅ API Response:", res);
       setProfileData(res?.data?.data ?? null);
+
+      if (!res?.data?.data) {
+        // لو مفيش بيانات جاية
+        setError("No startup data found for this ID.");
+      }
+
     } catch (err) {
-      console.error("❌ Error fetching company profile start:", err);
+      console.error("❌ Error fetching company profile:", err);
+
       if (err.response) {
+        // لو السيرفر رجع خطأ
         const status = err.response.status;
-        const message =
-          err.response.data?.message || "Server error, please try again later.";
-        setError(`Error (${status}): ${message}`);
+        const serverMessage = err.response.data?.message || JSON.stringify(err.response.data);
+        console.error("🔴 Full Error Response:", err.response.data);
+        setError(`Error (${status}): ${serverMessage}`);
       } else if (err.request) {
-        setError("No response from server. Please check your internet connection.");
+        console.error("⚠️ No response received:", err.request);
+        setError("No response from server. Please check your connection.");
       } else {
-        setError(`Request setup error: ${err.message}`);
+        console.error("⚠️ Request setup error:", err.message);
+        setError(`Request error: ${err.message}`);
       }
     } finally {
       setLoading(false);
@@ -62,7 +71,6 @@ useEffect(() => {
   };
 
   fetchProfile();
-  // 👇 فاضية: تشغّل المرة الأولى فقط
 }, []);
 
 
@@ -196,11 +204,8 @@ if (error) {
       <div className="bg-[#FFE1CD] rounded-xl p-6 mb-6 flex flex-col gap-8 relative overflow-hidden">
         {/* top row */}
         <div className="flex items-start gap-9">
-          <img
-            src={safeData.profileImageUrl}
-            alt="Logo"
-            className="w-20 h-20 rounded-full object-cover bg-white/50"
-          />
+        <img src={`http://localhost:5092${safeData.profileImageUrl}`} alt="Logo" className="w-20 h-20 rounded-full object-cover" />
+
           <div className="space-y-1">
             <h2 className="text-xl text-[#10233E] font-bold">{safeData.companyName}</h2>
             <p className="text-sm leading-relaxed">

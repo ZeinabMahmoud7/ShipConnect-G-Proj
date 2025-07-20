@@ -58,6 +58,12 @@ function SettingShipping() {
   useEffect(() => {
     fetchData();
   }, []);
+useEffect(() => {
+  const savedImage = localStorage.getItem('shippingProfileImage');
+  if (savedImage) {
+    setProfileImageUrl(savedImage);
+  }
+}, []);
 
   const onSubmit = async (data) => {
     try {
@@ -103,19 +109,22 @@ function SettingShipping() {
               />
             </label>
 
-            <input
-              type="file"
-              id="avatar-upload"
-              accept="image/*"
-              className="hidden"
-              onChange={async (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                  const base64 = await convertToBase64(file);
-                  setProfileImageUrl(base64);
-                }
-              }}
-            />
+       <input
+  type="file"
+  id="avatar-upload"
+  accept="image/*"
+  className="hidden"
+  onChange={async (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const base64 = await convertToBase64(file);
+    setProfileImageUrl(base64);
+    localStorage.setItem('shippingProfileImage', base64); // حفظ الصورة
+  }
+}}
+
+/>
+
           </div>
 
           <div className="text-center md:text-left">
