@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import { useAuth } from './AuthContext'; // Import useAuth to get the current user's ID
 import { jwtDecode } from "jwt-decode"; // Import jwtDecode to decode the token
+import toast from 'react-hot-toast'; // Import toast for notifications
 
 const OffersContext = createContext();
 
@@ -11,8 +12,10 @@ export const OffersProvider = ({ children }) => {
   const [messages, setMessages] = useState({});
   const [input, setInput] = useState('');
   const [activeChatId, setActiveChatId] = useState('');
+
   const { user } = useAuth(); // Get the authenticated user from AuthContext
-  const currentUserId = user?.userId; // Assuming email is the senderId for the current user
+  // Use user?.userId as currentUserId. For testing without full auth, you might temporarily mock it.
+  const currentUserId = user?.userId || "MOCK_USER_ID_FOR_TESTING"; // TEMPORARY MOCK: REMOVE IN PRODUCTION
 
   // Helper function to find the active offer data
   const findActiveOfferData = useCallback((idToFind) => {
@@ -21,6 +24,8 @@ export const OffersProvider = ({ children }) => {
     }
     // Flatten the offers array from all shipments and find the matching offer
     const foundOffer = offers.flatMap(shipment => shipment.offers).find(o => o.offerId.toString() === idToFind);
+    // Log the found offer data to help diagnose missing properties
+    console.log("activeOfferData found by findActiveOfferData:", foundOffer);
     return foundOffer;
   }, [offers]); // Dependency on 'offers' state
 
@@ -34,24 +39,29 @@ export const OffersProvider = ({ children }) => {
     const token = localStorage.getItem('token');
     if (!token) {
       console.error("Authentication token not found.");
+      toast.error("Authentication required to fetch messages.");
       return;
     }
 
     const activeOfferData = findActiveOfferData(offerId);
+    console.log("activeOfferData used for fetching messages API call:", activeOfferData); // Added log
 
     if (!activeOfferData) {
       console.error(`Active offer with ID ${offerId} not found in current offers data for fetching messages.`);
-      // Do not proceed with API call if activeOfferData is not found
+      toast.error("Selected chat not found. Please re-select.");
       return;
     }
 
     // Extract receiverId and shipmentId from the found offer data
-    // IMPORTANT: Ensure these properties (companyId, shipmentId) exist in your actual offer objects
-    const receiverId = activeOfferData.companyId; // Assuming 'companyId' is the receiver ID
-    const shipmentId = activeOfferData.shipmentId; // Assuming 'shipmentId' is the shipment ID
+    // IMPORTANT: Based on your console logs, activeOfferData does NOT contain 'companyId' or 'shipmentId'.
+    // You MUST inspect the full API response from /api/Offer/ShipmentOffers to find the correct property names.
+    // For now, these will likely still be undefined if your API response doesn't include them.
+    const receiverId = activeOfferData.companyId; // Reverted to companyId, but might still be undefined
+    const shipmentId = activeOfferData.shipmentId; // Might still be undefined
 
     if (!receiverId || shipmentId === undefined) { // Check for undefined or null for shipmentId
         console.error(`Missing receiverId (${receiverId}) or shipmentId (${shipmentId}) for offer ${offerId}. Cannot fetch messages.`);
+        toast.error("Chat details incomplete. Cannot fetch messages.");
         return;
     }
 
@@ -84,9 +94,11 @@ export const OffersProvider = ({ children }) => {
         console.log(`Successfully fetched messages for offer ${offerId}:`, fetchedMsgs);
       } else {
         console.error("Failed to fetch messages:", response.data?.message);
+        toast.error(`Failed to fetch messages: ${response.data?.message || 'Unknown error'}`);
       }
     } catch (err) {
       console.error(`❌ Error fetching messages for offer ${offerId}:`, err);
+      toast.error("Error fetching messages. Please try again.");
     }
   }, [currentUserId, findActiveOfferData]); // Add findActiveOfferData to dependencies
 
@@ -95,6 +107,12 @@ export const OffersProvider = ({ children }) => {
     const fetchOffers = async () => {
       try {
         const token = localStorage.getItem('token');
+        if (!token) {
+          console.error("Authentication token not found for fetching offers.");
+          toast.error("Authentication required to fetch offers.");
+          return;
+        }
+
         const response = await axios.get('/api/Offer/ShipmentOffers', {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -103,7 +121,15 @@ export const OffersProvider = ({ children }) => {
 
         const shipmentList = response.data?.data || [];
         setOffers(shipmentList);
-        console.log("✅ API Shipment List (OffersContext):", shipmentList);
+        console.log("✅ Full API Shipment List (OffersContext):", shipmentList); // Log full list
+        
+        // Log individual offer objects for detailed inspection
+        shipmentList.forEach((shipment, sIdx) => {
+          shipment.offers.forEach((offer, oIdx) => {
+            console.log(`Individual Offer Object (Shipment ${sIdx}, Offer ${oIdx}):`, offer);
+          });
+        });
+
 
         // Initialize messages state for each offer, but don't fetch yet
         const initialMessages = {};
@@ -126,6 +152,7 @@ export const OffersProvider = ({ children }) => {
 
       } catch (err) {
         console.error('❌ Error fetching offers:', err);
+        toast.error("Error fetching offers. Please try again.");
       }
     };
 
@@ -148,28 +175,35 @@ export const OffersProvider = ({ children }) => {
   const onSend = async () => {
     if (!input.trim() || !activeChatId || !currentUserId) {
         console.warn("Cannot send message: input, activeChatId, or currentUserId is missing.");
+        toast.error("Please type a message and select a chat to send.");
         return;
     }
 
     const token = localStorage.getItem('token');
     if (!token) {
       console.error("Authentication token not found.");
+      toast.error("Authentication required to send messages.");
       return;
     }
 
     const activeOfferData = findActiveOfferData(activeChatId);
+    console.log("activeOfferData used for sending message API call:", activeOfferData); // Added log
 
     if (!activeOfferData) {
       console.error(`Active offer with ID ${activeChatId} not found in current offers data for sending message.`);
+      toast.error("Selected chat not found. Please re-select.");
       return;
     }
 
     // Extract receiverId and shipmentId from the found offer data
-    const receiverId = activeOfferData.companyId; // Assuming 'companyId' is the receiver ID
-    const shipmentId = activeOfferData.shipmentId; // Assuming 'shipmentId' is the shipment ID
+    // IMPORTANT: Based on your console logs, activeOfferData does NOT contain 'companyId' or 'shipmentId'.
+    // You MUST inspect the full API response from /api/Offer/ShipmentOffers to find the correct property names.
+    const receiverId = activeOfferData.companyId; // Might still be undefined
+    const shipmentId = activeOfferData.shipmentId; // Might still be undefined
 
     if (!receiverId || shipmentId === undefined) { // Check for undefined or null for shipmentId
         console.error(`Missing receiverId (${receiverId}) or shipmentId (${shipmentId}) for offer ${activeChatId}. Cannot send message.`);
+        toast.error("Chat details incomplete. Cannot send message.");
         return;
     }
 
@@ -205,13 +239,11 @@ export const OffersProvider = ({ children }) => {
         fetchMessages(activeChatId);
       } else {
         console.error("Failed to send message:", response.data?.message);
-        // Display a toast error to the user
-        // toast.error(`Failed to send message: ${response.data?.message || 'Unknown error'}`);
+        toast.error(`Failed to send message: ${response.data?.message || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('❌ Error sending message:', error);
-      // Display a toast error to the user
-      // toast.error("Failed to send message. Please try again.");
+      toast.error("Failed to send message. Please try again.");
     }
   };
 

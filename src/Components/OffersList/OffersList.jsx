@@ -208,7 +208,7 @@ export default function OffersList({ offers, approvedChats, onApprove, onConnect
                   <div className="flex flex-col  md:flex-row justify-between items-start md:items-center gap-4 md:gap-0">
                     <div className="flex flex-col items-start gap-1 max-w-full md:max-w-[70%]">
                       <h3 className="text-2xl font-bold text-primaryBlack flex items-center gap-2 flex-wrap">
-                        {shipment.shipmentCode}{' '}
+                        {offer.companyName}{' '}
                         <span className="text-primaryBlack font-normal text-lg gap-1 flex items-center">
                           ⭐ ({offer.companyRating?.toFixed(1)})
 
