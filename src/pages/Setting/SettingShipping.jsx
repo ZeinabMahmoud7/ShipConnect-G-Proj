@@ -64,7 +64,13 @@ function SettingShipping() {
 
   useEffect(() => {
     fetchData();
-  }, [user]);
+  }, []);
+useEffect(() => {
+  const savedImage = localStorage.getItem('shippingProfileImage');
+  if (savedImage) {
+    setProfileImageUrl(savedImage);
+  }
+}, []);
 
   const onSubmit = async (data) => {
     try {

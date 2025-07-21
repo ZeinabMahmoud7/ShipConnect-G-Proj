@@ -100,27 +100,49 @@ const [shippingSegments, setShippingSegments] = useState([]); // للـ Shipping
   fetchShipmentStatus();
 }, []);
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        setLoading(true);
-        const token = localStorage.getItem("token");
-        const res = await axios.get(`/api/StartUp/StartUpProfile/${id}` || "", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setProfileData(res?.data?.data ?? null);
-      } catch (err) {
-        console.error("❌ Error fetching company profile", err);
-        setError("تعذر جلب بيانات الشركة");
-      } finally {
-        setLoading(false);
-      }
-    };
+useEffect(() => {
+  const fetchProfile = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+      const res = await axios.get(`/api/StartUp/StartUpProfile/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setProfileData(res?.data?.data ?? null);
 
-    fetchProfile();
-  }, [id]);
+      // لو مفيش بيانات جاية
+      if (!res?.data?.data) {
+        setError("No startup data found for this ID.");
+      }
+    } catch (err) {
+      console.error("❌ Full error object:", err);
+      
+      if (err.response) {
+        // لو السيرفر رجع خطأ
+        console.error("🔴 Response data:", err.response.data);
+        console.error("🔴 Status:", err.response.status);
+        console.error("🔴 Headers:", err.response.headers);
+
+        const status = err.response.status;
+        const serverMessage = err.response.data?.message || JSON.stringify(err.response.data);
+        setError(`Error ${status}: ${serverMessage}`);
+      } else if (err.request) {
+        // لو الطلب اتبعت لكن السيرفر ما ردش
+        console.error("⚠️ No response received:", err.request);
+        setError("No response from server. Please check your connection.");
+      } else {
+        // حصلت مشكلة في إعداد الطلب
+        console.error("⚠️ Request setup error:", err.message);
+        setError(`Request error: ${err.message}`);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchProfile();
+}, [id]);
+
 
   const transportTypeMap = {
     0: "Both",
@@ -340,7 +362,8 @@ function InfoItem({ label, value, Icon }) {
         {/* top row */}
         <div className="flex items-start gap-9">
           <img
-            src={safeData.profileImageUrl}
+          src={`http://localhost:5092${safeData.profileImageUrl}`} alt="Logo" className="w-20 h-20 rounded-full object-cover" />
+
             alt="Logo"
             className="w-20 h-20 rounded-full object-cover bg-white/50"
           />

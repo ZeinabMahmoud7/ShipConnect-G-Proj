@@ -49,26 +49,25 @@ const Navbar = () => {
         </div>
 
         {/* روابط النافبار */}
-        <nav className="hidden md:flex gap-6 text-white text-base font-medium">
-          <Link
-            to="/"
-            className="hover:bg-white/20 rounded-md px-2 py-1 transition-colors"
-          >
-            Home
-          </Link>
-          <Link
-            to="contact-us"
-            className="hover:bg-white/20 rounded-md px-2 py-1 transition-colors"
-          >
-            Contact Us
-          </Link>
-          <button
-            onClick={handleScrollToAbout}
-            className="hover:bg-white/20 rounded-md px-2 py-1 transition-colors"
-          >
-            About us
-          </button>
-        </nav>
+     <nav className="hidden md:flex gap-6 text-white text-base font-medium">
+  <Link
+    to="/"
+    className={`rounded-md px-2 py-1 transition-colors ${
+      location.pathname === "/" ? "bg-white/30" : "hover:bg-white/20"
+    }`}
+  >
+    Home
+  </Link>
+  <Link
+    to="/contact-us"
+    className={`rounded-md px-2 py-1 transition-colors ${
+      location.pathname === "/contact-us" ? "bg-white/30" : "hover:bg-white/20"
+    }`}
+  >
+    Contact Us
+  </Link>
+</nav>
+
         {/* صورة اليوزر + المنيو */}
         <div className="flex items-center gap-2 relative" ref={dropdownRef}>
           <button

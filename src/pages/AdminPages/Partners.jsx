@@ -31,9 +31,7 @@ export default function PartnersPage() {
           : res.data.data.data;
         console.log("test",res);
       setCompanies(resultData);
-       const ids = resultData.map(company => company.uerId);
-       
-    setUserIds(ids);
+          const ids = resultData.map(company => company.uerId);
     } catch (err) {
       console.error("❌ Error fetching companies", err);
     }
@@ -100,7 +98,7 @@ const handleApprove = async (uerId) => {
         <button
           className={`px-8 py-2 rounded-lg text-[18px] font-medium ${
             activeTab === "requests"
-              ? "bg-[#FEC6A0] text-white"
+              ? "bg-[#F9751C] text-white"
               : "bg-transparent text-[#1C2A53]"
           }`}
           onClick={() => setActiveTab("requests")}
@@ -110,7 +108,7 @@ const handleApprove = async (uerId) => {
         <button
           className={`px-8 rounded-lg py-2 text-[18px] font-medium ${
             activeTab === "our-companies"
-              ? "bg-[#FEC6A0] text-white"
+              ? "bg-[#F9751C] text-white"
               : "bg-transparent text-[#1C2A53]"
           }`}
           onClick={() => setActiveTab("our-companies")}
@@ -198,21 +196,22 @@ onClick={() => {
 
 
           >
-            <div className="flex items-center gap-5">
-              <img
-                src={company.profileImageUrl || "/images/default-user.png"}
-                alt={company.name || company.companyName}
-                className="w-[58px] h-[58px] rounded-full object-cover"
-              />
-              <div>
-                <h3 className="text-[17px] font-bold text-[#1C2A53]">
-                  {company.name || company.companyName}
-                </h3>
-                <p className="text-sm text-gray-500 capitalize">
-                  {company.accountType}
-                </p>
-              </div>
-            </div>
+           <div className="flex items-center gap-5">
+  <img
+    src={`http://localhost:5092${company.profileImageUrl}`}
+    alt={company.name || company.companyName}
+    className="w-[58px] h-[58px] rounded-full object-cover"
+  />
+  <div>
+    <h3 className="text-[17px] font-bold text-[#1C2A53]">
+      {company.name || company.companyName}
+    </h3>
+    <p className="text-sm text-gray-500 capitalize">
+      {company.accountType}
+    </p>
+  </div>
+</div>
+
 
             {activeTab === "requests" && (
               <div className="flex gap-2">

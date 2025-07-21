@@ -13,6 +13,14 @@ export default function OffersList({ offers, approvedChats, onApprove, onConnect
   const [approvedLocal, setApprovedLocal] = useState(() => new Set(approvedChats));
   const filterRef = useRef(null);
   const navigate = useNavigate();
+const isOfferPaid = (id) => {
+  try {
+    const paid = JSON.parse(localStorage.getItem("paidOffers") || "[]");
+    return paid.includes(String(id));
+  } catch {
+    return false;
+  }
+};
 
 
   const filteredOffers = offers.map((shipment) => ({
@@ -64,7 +72,8 @@ export default function OffersList({ offers, approvedChats, onApprove, onConnect
       );
 
       if (response.data?.paymentUrl) {
-        window.location.href = response.data.paymentUrl; // Redirect to payment gateway
+       window.location.href = `${response.data.paymentUrl}&offerId=${offerId}`;
+// Redirect to payment gateway
       } else {
         toast.error("Payment URL not returned by the server.");
       }
@@ -228,33 +237,28 @@ export default function OffersList({ offers, approvedChats, onApprove, onConnect
                     <div className="flex gap-4 mt-4">
                       {!approvedLocal.has(offer.offerId) && (
                         <>
-                          <button
-                            onClick={async () => {
-                              try {
-                                const token = localStorage.getItem('token'); // Or wherever you store the token
-                                await axios.put(`/api/Offer/acceptOffer/${offer.offerId}`, null, {
-                                  headers: {
-                                    Authorization: `Bearer ${token}`,
-                                  },
-                                });
+                        <button
+  onClick={async () => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.put(`/api/Offer/acceptOffer/${offer.offerId}`, null, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-                                setApprovedLocal((prev) => new Set(prev).add(offer.offerId));
-                                onApprove?.(offer.offerId);
-                                toast.success(`✅ Offer ${offer.offerId} approved successfully!`);
-                              } catch (error) {
-                                console.error("❌ Error approving offer:", error);
-                                toast.error("Failed to approve offer. Please try again.");
-                              }
-                            }}
-                            className="flex items-center border border-[#177D3F] gap-x-2 text-[#177D3F] rounded-[20px] px-4 py-2 hover:bg-[#177D3F]/20
- transition"
-                          >
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M22 12C22 6.477 17.523 2 12 2C6.477 2 2 6.477 2 12C2 17.523 6.477 22 12 22C17.523 22 22 17.523 22 12Z" stroke="#177D3F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                              <path d="M8 12.75C8 12.75 9.6 13.662 10.4 15C10.4 15 12.8 9.75 16 8" stroke="#177D3F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                            Approve
-                          </button>
+      setApprovedLocal((prev) => new Set(prev).add(offer.offerId));
+      toast.success(`✅ Offer ${offer.offerId} approved successfully!`);
+    } catch (error) {
+      console.error("❌ Error approving offer:", error);
+      toast.error("Failed to approve offer. Please try again.");
+    }
+  }}
+  className="flex items-center border border-[#177D3F] gap-x-2 text-[#177D3F] rounded-[20px] px-4 py-2 hover:bg-[#177D3F]/20 transition"
+>
+  Approve
+</button>
+
 
                           <button
                             onClick={() => {
@@ -272,22 +276,29 @@ export default function OffersList({ offers, approvedChats, onApprove, onConnect
                         </>
                       )}
 
-                      {approvedLocal.has(offer.offerId) && (
-                        <button
-                          onClick={() => handleConfirmPayment(offer.offerId, offer.price)}
-                          className="bg-green-600 text-white rounded-lg px-4 py-2 hover:bg-green-700 transition"
-                        >
-                          Pay
-                        </button>
+                {approvedLocal.has(offer.offerId) && (
+  isOfferPaid(offer.offerId) ? (
+    <button className="bg-gray-400 text-white rounded-lg px-4 py-2 cursor-default">
+      Paid
+    </button>
+  ) : (
+    <button
+      onClick={() => handleConfirmPayment(offer.offerId, offer.price)}
+      className="bg-green-600 text-white rounded-lg px-4 py-2 hover:bg-green-700 transition"
+    >
+      Pay
+    </button>
+  )
+)}
 
-                      )}
                       {/* Temporary Test Chat Button */}
-                      {/* <button
-                        onClick={() => onConnect(offer.offerId)}
-                        className="bg-blue-500 text-white rounded-lg px-4 py-2 hover:bg-blue-600 transition"
-                      >
-                        Test Chat
-                      </button> */}
+                   {/* <button
+  onClick={() => onConnect(offer.offerId)}
+  className="bg-blue-500 text-white rounded-lg px-4 py-2 hover:bg-blue-600 transition"
+>
+  Test Chat
+</button> */}
+
                     </div>
 
                   </div>

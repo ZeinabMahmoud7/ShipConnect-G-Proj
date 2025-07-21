@@ -143,12 +143,13 @@ export const OffersProvider = ({ children }) => {
 
         // Select the first offer to activate the conversation (if any)
         // This should run AFTER offers are set
-        if (!activeChatId && shipmentList.length > 0) {
-          const firstOfferId = shipmentList[0]?.offers?.[0]?.offerId?.toString();
-          if (firstOfferId) {
-            setActiveChatId(firstOfferId);
-          }
-        }
+     if (!activeChatId && shipmentList.length > 0) {
+  const firstOfferId = shipmentList[0]?.offers?.[0]?.offerId?.toString();
+  if (firstOfferId && isOfferPaid(firstOfferId)) {
+    setActiveChatId(firstOfferId);
+  }
+}
+
 
       } catch (err) {
         console.error('❌ Error fetching offers:', err);
@@ -158,6 +159,7 @@ export const OffersProvider = ({ children }) => {
 
     fetchOffers();
   }, [activeChatId]); // Re-run when activeChatId changes to ensure initial fetch if not set
+
 
   // Effect to fetch messages when activeChatId changes, and offers are loaded
   useEffect(() => {
@@ -246,21 +248,39 @@ export const OffersProvider = ({ children }) => {
       toast.error("Failed to send message. Please try again.");
     }
   };
+const markOfferPaid = (id) => {
+  const key = "paidOffers";
+  const paid = JSON.parse(localStorage.getItem(key) || "[]");
+  const idStr = String(id);
+  if (!paid.includes(idStr)) {
+    const updated = [...paid, idStr];
+    localStorage.setItem(key, JSON.stringify(updated));
+    console.log(`[OffersContext] marked offer ${idStr} as PAID.`);
+  }
+};
+
+const isOfferPaid = (id) => {
+  const paid = JSON.parse(localStorage.getItem("paidOffers") || "[]");
+  return paid.includes(String(id));
+};
 
   return (
-    <OffersContext.Provider
-      value={{
-        offers,            // [{ shipmentCode, offers: [...] }, ...]
-        approvedChats,     // [offerId, ...]
-        messages,          // { offerId: [...], ... }
-        input,
-        setInput,
-        activeChatId,
-        setActiveChatId,
-        handleApprove,
-        onSend,
-      }}
-    >
+<OffersContext.Provider
+  value={{
+    offers,
+    approvedChats,
+    messages,
+    input,
+    setInput,
+    activeChatId,
+    setActiveChatId,
+    handleApprove,
+    onSend,
+    isOfferPaid,        // ✅
+    markOfferPaid,      // ✅
+  }}
+>
+
       {children}
     </OffersContext.Provider>
   );
