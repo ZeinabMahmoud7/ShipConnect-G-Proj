@@ -362,7 +362,7 @@ function InfoItem({ label, value, Icon }) {
         {/* top row */}
         <div className="flex items-start gap-9">
           <img
-          src={`http://localhost:5092${safeData.profileImageUrl}`} alt="Logo" className="w-20 h-20 rounded-full object-cover" />
+          src={`http://localhost:5092${safeData.profileImageUrl}`} //alt="Logo" className="w-20 h-20 rounded-full object-cover"
 
             alt="Logo"
             className="w-20 h-20 rounded-full object-cover bg-white/50"
